@@ -1,17 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Log Viewer</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
+  <title>Collaborator Lite</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: monospace;
+      background-color: #111;
+      color: #0f0;
+      padding: 20px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Log Viewer</h1>
+  <h2>👁️ Collaborator Viewer</h2>
+  <div id="output">Mendeteksi IP...</div>
 
-  <div id="logs"></div>
+  <script>
+    async function getIPInfo() {
+      try {
+        const res = await fetch("https://api.ipify.org?format=json");
+        const data = await res.json();
 
-  <button id="clearLogs">Clear Logs</button>
-  <button id="downloadLogs">Download Logs</button>
+        const geo = await fetch(`https://ipapi.co/${data.ip}/json/`);
+        const geoData = await geo.json();
 
-  <script src="script.js"></script>
+        document.getElementById("output").innerHTML = `
+          <b>IP:</b> ${data.ip} <br>
+          <b>ISP:</b> ${geoData.org} <br>
+          <b>Location:</b> ${geoData.city}, ${geoData.region}, ${geoData.country_name} <br>
+          <b>Coordinates:</b> ${geoData.latitude}, ${geoData.longitude} <br>
+          <b>Time:</b> ${new Date().toLocaleString()}
+        `;
+
+      } catch (e) {
+        document.getElementById("output").innerText = "Gagal mengambil IP.";
+        console.error(e);
+      }
+    }
+
+    getIPInfo();
+  </script>
 </body>
 </html>
