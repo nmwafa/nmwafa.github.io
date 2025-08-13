@@ -1,32 +1,315 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hello World!</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #000000;
-      min-height: 100vh
-    }
-
-    img {
-      max-width: 100%;
-      height: auto;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portofolio Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Menggunakan font Fira Code untuk tampilan monospaced khas terminal */
+        body {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Kustomisasi scrollbar agar sesuai tema */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4a4a4a;
+            border-radius: 4px;
+        }
+        html.light ::-webkit-scrollbar-track {
+            background: #f0f0f0;
+        }
+        html.light ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+        }
+        /* Efek kursor berkedip */
+        .blinking-cursor {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            from, to {
+                color: transparent;
+            }
+            50% {
+                color: inherit;
+            }
+        }
+        /* Menghilangkan panah pada input number (jika ada) */
+        input[type="text"] {
+            caret-color: #4ade80; /* Warna kursor input */
+        }
+        html.light input[type="text"] {
+            caret-color: #16a34a;
+        }
+    </style>
+    <script>
+        // Konfigurasi Tailwind CSS untuk mode gelap
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'fira-code': ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        'dark-bg': '#1a1b26',
+                        'dark-fg': '#a9b1d6',
+                        'dark-border': '#414868',
+                        'dark-green': '#9ece6a',
+                        'dark-blue': '#7aa2f7',
+                        'dark-cyan': '#7dcfff',
+                        'dark-red': '#f7768e',
+                        'light-bg': '#fdfdfd',
+                        'light-fg': '#343434',
+                        'light-border': '#dcdcdc',
+                        'light-green': '#2e9335',
+                        'light-blue': '#2e5fdc',
+                        'light-cyan': '#2e89a0',
+                        'light-red': '#c82a2a',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-  <img src="https://cdn.dribbble.com/users/1106178/screenshots/4175222/media/5244fb173280f7d2fe8707a48106abea.gif" alt="Loading Animation">
-  <script src="https://cybersentinelsecure.asia/snowstorm.js"></script>
+<body class="bg-light-bg dark:bg-dark-bg text-light-fg dark:text-dark-fg transition-colors duration-300">
+
+    <div id="terminal" class="p-2 sm:p-4 h-screen w-full flex flex-col">
+        <!-- Header Jendela Terminal -->
+        <div class="bg-gray-200 dark:bg-[#282a36] rounded-t-lg p-2 flex items-center gap-2 shadow-md">
+            <div class="w-3.5 h-3.5 bg-red-500 rounded-full"></div>
+            <div class="w-3.5 h-3.5 bg-yellow-500 rounded-full"></div>
+            <div class="w-3.5 h-3.5 bg-green-500 rounded-full"></div>
+            <div class="flex-grow text-center text-sm text-gray-600 dark:text-gray-400">
+                user@portfolio — bash
+            </div>
+            <!-- Tombol Light/Dark Mode -->
+            <button id="theme-toggle" class="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white">
+                <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 8.486a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path></svg>
+            </button>
+        </div>
+
+        <!-- Konten Terminal -->
+        <div id="terminal-body" class="w-full flex-grow bg-white dark:bg-dark-bg border-x-2 border-b-2 border-light-border dark:border-dark-border rounded-b-lg p-4 overflow-y-auto text-sm sm:text-base">
+            <div id="output"></div>
+            <div class="flex gap-2 items-center">
+                <div class="flex-shrink-0">
+                    <span class="text-light-green dark:text-dark-green">user@portfolio</span>
+                    <span class="text-light-fg dark:text-dark-fg">:</span>
+                    <span class="text-light-blue dark:text-dark-blue">~</span>
+                    <span class="text-light-fg dark:text-dark-fg">$</span>
+                </div>
+                <input type="text" id="command-input" class="flex-grow bg-transparent border-none outline-none text-light-fg dark:text-dark-fg" autofocus>
+                <span class="blinking-cursor">_</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const terminalBody = document.getElementById('terminal-body');
+        const output = document.getElementById('output');
+        const commandInput = document.getElementById('command-input');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIconDark = document.getElementById('theme-icon-dark');
+        const themeIconLight = document.getElementById('theme-icon-light');
+
+        // --- Data Mock untuk Blog dan Proyek ---
+        const blogPosts = {
+            '1': { title: 'Mengenal Konsep Web Development', slug: 'mengenal-web-dev', date: '2024-07-15', content: 'Web development adalah proses membangun dan memelihara website. Ini melibatkan frontend (apa yang Anda lihat), backend (logika di balik layar), dan database. Mempelajari HTML, CSS, dan JavaScript adalah langkah pertama yang bagus.' },
+            '2': { title: 'Tips Produktif untuk Programmer', slug: 'tips-produktif', date: '2024-07-20', content: 'Beberapa tips untuk tetap produktif: gunakan teknik Pomodoro, istirahat secara teratur, pecah tugas besar menjadi kecil, dan jangan takut untuk bertanya ketika Anda buntu.' },
+            '3': { title: 'CLI vs GUI: Mana yang Lebih Baik?', slug: 'cli-vs-gui', date: '2024-08-01', content: 'CLI (Command-Line Interface) dan GUI (Graphical User Interface) keduanya memiliki kelebihan. GUI lebih intuitif untuk pemula, sementara CLI menawarkan kecepatan dan otomatisasi untuk pengguna tingkat lanjut.' }
+        };
+
+        const projects = [
+            { name: 'Sistem Manajemen Toko', description: 'Aplikasi kasir berbasis web dengan PHP dan MySQL.', url: '#' },
+            { name: 'Bot Discord Cuaca', description: 'Bot yang memberikan informasi cuaca menggunakan Node.js.', url: '#' },
+            { name: 'Game Ular Klasik', description: 'Game ular sederhana yang dibuat dengan JavaScript murni.', url: '#' }
+        ];
+
+        // --- Fungsi-fungsi Perintah ---
+        const commands = {
+            help: () => {
+                return `
+                    <p class="mb-2">Perintah yang tersedia:</p>
+                    <ul class="list-inside list-disc">
+                        <li><span class="text-light-green dark:text-dark-green">about</span>        - Tampilkan informasi tentang saya.</li>
+                        <li><span class="text-light-green dark:text-dark-green">projects</span>     - Lihat daftar proyek yang pernah saya buat.</li>
+                        <li><span class="text-light-green dark:text-dark-green">blog</span>         - Akses artikel blog. Gunakan 'blog list' atau 'blog read [id]'.</li>
+                        <li><span class="text-light-green dark:text-dark-green">contact</span>      - Tampilkan informasi kontak.</li>
+                        <li><span class="text-light-green dark:text-dark-green">theme [light|dark]</span> - Ganti tema tampilan.</li>
+                        <li><span class="text-light-green dark:text-dark-green">clear</span>        - Bersihkan layar terminal.</li>
+                        <li><span class="text-light-green dark:text-dark-green">welcome</span>      - Tampilkan kembali pesan selamat datang.</li>
+                    </ul>
+                `;
+            },
+            about: () => {
+                return `
+                    <p>Hai! Saya seorang Web Developer dan penggemar teknologi.</p>
+                    <p>Saya suka membuat aplikasi web yang bersih, efisien, dan bermanfaat.</p>
+                    <p>Portofolio ini adalah salah satu eksperimen saya dalam menggabungkan fungsionalitas dengan estetika retro-modern. Ketik 'projects' untuk melihat karya saya!</p>
+                `;
+            },
+            projects: () => {
+                let projectList = '<p class="mb-2">Berikut adalah beberapa proyek saya:</p>';
+                projects.forEach(p => {
+                    projectList += `
+                        <div class="mb-2">
+                            <p class="text-light-cyan dark:text-dark-cyan font-bold">${p.name}</p>
+                            <p class="pl-4">- ${p.description} <a href="${p.url}" target="_blank" class="underline">Lihat Proyek</a></p>
+                        </div>
+                    `;
+                });
+                return projectList;
+            },
+            blog: (args) => {
+                if (args.length === 0 || args[0] === 'list') {
+                    let postList = '<p class="mb-2">Daftar artikel blog (gunakan \'blog read [id]\'):</p>';
+                    Object.entries(blogPosts).forEach(([id, post]) => {
+                        postList += `<p><span class="text-light-cyan dark:text-dark-cyan">[${id}]</span> ${post.title} - <span class="text-gray-500">${post.date}</span></p>`;
+                    });
+                    return postList;
+                }
+                if (args[0] === 'read' && args[1]) {
+                    const post = blogPosts[args[1]];
+                    if (post) {
+                        return `
+                            <h3 class="text-xl font-bold text-light-green dark:text-dark-green">${post.title}</h3>
+                            <p class="text-sm text-gray-500 mb-4">Dipublikasikan pada: ${post.date}</p>
+                            <p>${post.content}</p>
+                        `;
+                    }
+                    return `<p class="text-light-red dark:text-dark-red">Error: Post dengan ID '${args[1]}' tidak ditemukan.</p>`;
+                }
+                return `<p class="text-light-red dark:text-dark-red">Error: Perintah blog tidak valid. Gunakan 'blog list' atau 'blog read [id]'.</p>`;
+            },
+            contact: () => {
+                return `
+                    <p>Anda bisa menghubungi saya melalui:</p>
+                    <ul>
+                        <li>- Email: <a href="mailto:email@example.com" class="underline text-light-blue dark:text-dark-blue">email@example.com</a></li>
+                        <li>- GitHub: <a href="#" target="_blank" class="underline text-light-blue dark:text-dark-blue">github_username</a></li>
+                        <li>- LinkedIn: <a href="#" target="_blank" class="underline text-light-blue dark:text-dark-blue">linkedin_profile</a></li>
+                    </ul>
+                `;
+            },
+            clear: () => {
+                output.innerHTML = '';
+                return '';
+            },
+            welcome: () => {
+                return getWelcomeMessage();
+            },
+            theme: (args) => {
+                if (args.length === 0) {
+                    return `<p class="text-light-red dark:text-dark-red">Error: Tentukan tema 'light' atau 'dark'.</p>`;
+                }
+                if (args[0] === 'light') {
+                    setTheme('light');
+                    return `<p>Tema diubah ke mode terang.</p>`;
+                } else if (args[0] === 'dark') {
+                    setTheme('dark');
+                    return `<p>Tema diubah ke mode gelap.</p>`;
+                }
+                return `<p class="text-light-red dark:text-dark-red">Error: Tema tidak dikenal '${args[0]}'.</p>`;
+            }
+        };
+
+        // --- Logika Terminal ---
+        commandInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const fullCommand = commandInput.value.trim();
+                if (fullCommand) {
+                    const [command, ...args] = fullCommand.split(' ');
+                    
+                    // Tampilkan perintah yang diketik
+                    const promptLine = document.createElement('div');
+                    promptLine.innerHTML = `
+                        <div class="flex gap-2">
+                            <div class="flex-shrink-0">
+                                <span class="text-light-green dark:text-dark-green">user@portfolio</span>
+                                <span>:</span>
+                                <span class="text-light-blue dark:text-dark-blue">~</span>
+                                <span>$</span>
+                            </div>
+                            <div class="flex-grow">${fullCommand}</div>
+                        </div>
+                    `;
+                    output.appendChild(promptLine);
+
+                    // Jalankan perintah dan tampilkan hasilnya
+                    const result = document.createElement('div');
+                    if (commands[command]) {
+                        result.innerHTML = commands[command](args);
+                    } else {
+                        result.innerHTML = `<p class="text-light-red dark:text-dark-red">Error: Perintah tidak ditemukan: ${command}. Ketik 'help' untuk daftar perintah.</p>`;
+                    }
+                    output.appendChild(result);
+                    
+                    commandInput.value = '';
+                    terminalBody.scrollTop = terminalBody.scrollHeight; // Auto-scroll ke bawah
+                }
+            }
+        });
+
+        // --- Logika Tema ---
+        const setTheme = (theme) => {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                themeIconLight.classList.remove('hidden');
+                themeIconDark.classList.add('hidden');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeIconDark.classList.remove('hidden');
+                themeIconLight.classList.add('hidden');
+                localStorage.setItem('theme', 'light');
+            }
+        };
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+
+        // --- Inisialisasi ---
+        function getWelcomeMessage() {
+            return `
+                <p class="text-2xl font-bold text-light-green dark:text-dark-green mb-4">Selamat Datang di Portofolio Terminal!</p>
+                <p>Ini adalah portofolio interaktif bergaya Command Line Interface (CLI).</p>
+                <p>Ketik <span class="text-light-cyan dark:text-dark-cyan">'help'</span> untuk melihat daftar perintah yang tersedia.</p>
+                <br>
+            `;
+        }
+        
+        function initialize() {
+            // Atur tema awal berdasarkan preferensi user atau default ke 'dark'
+            const preferredTheme = localStorage.getItem('theme');
+            if (preferredTheme) {
+                setTheme(preferredTheme);
+            } else {
+                setTheme('dark');
+            }
+
+            // Tampilkan pesan selamat datang
+            output.innerHTML = getWelcomeMessage();
+            
+            // Fokuskan ke input saat terminal diklik
+            terminalBody.addEventListener('click', () => {
+                commandInput.focus();
+            });
+        }
+
+        initialize();
+
+    </script>
 </body>
 </html>
