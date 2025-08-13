@@ -121,9 +121,9 @@
 
         // --- Data Mock untuk Blog dan Proyek ---
         const blogPosts = {
-            '1': { title: 'Mengenal Konsep Web Development', slug: 'mengenal-web-dev', date: '2024-07-15', content: 'Web development adalah proses membangun dan memelihara website. Ini melibatkan frontend (apa yang Anda lihat), backend (logika di balik layar), dan database. Mempelajari HTML, CSS, dan JavaScript adalah langkah pertama yang bagus.' },
-            '2': { title: 'Tips Produktif untuk Programmer', slug: 'tips-produktif', date: '2024-07-20', content: 'Beberapa tips untuk tetap produktif: gunakan teknik Pomodoro, istirahat secara teratur, pecah tugas besar menjadi kecil, dan jangan takut untuk bertanya ketika Anda buntu.' },
-            '3': { title: 'CLI vs GUI: Mana yang Lebih Baik?', slug: 'cli-vs-gui', date: '2024-08-01', content: 'CLI (Command-Line Interface) dan GUI (Graphical User Interface) keduanya memiliki kelebihan. GUI lebih intuitif untuk pemula, sementara CLI menawarkan kecepatan dan otomatisasi untuk pengguna tingkat lanjut.' }
+            '1': { title: 'Mengenal Konsep Web Development', date: '2024-07-15', url: 'https://medium.com/@username/mengenal-konsep-web-development' },
+            '2': { title: 'Tips Produktif untuk Programmer', date: '2024-07-20', url: 'https://medium.com/@username/tips-produktif-untuk-programmer' },
+            '3': { title: 'CLI vs GUI: Mana yang Lebih Baik?', date: '2024-08-01', url: 'https://medium.com/@username/cli-vs-gui' }
         };
 
         const projects = [
@@ -169,7 +169,7 @@
             },
             blog: (args) => {
                 if (args.length === 0 || args[0] === 'list') {
-                    let postList = '<p class="mb-2">Daftar artikel blog (gunakan \'blog read [id]\'):</p>';
+                    let postList = '<p class="mb-2">Daftar artikel blog (gunakan perintah \'blog read [id]\' untuk membaca):</p>';
                     Object.entries(blogPosts).forEach(([id, post]) => {
                         postList += `<p><span class="text-light-cyan dark:text-dark-cyan">[${id}]</span> ${post.title} - <span class="text-gray-500">${post.date}</span></p>`;
                     });
@@ -178,11 +178,8 @@
                 if (args[0] === 'read' && args[1]) {
                     const post = blogPosts[args[1]];
                     if (post) {
-                        return `
-                            <h3 class="text-xl font-bold text-light-green dark:text-dark-green">${post.title}</h3>
-                            <p class="text-sm text-gray-500 mb-4">Dipublikasikan pada: ${post.date}</p>
-                            <p>${post.content}</p>
-                        `;
+                        window.open(post.url, '_blank');
+                        return `<p>Membuka artikel "${post.title}" di tab baru...</p>`;
                     }
                     return `<p class="text-light-red dark:text-dark-red">Error: Post dengan ID '${args[1]}' tidak ditemukan.</p>`;
                 }
@@ -192,9 +189,9 @@
                 return `
                     <p>Anda bisa menghubungi saya melalui:</p>
                     <ul>
-                        <li>- Email: <a href="mailto:email@example.com" class="underline text-light-blue dark:text-dark-blue">email@example.com</a></li>
-                        <li>- GitHub: <a href="#" target="_blank" class="underline text-light-blue dark:text-dark-blue">github_username</a></li>
-                        <li>- LinkedIn: <a href="#" target="_blank" class="underline text-light-blue dark:text-dark-blue">linkedin_profile</a></li>
+                        <li>> Email: <a href="mailto:atkinsonism@proton.me" class="underline text-light-blue dark:text-dark-blue">atkinsonism@proton.me</a></li>
+                        <li>> GitHub: <a href="https://github.com/nmwafa" target="_blank" class="underline text-light-blue dark:text-dark-blue">nmwafa</a></li>
+                        <li>> LinkedIn: <a href="https://www.linkedin.com/in/nmwafa" target="_blank" class="underline text-light-blue dark:text-dark-blue">nmwafa</a></li>
                     </ul>
                 `;
             },
@@ -301,12 +298,11 @@
                 commandInput.focus();
             });
         }
-
         initialize();
-
     </script>
 </body>
 </html>
+
 
 
 
