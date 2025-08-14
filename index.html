@@ -121,9 +121,10 @@
 
         // --- Data Mock untuk Blog dan Proyek ---
         const blogPosts = {
-            '1': { title: 'Mengenal Konsep Web Development', date: '2024-07-15', url: 'https://medium.com/@username/mengenal-konsep-web-development' },
-            '2': { title: 'Tips Produktif untuk Programmer', date: '2024-07-20', url: 'https://medium.com/@username/tips-produktif-untuk-programmer' },
-            '3': { title: 'CLI vs GUI: Mana yang Lebih Baik?', date: '2024-08-01', url: 'https://medium.com/@username/cli-vs-gui' }
+            '1': { title: 'Lagi browsing ketemu CAPTCHA? Awas palsu!!!', url: 'https://medium.com/@nmwafa/lagi-browsing-ketemu-captcha-awas-palsu-c90586326b86' },
+            '2': { title: 'Kenalan dengan GNS3', url: 'https://medium.com/@nmwafa/kenalan-dengan-gns3-29c227e07d0d' },
+            '3': { title: 'Hardening Web Server di Linux Ubuntu', url: 'https://medium.com/@nmwafa/hardening-web-server-di-linux-ubuntu-66c7803d3d7e' },
+            '4': { title: 'Apa itu Fork bomb?', url: 'https://nmwafa.medium.com/apa-itu-fork-bomb-27a2a4d0ffe9' }
         };
 
         const projects = [
@@ -150,9 +151,9 @@
             },
             about: () => {
                 return `
-                    <p>Hai! Saya seorang Web Developer dan penggemar teknologi.</p>
-                    <p>Saya suka membuat aplikasi web yang bersih, efisien, dan bermanfaat.</p>
-                    <p>Portofolio ini adalah salah satu eksperimen saya dalam menggabungkan fungsionalitas dengan estetika retro-modern. Ketik 'projects' untuk melihat karya saya!</p>
+                    <p>Hai! Saya seorang penggemar teknologi.</p>
+                    <p>Saya mempelajari berbagai hal terkait Pemrograman, Jaringan, dan khususnya Keamanan siber.</p>
+                    <p>Saat ini, saya fokus pada keamanan aplikasi web dan terus menjelajahi cara-cara baru untuk meningkatkan keterampilan saya dan tetap diperbarui dengan tren terbaru di bidang ini.</p>
                 `;
             },
             projects: () => {
@@ -171,7 +172,7 @@
                 if (args.length === 0 || args[0] === 'list') {
                     let postList = '<p class="mb-2">Daftar artikel blog (gunakan perintah \'blog read [id]\' untuk membaca):</p>';
                     Object.entries(blogPosts).forEach(([id, post]) => {
-                        postList += `<p><span class="text-light-cyan dark:text-dark-cyan">[${id}]</span> ${post.title} - <span class="text-gray-500">${post.date}</span></p>`;
+                        postList += `<p><span class="text-light-cyan dark:text-dark-cyan">[${id}]</span> ${post.title} </p>`;
                     });
                     return postList;
                 }
@@ -187,7 +188,7 @@
             },
             contact: () => {
                 return `
-                    <p>Anda bisa menghubungi saya melalui:</p>
+                    <p>Mari terhubung :)</p>
                     <ul>
                         <li>> Email: <a href="mailto:atkinsonism@proton.me" class="underline text-light-blue dark:text-dark-blue">atkinsonism@proton.me</a></li>
                         <li>> GitHub: <a href="https://github.com/nmwafa" target="_blank" class="underline text-light-blue dark:text-dark-blue">nmwafa</a></li>
@@ -302,6 +303,7 @@
     </script>
 </body>
 </html>
+
 
 
 
