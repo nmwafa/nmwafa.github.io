@@ -1,188 +1,275 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Collaborator Terminal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        html, body {
-            height: 100%;
-            overflow: hidden; /* Prevent body scroll */
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .terminal-output {
-            font-family: 'Fira Code', monospace;
-        }
-        /* Custom scrollbar for a more terminal-like feel */
-        .terminal-output::-webkit-scrollbar {
-            width: 8px;
-        }
-        .terminal-output::-webkit-scrollbar-track {
-            background: #1a1a1a;
-        }
-        .terminal-output::-webkit-scrollbar-thumb {
-            background-color: #4a5568;
-            border-radius: 4px;
-            border: 2px solid #1a1a1a;
-        }
-    </style>
-</head>
-<body class="bg-gray-900 text-gray-300 p-2 sm:p-4">
+import React, { useEffect, useRef, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Copy, Trash2, Link2, Radio, WifiOff, RefreshCw } from "lucide-react";
 
-    <!-- Main Terminal Window -->
-    <div class="w-full h-full bg-black rounded-xl shadow-2xl border border-gray-700 overflow-hidden flex flex-col">
-        
-        <!-- Terminal Header -->
-        <div class="bg-gray-800 p-3 flex justify-between items-center border-b border-gray-700 flex-shrink-0">
-            <div class="flex items-center gap-2">
-                <span class="w-3 h-3 bg-red-500 rounded-full"></span>
-                <span class="w-3 h-3 bg-yellow-500 rounded-full"></span>
-                <span class="w-3 h-3 bg-green-500 rounded-full"></span>
-                <p class="text-sm ml-2 text-gray-400">Collaborator Interaction Log</p>
+/**
+ * SSRF & OAST Collaborator – Terminal UI
+ * --------------------------------------
+ * Frontend-only React component that mimics Burp Collaborator-style UX for
+ * out-of-band testing (HTTP/DNS/SMTP). It expects a backend providing:
+ *
+ * 1) POST /api/new-session  -> { sessionId, http, dns, smtp, sse }
+ *    - http:  string (e.g., "https://<id>.oast.example.com")
+ *    - dns:   string (e.g., "<id>.oast.example.com")
+ *    - smtp:  string (e.g., "<id>@oast.example.com")
+ *    - sse:   string (EventSource URL, e.g., "/api/events?sid=<sessionId>")
+ *
+ * 2) GET  /api/events?sid=...  -> text/event-stream (SSE)
+ *    - Emits lines with JSON payloads like { type, protocol, src, dst, method, host, path, headers, body, ts }
+ *
+ * 3) (Optional demo) POST /api/ping { sid } -> triggers a synthetic event
+ *
+ * Notes:
+ * - This UI has no command input in the terminal box – it only shows realtime output, appending and autoscrolling.
+ * - Includes a Clear button and connection status indicator.
+ * - If the backend is missing, the component falls back to a local mock generator so you can preview the UI.
+ */
+
+// --- Small helpers ---
+const useAutoScroll = (deps) => {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+    if (nearBottom) el.scrollTop = el.scrollHeight;
+  }, deps);
+  return ref;
+};
+
+const formatTs = (ts) => new Date(ts).toLocaleString();
+
+const Line = ({ children }) => (
+  <div className="whitespace-pre-wrap break-words font-mono text-sm leading-relaxed">
+    {children}
+  </div>
+);
+
+export default function CollaboratorTerminal() {
+  const [session, setSession] = useState(null); // { sessionId, http, dns, smtp, sse }
+  const [logs, setLogs] = useState([]); // [{ ts, text, raw }]
+  const [connected, setConnected] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [mockMode, setMockMode] = useState(false);
+
+  const terminalRef = useAutoScroll([logs]);
+
+  const addLog = (payload) => {
+    const ts = payload?.ts || Date.now();
+    let text = "";
+    if (typeof payload === "string") {
+      text = payload;
+    } else {
+      const {
+        type = "event",
+        protocol = "HTTP",
+        method = payload?.method || "",
+        host = payload?.host || "",
+        path = payload?.path || "",
+        src = payload?.src || "?",
+        dst = payload?.dst || "?",
+        headers,
+        body,
+      } = payload;
+      const head = `[${formatTs(ts)}] ${type.toUpperCase()} ${protocol} ${method} ${host}${path}`.trim();
+      const meta = `src=${src} -> dst=${dst}`;
+      const hdr = headers ? `\nheaders: ${JSON.stringify(headers)}` : "";
+      const b = body ? `\nbody: ${truncate(body, 1500)}` : "";
+      text = `${head}\n${meta}${hdr}${b}`;
+    }
+    setLogs((prev) => [...prev, { ts, text, raw: payload }]);
+  };
+
+  const truncate = (s, max) => {
+    try {
+      const str = typeof s === "string" ? s : JSON.stringify(s);
+      return str.length > max ? str.slice(0, max) + "…" : str;
+    } catch {
+      return String(s).slice(0, max) + "…";
+    }
+  };
+
+  const copy = async (val) => {
+    try {
+      await navigator.clipboard.writeText(val);
+    } catch {
+      // ignore
+    }
+  };
+
+  const newSession = async () => {
+    setLoading(true);
+    setConnected(false);
+    setLogs([]);
+    try {
+      const res = await fetch("/api/new-session", { method: "POST" });
+      if (!res.ok) throw new Error("backend not available");
+      const json = await res.json();
+      setSession(json);
+      connectSSE(json);
+      setMockMode(false);
+      addLog({ ts: Date.now(), type: "info", protocol: "LOCAL", method: "NEW", host: "session", path: `/${json.sessionId}`, src: "ui", dst: "server", body: "Session created" });
+    } catch (e) {
+      // Fall back to mock mode so the UI is still useful in preview
+      const sid = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 10);
+      const mock = {
+        sessionId: sid,
+        http: `https://${sid}.oast.local`,
+        dns: `${sid}.oast.local`,
+        smtp: `${sid}@oast.local`,
+        sse: "mock",
+      };
+      setSession(mock);
+      setMockMode(true);
+      addLog(`[${formatTs(Date.now())}] INFO Using mock mode (no backend detected).`);
+      startMockStream(mock);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const connectSSE = (sess) => {
+    try {
+      if (!sess?.sse) return setConnected(false);
+      const es = new EventSource(sess.sse, { withCredentials: true });
+      es.onopen = () => setConnected(true);
+      es.onerror = () => setConnected(false);
+      es.onmessage = (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          addLog(data);
+        } catch {
+          addLog(String(e.data || ""));
+        }
+      };
+    } catch (e) {
+      setConnected(false);
+    }
+  };
+
+  // Mock generator for preview without backend
+  const mockTimer = useRef(null);
+  const startMockStream = (sessParam) => {
+    clearInterval(mockTimer.current);
+    const sess = sessParam || session;
+    mockTimer.current = setInterval(() => {
+      const now = Date.now();
+      const samples = [
+        { type: "hit", protocol: "HTTP", method: "GET", host: String(sess?.http || "").replace("https://", ""), path: "/health", src: "10.0.0.12", dst: "127.0.0.1", ts: now },
+        { type: "dns", protocol: "DNS", method: "A?", host: sess?.dns, path: "", src: "10.0.0.55", dst: "127.0.0.1", ts: now },
+        { type: "mail", protocol: "SMTP", method: "RCPT TO", host: sess?.smtp, path: "", src: "10.0.0.88", dst: "127.0.0.1", ts: now },
+      ];
+      addLog(samples[Math.floor(Math.random() * samples.length)]);
+      setConnected(true);
+    }, 1500);
+  };
+
+  useEffect(() => {
+    newSession();
+    return () => clearInterval(mockTimer.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleClear = () => setLogs([]);
+
+  const handlePing = async () => {
+    try {
+      await fetch("/api/ping", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sid: session?.sessionId }) });
+    } catch {}
+  };
+
+  return (
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 p-4 md:p-8">
+      <div className="max-w-5xl mx-auto space-y-4">
+        <header className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">SSRF & OAST Collaborator</h1>
+            <p className="text-neutral-400 text-sm mt-1">Terminal-style, realtime viewer for out-of-band interactions.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" onClick={newSession} disabled={loading} className="gap-2">
+              <RefreshCw className="h-4 w-4" /> New Session
+            </Button>
+            <Button variant="destructive" onClick={handleClear} className="gap-2">
+              <Trash2 className="h-4 w-4" /> Clear
+            </Button>
+          </div>
+        </header>
+
+        <Card className="bg-neutral-900 border-neutral-800">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base">Endpoints</CardTitle>
+              <div className="flex items-center gap-2 text-xs">
+                {connected ? (
+                  <span className="flex items-center gap-1 text-emerald-400"><Radio className="h-3 w-3" /> connected</span>
+                ) : (
+                  <span className="flex items-center gap-1 text-red-400"><WifiOff className="h-3 w-3" /> disconnected</span>
+                )}
+              </div>
             </div>
-            <button id="clearButton" class="text-sm bg-gray-700 hover:bg-gray-600 text-white font-semibold py-1 px-3 rounded-md transition-colors duration-200">
-                Clear
-            </button>
-        </div>
-
-        <!-- Collaborator Info & Controls -->
-        <div class="p-4 bg-gray-800/50 border-b border-gray-700 flex-shrink-0">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div class="flex items-center gap-2 flex-wrap">
-                     <span class="font-semibold text-green-400">Payload URL:</span>
-                     <code id="collaboratorUrl" class="bg-gray-900 text-yellow-400 px-2 py-1 rounded-md text-sm select-all"></code>
-                </div>
-                <button id="copyButton" class="w-full sm:w-auto text-sm bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200">
-                    Copy URL
-                </button>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <EndpointRow label="HTTP" value={session?.http} onCopy={copy} />
+            <EndpointRow label="DNS" value={session?.dns} onCopy={copy} />
+            <EndpointRow label="SMTP" value={session?.smtp} onCopy={copy} />
+            <div className="pt-1">
+              <Button size="sm" variant="secondary" className="gap-2" onClick={handlePing}>
+                <Link2 className="h-4 w-4" /> Send Test Ping
+              </Button>
+              {mockMode && (
+                <span className="ml-3 text-xs text-amber-400">Mock mode active (no backend detected).</span>
+              )}
             </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <!-- Terminal Output Area -->
-        <div id="terminalOutput" class="terminal-output flex-grow p-4 overflow-y-auto text-sm">
-            <!-- Real-time logs will be appended here -->
-            <div class="text-gray-500">Menunggu interaksi... Gunakan URL di atas dalam payload Anda.</div>
-        </div>
+        <Card className="bg-black/70 border-neutral-800 shadow-inner">
+          <CardHeader className="py-3 border-b border-neutral-800">
+            <CardTitle className="text-base">Terminal Output</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div
+              ref={terminalRef}
+              className="h-[55vh] md:h-[65vh] overflow-y-auto p-4 font-mono text-emerald-300 text-sm bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.08),rgba(0,0,0,0))]"
+            >
+              {logs.length === 0 ? (
+                <div className="text-neutral-500">Awaiting interactions…</div>
+              ) : (
+                logs.map((l, i) => (
+                  <Line key={i}>
+                    {l.text}
+                  </Line>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <footer className="text-xs text-neutral-500 pt-2">
+          <p>
+            Tip: Point your SSRF payloads to the HTTP URL, resolve the DNS name for DNS exfil checks, or send an email to the SMTP address. Events will appear above in realtime.
+          </p>
+        </footer>
+      </div>
     </div>
+  );
+}
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- DOM Element References ---
-            const collaboratorUrlEl = document.getElementById('collaboratorUrl');
-            const copyButton = document.getElementById('copyButton');
-            const clearButton = document.getElementById('clearButton');
-            const terminalOutput = document.getElementById('terminalOutput');
-
-            // --- Initial Setup ---
-            let uniqueId = '';
-
-            // Function to generate a random alphanumeric string for the subdomain
-            const generateUniqueId = (length = 16) => {
-                const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-                let result = '';
-                for (let i = 0; i < length; i++) {
-                    result += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                return result;
-            };
-
-            // Function to set the unique collaborator URL on page load
-            const initializeCollaborator = () => {
-                uniqueId = generateUniqueId();
-                // NOTE: Changed to match the GitHub Pages URL format request.
-                // The unique ID is now a query parameter.
-                collaboratorUrlEl.textContent = `https://nmwafa.github.io/collaborator?id=${uniqueId}`;
-            };
-
-            // --- Event Listeners ---
-
-            // Copy button functionality
-            copyButton.addEventListener('click', () => {
-                const urlToCopy = collaboratorUrlEl.textContent;
-                const textArea = document.createElement("textarea");
-                textArea.value = urlToCopy;
-                textArea.style.position = "fixed";
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    copyButton.textContent = 'Copied!';
-                    copyButton.classList.remove('bg-blue-600', 'hover:bg-blue-500');
-                    copyButton.classList.add('bg-green-600');
-                } catch (err) {
-                    console.error('Fallback: Oops, unable to copy', err);
-                }
-                document.body.removeChild(textArea);
-
-                setTimeout(() => {
-                    copyButton.textContent = 'Copy URL';
-                    copyButton.classList.remove('bg-green-600');
-                    copyButton.classList.add('bg-blue-600', 'hover:bg-blue-500');
-                }, 2000);
-            });
-
-            // Clear button functionality
-            clearButton.addEventListener('click', () => {
-                terminalOutput.innerHTML = '<div class="text-gray-500">Log dibersihkan. Menunggu interaksi baru...</div>';
-            });
-
-            // --- Real-time Log Simulation ---
-            // This part simulates receiving data. A real implementation needs a backend.
-            const addLogEntry = (logData) => {
-                const initialMessage = terminalOutput.querySelector('.text-gray-500');
-                if (initialMessage) {
-                    initialMessage.remove();
-                }
-                const logEntry = document.createElement('div');
-                logEntry.classList.add('mb-3');
-                logEntry.innerHTML = logData;
-                terminalOutput.appendChild(logEntry);
-                terminalOutput.scrollTop = terminalOutput.scrollHeight;
-            };
-
-            const simulateIncomingLog = () => {
-                const interactionTypes = ['HTTP', 'DNS'];
-                const methods = ['GET', 'POST', 'HEAD'];
-                const ips = ['8.8.8.8', '1.1.1.1', '208.67.222.222', '192.168.1.101'];
-                const userAgents = [
-                    'curl/7.64.1', 'Wget/1.20.3 (linux-gnu)',
-                    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
-                    'Go-http-client/1.1'
-                ];
-                const type = interactionTypes[Math.floor(Math.random() * interactionTypes.length)];
-                const randomIp = ips[Math.floor(Math.random() * ips.length)];
-                const timestamp = new Date().toISOString();
-                let logHtml = `<div class="text-cyan-400">[${timestamp}]</div>`;
-
-                if (type === 'DNS') {
-                    logHtml += `
-                        <div><span class="text-yellow-400 font-bold">[DNS]</span> Query dari <span class="text-red-400">${randomIp}</span></div>
-                        <div>  - Type: A</div>
-                        <div>  - Query: <span class="font-semibold">ssrf.github.io</span></div>`;
-                } else { // HTTP
-                    const randomMethod = methods[Math.floor(Math.random() * methods.length)];
-                    const randomUserAgent = userAgents[Math.floor(Math.random() * userAgents.length)];
-                    logHtml += `
-                        <div><span class="text-green-400 font-bold">[HTTP]</span> Request dari <span class="text-red-400">${randomIp}</span></div>
-                        <div>  - Method: ${randomMethod}</div>
-                        <div>  - URL: /collaborator?id=${uniqueId}</div>
-                        <div>  - User-Agent: ${randomUserAgent}</div>`;
-                }
-                
-                addLogEntry(logHtml);
-            };
-
-            // Start the simulation loop
-            initializeCollaborator();
-            setInterval(simulateIncomingLog, 5000 + Math.random() * 3000);
-        });
-    </script>
-</body>
-</html>
+function EndpointRow({ label, value, onCopy }) {
+  return (
+    <div className="grid grid-cols-12 gap-2 items-center">
+      <div className="col-span-12 md:col-span-2 text-xs text-neutral-400">{label}</div>
+      <div className="col-span-12 md:col-span-9">
+        <Input readOnly value={value || "—"} className="bg-neutral-950 border-neutral-800 text-neutral-200 font-mono" />
+      </div>
+      <div className="col-span-12 md:col-span-1">
+        <Button size="icon" variant="outline" className="w-full md:w-10" onClick={() => value && onCopy(value)}>
+          <Copy className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
+}
