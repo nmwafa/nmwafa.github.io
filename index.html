@@ -37,6 +37,23 @@
         html.light input[type="text"] {
             caret-color: #16a34a;
         }
+        /* Efek kursor berkedip */
+        .blinking-cursor {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            from, to {
+                color: transparent;
+            }
+            50% {
+                color: inherit;
+            }
+        }
+        /* Sembunyikan kursor vertikal dan teks default dari input field */
+        input[type="text"] {
+            caret-color: transparent;
+            color: transparent;
+        }
     </style>
     <script>
         // Konfigurasi Tailwind CSS untuk mode gelap
@@ -93,7 +110,16 @@
                 <div class="flex-shrink-0 mr-2">
                     <span class="text-light-green dark:text-dark-green">nmwafa@portfolio</span><span class="text-light-fg dark:text-dark-fg">:</span><span class="text-light-blue dark:text-dark-blue">~</span><span class="text-light-fg dark:text-dark-fg">$</span>
                 </div>
-                <input type="text" id="command-input" class="flex-grow bg-transparent border-none outline-none text-light-fg dark:text-dark-fg" autofocus>
+                <!-- Container untuk input dan overlay visualnya -->
+                <div class="relative flex-grow" onclick="commandInput.focus()">
+                    <!-- Input field yang sebenarnya, teks dan kursornya transparan -->
+                    <input type="text" id="command-input" class="w-full bg-transparent border-none outline-none" autofocus>
+                    <!-- Overlay visual untuk menampilkan teks dan kursor kustom -->
+                    <div class="absolute inset-0 flex items-center pointer-events-none">
+                        <span id="input-text-display" class="whitespace-pre"></span>
+                        <span id="fake-cursor" class="blinking-cursor">_</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -105,6 +131,8 @@
         const themeToggle = document.getElementById('theme-toggle');
         const themeIconDark = document.getElementById('theme-icon-dark');
         const themeIconLight = document.getElementById('theme-icon-light');
+        const fakeCursor = document.getElementById('fake-cursor');
+        const inputTextDisplay = document.getElementById('input-text-display');
 
         // --- Data Mock untuk Blog dan Proyek ---
         const blogPosts = {
@@ -131,8 +159,8 @@
                         <li><span class="text-light-green dark:text-dark-green">about</span>        - Tampilkan informasi tentang saya.</li>
                         <li><span class="text-light-green dark:text-dark-green">projects</span>     - Lihat daftar proyek yang pernah saya buat.</li>
                         <li><span class="text-light-green dark:text-dark-green">blog</span>         - Akses artikel blog. Gunakan 'blog list' atau 'blog read [id]'.</li>
-                        <li><span class="text-light-green dark:text-dark-green">contact</span>      - Tampilkan informasi kontak.</li>
                         <li><span class="text-light-green dark:text-dark-green">writeup</span>      - Buka halaman write-up di GitBook.</li>
+                        <li><span class="text-light-green dark:text-dark-green">contact</span>      - Tampilkan informasi kontak.</li>
                         <li><span class="text-light-green dark:text-dark-green">clear</span>        - Bersihkan layar terminal.</li>
                         <li><span class="text-light-green dark:text-dark-green">welcome</span>      - Tampilkan kembali pesan selamat datang.</li>
                     </ul>
@@ -200,12 +228,12 @@
 
         // --- Logika Terminal ---
         commandInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !commandInput.disabled) {
+                commandInput.disabled = true;
                 const fullCommand = commandInput.value.trim();
                 if (fullCommand) {
                     const [command, ...args] = fullCommand.split(' ');
                     
-                    // Tampilkan perintah yang diketik
                     const promptLine = document.createElement('div');
                     promptLine.innerHTML = `
                         <div class="flex">
@@ -216,19 +244,29 @@
                         </div>`;
                     output.appendChild(promptLine);
                     commandInput.value = '';
+                    inputTextDisplay.textContent = ''; // Hapus juga teks visual
 
-                    // Jalankan perintah dan tampilkan hasilnya
-                    const result = document.createElement('div');
+                    const resultDiv = document.createElement('div');
+                    output.appendChild(resultDiv);
+
                     if (commands[command]) {
-                        result.innerHTML = commands[command](args);
+                        const result = commands[command](args);
+                        resultDiv.innerHTML = result;
                     } else {
-                        result.innerHTML = `<p class="text-light-red dark:text-dark-red">Error: Perintah tidak ditemukan: ${command}. Ketik 'help' untuk daftar perintah.</p>`;
+                        resultDiv.innerHTML = `<p class="text-light-red dark:text-dark-red">Error: Perintah tidak ditemukan: ${command}. Ketik 'help' untuk daftar perintah.</p>`;
                     }
-                    output.appendChild(result);
                     
-                    commandInput.value = '';
-                    terminalBody.scrollTop = terminalBody.scrollHeight; // Auto-scroll ke bawah
+                    terminalBody.scrollTop = terminalBody.scrollHeight;
                 }
+                commandInput.disabled = false;
+                commandInput.focus();
+            }
+        });
+
+        // Sinkronkan teks dari input yang tersembunyi ke tampilan visual
+        commandInput.addEventListener('input', () => {
+            if (inputTextDisplay) {
+                inputTextDisplay.textContent = commandInput.value;
             }
         });
 
@@ -263,26 +301,23 @@
         }
         
         function initialize() {
-            // Atur tema awal berdasarkan preferensi user atau default ke 'dark'
             const preferredTheme = localStorage.getItem('theme');
-            if (preferredTheme) {
-                setTheme(preferredTheme);
-            } else {
-                setTheme('dark');
-            }
-
-            // Tampilkan pesan selamat datang
+            setTheme(preferredTheme || 'dark');
             output.innerHTML = getWelcomeMessage();
-            
-            // Fokuskan ke input saat terminal diklik
-            terminalBody.addEventListener('click', () => {
-                commandInput.focus();
+            // Saat terminal diklik di mana saja, fokuskan ke input
+            terminalBody.addEventListener('click', (e) => {
+                // Hindari re-focus jika yang diklik adalah link
+                if (e.target.tagName !== 'A') {
+                    commandInput.focus();
+                }
             });
+            commandInput.focus();
         }
         initialize();
     </script>
 </body>
 </html>
+
 
 
 
