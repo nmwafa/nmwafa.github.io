@@ -187,7 +187,7 @@
             },
             blog: (args) => {
                 if (args.length === 0 || args[0] === 'list') {
-                    let postList = '<p class="mb-2">Daftar artikel blog (gunakan perintah \'blog read [id]\' untuk membaca):</p>';
+                    let postList = '<p class="mb-2">Daftar artikel blog. Gunakan perintah \'blog read [id]\' untuk membaca (ex: blog read 1):</p>';
                     Object.entries(blogPosts).forEach(([id, post]) => {
                         postList += `<p><span class="text-light-cyan dark:text-dark-cyan">[${id}]</span> ${post.title} </p>`;
                     });
@@ -317,6 +317,7 @@
     </script>
 </body>
 </html>
+
 
 
 
