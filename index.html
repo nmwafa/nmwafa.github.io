@@ -85,7 +85,7 @@
         }
     </script>
 </head>
-<body class="bg-light-bg dark:bg-dark-bg text-light-fg dark:text-dark-fg transition-colors duration-300">
+<body class="bg-light-bg dark:bg-dark-bg text-light-fg dark:text-dark-fg transition-colors duration-300" oncontextmenu="return false;">
 
     <div id="terminal" class="p-2 sm:p-4 h-screen w-full flex flex-col">
         <!-- Header Jendela Terminal -->
@@ -270,7 +270,7 @@
             }
         });
 
-        // --- Logika Tema ---
+        // --- Tema ---
         const setTheme = (theme) => {
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark');
@@ -294,7 +294,7 @@
         function getWelcomeMessage() {
             return `
                 <p class="text-2xl font-bold text-light-green dark:text-dark-green mb-4">Selamat Datang di Portofolio Terminal!</p>
-                <p>Ini adalah portofolio interaktif bergaya Command Line Interface (CLI).</p>
+                <p>Ini adalah portofolio interaktif dengan style Command Line Interface (CLI).</p>
                 <p>Ketik <span class="text-light-cyan dark:text-dark-cyan">'help'</span> untuk melihat daftar perintah yang tersedia.</p>
                 <br>
             `;
@@ -315,8 +315,27 @@
         }
         initialize();
     </script>
+
+    <!-- block -->
+    <script>
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode === 123) {
+                e.preventDefault();
+            }
+            if (
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U') || (e.metaKey && e.altKey && e.key === 'I')
+            ) {
+                e.preventDefault();
+            }
+        });
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+    </script>
 </body>
 </html>
+
 
 
 
