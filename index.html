@@ -140,7 +140,8 @@
             '2': { title: 'Kenalan dengan GNS3', url: 'https://medium.com/@nmwafa/kenalan-dengan-gns3-29c227e07d0d' },
             '3': { title: 'Hardening Web Server di Linux Ubuntu', url: 'https://medium.com/@nmwafa/hardening-web-server-di-linux-ubuntu-66c7803d3d7e' },
             '4': { title: 'Apa itu Fork bomb?', url: 'https://nmwafa.medium.com/apa-itu-fork-bomb-27a2a4d0ffe9' },
-            '5': { title: 'HTB Skills Assessment — SQL Injection Fundamentals', url: 'https://medium.com/@nmwafa/htb-skills-assessment-sql-injection-fundamentals-4584dc7568a5' }
+            '5': { title: 'HTB Skills Assessment — SQL Injection Fundamentals', url: 'https://medium.com/@nmwafa/htb-skills-assessment-sql-injection-fundamentals-4584dc7568a5' },
+            '6': { title: 'Mengenal kerentanan desinkronisasi HTTP', url: 'https://nmwafa.medium.com/mengenal-kerentanan-desinkronisasi-http-7d59abef382b' }
         };
 
         const projects = [
@@ -174,7 +175,7 @@
                 `;
             },
             projects: () => {
-                let projectList = '<p class="mb-2">Berikut adalah beberapa proyek saya:</p>';
+                let projectList = '<p class="mb-2">Berikut adalah proyek yagng saya buat:</p>';
                 projects.forEach(p => {
                     projectList += `
                         <div class="mb-2">
@@ -294,7 +295,7 @@
         function getWelcomeMessage() {
             return `
                 <p class="text-2xl font-bold text-light-green dark:text-dark-green mb-4">Selamat Datang di Portofolio Terminal!</p>
-                <p>Ini adalah portofolio interaktif dengan style Command Line Interface (CLI).</p>
+                <p>Ini adalah portofolio interaktif dengan style CLI.</p>
                 <p>Ketik <span class="text-light-cyan dark:text-dark-cyan">'help'</span> untuk melihat daftar perintah yang tersedia.</p>
                 <br>
             `;
@@ -329,6 +330,7 @@
     </script>
 </body>
 </html>
+
 
 
 
