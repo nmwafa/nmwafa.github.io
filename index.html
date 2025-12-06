@@ -148,7 +148,7 @@
             { name: 'Recon & Pillage', description: 'Skrip automasi pencarian subdomain, deteksi teknologi, dan mengkategorikan berdasarkan status kode, url dan teknologi.', url: 'https://github.com/nmwafa/recon-pillage' }
         ];
 
-        const writeupUrl = 'https://wafa-1.gitbook.io/';
+        const certUrl = 'https://drive.google.com/drive/folders/1LydeHP-hpuWUZEipSZV-B0h8dJloc89W?usp=sharing';
 
         // --- Fungsi-fungsi Perintah ---
         const commands = {
@@ -159,7 +159,7 @@
                         <li><span class="text-light-green dark:text-dark-green">about</span>        - Tampilkan informasi tentang saya.</li>
                         <li><span class="text-light-green dark:text-dark-green">projects</span>     - Lihat daftar proyek yang pernah saya buat.</li>
                         <li><span class="text-light-green dark:text-dark-green">blog</span>         - Akses artikel blog. Gunakan 'blog list' atau 'blog read [id]'.</li>
-                        <li><span class="text-light-green dark:text-dark-green">writeup</span>      - Buka halaman write-up di GitBook.</li>
+                        <li><span class="text-light-green dark:text-dark-green">cert</span>         - Lihat sertifikat dan surat apresiasi.</li>
                         <li><span class="text-light-green dark:text-dark-green">contact</span>      - Tampilkan informasi kontak.</li>
                         <li><span class="text-light-green dark:text-dark-green">clear</span>        - Bersihkan layar terminal.</li>
                         <li><span class="text-light-green dark:text-dark-green">welcome</span>      - Tampilkan kembali pesan selamat datang.</li>
@@ -204,9 +204,9 @@
                 }
                 return `<p class="text-light-red dark:text-dark-red">Error: Perintah blog tidak valid. Gunakan 'blog list' atau 'blog read [id]'.</p>`;
             },
-            writeup: () => {
-                window.open(writeupUrl, '_blank');
-                return `<p>Membuka halaman write-up di tab baru...</p>`;
+            cert: () => {
+                window.open(certUrl, '_blank');
+                return `<p>Membuka halaman di tab baru...</p>`;
             },
             contact: () => {
                 return `
@@ -330,6 +330,7 @@
     </script>
 </body>
 </html>
+
 
 
 
