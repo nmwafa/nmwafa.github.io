@@ -54,6 +54,10 @@
             caret-color: transparent;
             color: transparent;
         }
+        /* Memastikan background tetap penuh saat fullscreen */
+        :fullscreen {
+            background-color: transparent;
+        }
     </style>
     <script>
         // Konfigurasi Tailwind CSS untuk mode gelap
@@ -93,14 +97,29 @@
             <div class="w-3.5 h-3.5 bg-red-500 rounded-full"></div>
             <div class="w-3.5 h-3.5 bg-yellow-500 rounded-full"></div>
             <div class="w-3.5 h-3.5 bg-green-500 rounded-full"></div>
-            <div class="flex-grow text-center text-sm text-gray-600 dark:text-gray-400">
+            <div class="flex-grow text-center text-sm text-gray-600 dark:text-gray-400 overflow-hidden whitespace-nowrap text-ellipsis px-2">
                 nmwafa@portfolio — bash
             </div>
-            <!-- Tombol Light/Dark Mode -->
-            <button id="theme-toggle" class="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white">
-                <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 8.486a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path></svg>
-            </button>
+            
+            <div class="flex items-center gap-3">
+                <!-- Tombol Fullscreen -->
+                <button id="fullscreen-toggle" class="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">
+                    <!-- Icon Expand -->
+                    <svg id="fs-icon-expand" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                    </svg>
+                    <!-- Icon Compress (Hidden by default) -->
+                    <svg id="fs-icon-compress" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4l5 5m11-5l-5 5m-11 11l5-5m11 5l-5-5M9 4v5H4m11-5v5h5M9 20v-5H4m11 5v-5h5"></path>
+                    </svg>
+                </button>
+
+                <!-- Tombol Light/Dark Mode -->
+                <button id="theme-toggle" class="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">
+                    <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 8.486a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path></svg>
+                </button>
+            </div>
         </div>
 
         <!-- Konten Terminal -->
@@ -113,7 +132,7 @@
                 <!-- Container untuk input dan overlay visualnya -->
                 <div class="relative flex-grow" onclick="commandInput.focus()">
                     <!-- Input field yang sebenarnya, teks dan kursornya transparan -->
-                    <input type="text" id="command-input" class="w-full bg-transparent border-none outline-none" autofocus>
+                    <input type="text" id="command-input" class="w-full bg-transparent border-none outline-none" autofocus autocomplete="off">
                     <!-- Overlay visual untuk menampilkan teks dan kursor kustom -->
                     <div class="absolute inset-0 flex items-center pointer-events-none">
                         <span id="input-text-display" class="whitespace-pre"></span>
@@ -133,6 +152,11 @@
         const themeIconLight = document.getElementById('theme-icon-light');
         const fakeCursor = document.getElementById('fake-cursor');
         const inputTextDisplay = document.getElementById('input-text-display');
+        
+        // Unsur baru untuk Fullscreen
+        const fullscreenToggle = document.getElementById('fullscreen-toggle');
+        const fsIconExpand = document.getElementById('fs-icon-expand');
+        const fsIconCompress = document.getElementById('fs-icon-compress');
 
         // --- Data Mock untuk Blog dan Proyek ---
         const blogPosts = {
@@ -234,14 +258,14 @@
                 const fullCommand = commandInput.value.trim();
                 if (fullCommand) {
                     const [command, ...args] = fullCommand.split(' ');
-                    
+                                        
                     const promptLine = document.createElement('div');
                     promptLine.innerHTML = `
                         <div class="flex">
                             <div class="flex-shrink-0 mr-2">
                                 <span class="text-light-green dark:text-dark-green">nmwafa@portfolio</span><span class="text-light-fg dark:text-dark-fg">:</span><span class="text-light-blue dark:text-dark-blue">~</span><span class="text-light-fg dark:text-dark-fg">$</span>
                             </div>
-                            <div class="flex-grow">${fullCommand}</div>
+                            <div class="flex-grow break-all">${fullCommand}</div>
                         </div>`;
                     output.appendChild(promptLine);
                     commandInput.value = '';
@@ -256,7 +280,7 @@
                     } else {
                         resultDiv.innerHTML = `<p class="text-light-red dark:text-dark-red">Error: Perintah tidak ditemukan: ${command}. Ketik 'help' untuk daftar perintah.</p>`;
                     }
-                    
+                                        
                     terminalBody.scrollTop = terminalBody.scrollHeight;
                 }
                 commandInput.disabled = false;
@@ -291,6 +315,53 @@
             setTheme(currentTheme === 'dark' ? 'light' : 'dark');
         });
 
+        // --- Logika Fullscreen (Cross-Browser) ---
+        function toggleFullscreen() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+                // Masuk Fullscreen
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                } else if (elem.mozRequestFullScreen) {
+                    elem.mozRequestFullScreen();
+                }
+            } else {
+                // Keluar Fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                }
+            }
+        }
+
+        fullscreenToggle.addEventListener('click', toggleFullscreen);
+
+        // Update icon saat status fullscreen berubah (termasuk jika user tekan ESC)
+        function updateFullscreenIcons() {
+            const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+            if (isFullscreen) {
+                fsIconExpand.classList.add('hidden');
+                fsIconCompress.classList.remove('hidden');
+            } else {
+                fsIconExpand.classList.remove('hidden');
+                fsIconCompress.classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('fullscreenchange', updateFullscreenIcons);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenIcons);
+        document.addEventListener('mozfullscreenchange', updateFullscreenIcons);
+        document.addEventListener('MSFullscreenChange', updateFullscreenIcons);
+
         // --- Inisialisasi ---
         function getWelcomeMessage() {
             return `
@@ -300,7 +371,7 @@
                 <br>
             `;
         }
-        
+                
         function initialize() {
             const preferredTheme = localStorage.getItem('theme');
             setTheme(preferredTheme || 'dark');
@@ -317,7 +388,7 @@
         initialize();
     </script>
 
-    <!-- block -->
+    <!-- Block Inspeksi (Ctrl+U, F12, Right Click) -->
     <script>
         document.addEventListener('keydown', function(e) {
             const isControlOrCommand = e.ctrlKey || e.metaKey;
@@ -326,31 +397,6 @@
                 e.preventDefault();
             }
         });
-        document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
