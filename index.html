@@ -393,12 +393,13 @@
         document.addEventListener('keydown', function(e) {
             const isControlOrCommand = e.ctrlKey || e.metaKey;
             const key = e.key ? e.key.toUpperCase() : '';
-            if (e.keyCode === 123 || (isControlOrCommand && key === 'U') || (isControlOrCommand && key === 'F') || (isControlOrCommand && key === 'G') || (isControlOrCommand && e.shiftKey && (key === 'I' || key === 'J' || key === 'C'))) {
+            if (e.keyCode === 123 || (isControlOrCommand && key === 'U') || (isControlOrCommand && key === 'F') || (isControlOrCommand && key === 'G') || (isControlOrCommand && key === 'V') || (isControlOrCommand && e.shiftKey && (key === 'I' || key === 'J' || key === 'C'))) {
                 e.preventDefault();
             }
         });
     </script>
 </body>
 </html>
+
 
 
