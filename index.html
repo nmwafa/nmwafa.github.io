@@ -9,11 +9,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Menggunakan font Fira Code untuk tampilan monospaced khas terminal */
         body {
             font-family: 'Fira Code', monospace;
         }
-        /* Kustomisasi scrollbar agar sesuai tema */
+        /* warna text selection */
+        ::selection {
+            background-color: transparent; 
+            color: #4ade80;
+        }
+        /* Untuk mode terang */
+        html.light ::selection {
+            background-color: transparent;
+            color: #16a34a;
+        }
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -400,6 +408,7 @@
     </script>
 </body>
 </html>
+
 
 
 
