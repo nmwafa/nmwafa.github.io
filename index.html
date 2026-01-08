@@ -141,7 +141,7 @@
                 <!-- Container untuk input dan overlay visualnya -->
                 <div class="relative flex-grow" onclick="commandInput.focus()">
                     <!-- Input field yang sebenarnya, teks dan kursornya transparan -->
-                    <input type="text" id="command-input" class="w-full bg-transparent border-none outline-none" autofocus autocomplete="off">
+                    <input type="text" id="command-input" class="w-full bg-transparent border-none outline-none" autofocus autocomplete="off" spellcheck="false">
                     <!-- Overlay visual untuk menampilkan teks dan kursor kustom -->
                     <div class="absolute inset-0 flex items-center pointer-events-none">
                         <span id="input-text-display" class="whitespace-pre"></span>
@@ -278,7 +278,7 @@
                         </div>`;
                     output.appendChild(promptLine);
                     commandInput.value = '';
-                    inputTextDisplay.textContent = ''; // Hapus juga teks visual
+                    inputTextDisplay.textContent = '';
 
                     const resultDiv = document.createElement('div');
                     output.appendChild(resultDiv);
@@ -415,5 +415,6 @@
     </script>
 </body>
 </html>
+
 
 
