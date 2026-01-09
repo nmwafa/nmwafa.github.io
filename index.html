@@ -399,23 +399,24 @@
 
     <!-- Block -->
     <script>
-        window.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function(e) {
             const isControlOrCommand = e.ctrlKey || e.metaKey;
             const key = e.key ? e.key.toUpperCase() : '';
-            const blockedNavigation = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
+            const k = e.keyCode;
             if (isControlOrCommand && key === 'F') {
                 e.preventDefault();
                 toggleFullscreen();
                 return false;
             }
-            if (e.keyCode === 123 || blockedNavigation.includes(key) || (isControlOrCommand && ['D', 'K', 'P', 'O', 'E', 'H', 'S', 'U', 'G', 'V'].includes(key)) || (isControlOrCommand && e.shiftKey && ['I', 'J', 'C'].includes(key))) {
+            if (k === 9 || k === 20 || k === 35 || k === 36 || k === 37 || k === 38 || k === 39 || k === 40 || k === 123 || (isControlOrCommand && key === 'D') || (isControlOrCommand && key === 'K') || (isControlOrCommand && key === 'P') || (isControlOrCommand && key === 'O') || (isControlOrCommand && key === 'E') || (isControlOrCommand && key === 'H') || (isControlOrCommand && key === 'S') || (isControlOrCommand && key === 'U') || (isControlOrCommand && key === 'G') || (isControlOrCommand && key === 'V') || (isControlOrCommand && e.shiftKey && (key === 'I' || key === 'J' || key === 'C'))) {
                 e.preventDefault();
                 return false;
             }
-        }, false);
+        });
     </script>
 </body>
 </html>
+
 
 
 
