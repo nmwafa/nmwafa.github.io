@@ -287,7 +287,7 @@
                         const result = commands[command](args);
                         resultDiv.innerHTML = result;
                     } else {
-                        resultDiv.innerHTML = `<p class="text-light-red dark:text-dark-red">Error: Perintah tidak ditemukan: ${command}. Ketik 'help' untuk daftar perintah.</p>`;
+                        resultDiv.innerHTML = `<p class="text-light-red dark:text-dark-red">Error: Perintah tidak ditemukan: ${command}.<br>Ketik 'help' untuk melihat daftar perintah.</p>`;
                     }
                                         
                     terminalBody.scrollTop = terminalBody.scrollHeight;
@@ -416,6 +416,7 @@
     </script>
 </body>
 </html>
+
 
 
 
