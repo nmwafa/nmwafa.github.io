@@ -201,10 +201,9 @@
             },
             about: () => {
                 return `
-                    <p>Hai! Saya seorang penggemar teknologi yang memulai perjalanan IT di akhir 2022.</p>
-                    <p>Saya mempelajari berbagai hal terkait Pemrograman dan Jaringan. Pada pertengahan 2023, saya mulai mempelajari tentang Keamanan siber.</p>
-                    <p>Saat ini, saya fokus pada keamanan aplikasi web dan terus mengeksplorasi hal-hal baru untuk meningkatkan keterampilan saya agar tetap update dengan tren terbaru di bidang ini.</p>
-                    <p>Kadang-kadang saya mengasah keterampilan dengan 'berburu serangga' dan berkontribusi terhadap keamanan sistem untuk organisasi pendidikan dan yang lainnya.</p>
+                    <pWafa is a cybersecurity specialist with a primary focus on web application security and related fields.</p>
+                    <p>He is dedicated to developing his skills and consistently keeping up with the latest trends in this area.</p>
+                    <p>Occasionally, he also contributes by helping secure systems for educational institutions and other organizations.</p>
                 `;
             },
             projects: () => {
@@ -233,13 +232,13 @@
                         window.open(post.url, '_blank');
                         return `<p>Opening article: "${post.title}" in a new tab...</p>`;
                     }
-                    return `<p class="text-light-red dark:text-dark-red">Error: Article with ID '${args[1]}' not found!</p>`;
+                    return `<p class="text-light-red dark:text-dark-red">Article with ID '${args[1]}' not found!</p>`;
                 }
-                return `<p class="text-light-red dark:text-dark-red">Error: Invalid command. Use 'blog list' or 'blog read [id]'!</p>`;
+                return `<p class="text-light-red dark:text-dark-red">Invalid command! Use 'blog list' or 'blog read [id]'</p>`;
             },
             cert: () => {
                 window.open(certUrl, '_blank');
-                return `<p>Open the page in a new tab...</p>`;
+                return `<p>Opening page in a new tab...</p>`;
             },
             contact: () => {
                 return `
