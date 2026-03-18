@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portofolio</title>
+    <title>Interactive Portfolio</title>
     <link rel="icon" href="https://img.icons8.com/?size=100&id=79VYzrK1Ycae&format=png&color=000000">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -107,7 +107,7 @@
             <div class="w-3.5 h-3.5 bg-yellow-500 rounded-full"></div>
             <div class="w-3.5 h-3.5 bg-green-500 rounded-full"></div>
             <div class="flex-grow text-center text-sm text-gray-600 dark:text-gray-400 overflow-hidden whitespace-nowrap text-ellipsis px-2">
-                root@nmwafa — bash
+                root@nmwafa — yosh
             </div>
             
             <div class="flex items-center gap-3">
@@ -178,7 +178,7 @@
         };
 
         const projects = [
-            { name: 'Recon & Pillage', description: 'Skrip automasi pencarian subdomain, deteksi teknologi, dan mengkategorikan berdasarkan status kode, url dan teknologi.', url: 'https://github.com/nmwafa/recon-pillage' }
+            { name: 'Recon & Pillage', description: 'Automation script for subdomain search, technology detection, and categorizing based on status code, URL, and technology.', url: 'https://github.com/nmwafa/recon-pillage' }
         ];
 
         const certUrl = 'https://drive.google.com/drive/folders/1LydeHP-hpuWUZEipSZV-B0h8dJloc89W?usp=sharing';
@@ -187,15 +187,15 @@
         const commands = {
             help: () => {
                 return `
-                    <p class="mb-2">Perintah yang tersedia:</p>
+                    <p class="mb-2">Available commands:</p>
                     <ul class="list-inside list-disc">
-                        <li><span class="text-light-green dark:text-dark-green">about</span>        - Tampilkan informasi tentang saya.</li>
-                        <li><span class="text-light-green dark:text-dark-green">projects</span>     - Lihat daftar proyek yang pernah saya buat.</li>
-                        <li><span class="text-light-green dark:text-dark-green">blog</span>         - Akses artikel blog. Gunakan 'blog list' atau 'blog read [id]'.</li>
-                        <li><span class="text-light-green dark:text-dark-green">cert</span>         - Lihat sertifikat dan surat apresiasi.</li>
-                        <li><span class="text-light-green dark:text-dark-green">contact</span>      - Tampilkan informasi kontak.</li>
-                        <li><span class="text-light-green dark:text-dark-green">clear</span>        - Bersihkan layar terminal.</li>
-                        <li><span class="text-light-green dark:text-dark-green">welcome</span>      - Tampilkan kembali pesan selamat datang.</li>
+                        <li><span class="text-light-green dark:text-dark-green">about</span>        - Show information about me</li>
+                        <li><span class="text-light-green dark:text-dark-green">projects</span>     - See the list of projects</li>
+                        <li><span class="text-light-green dark:text-dark-green">blog</span>         - List of blog articles. Use 'blog list' or 'blog read [id]'</li>
+                        <li><span class="text-light-green dark:text-dark-green">cert</span>         - See the certificate and letter of appreciation</li>
+                        <li><span class="text-light-green dark:text-dark-green">contact</span>      - Show contact information</li>
+                        <li><span class="text-light-green dark:text-dark-green">clear</span>        - Clean the terminal screen</li>
+                        <li><span class="text-light-green dark:text-dark-green">welcome</span>      - Show the welcome message again</li>
                     </ul>
                 `;
             },
@@ -208,7 +208,7 @@
                 `;
             },
             projects: () => {
-                let projectList = '<p class="mb-2">Berikut adalah proyek yagng saya buat:</p>';
+                let projectList = '<p class="mb-2">This is a project that I created:</p>';
                 projects.forEach(p => {
                     projectList += `
                         <div class="mb-2">
@@ -221,7 +221,7 @@
             },
             blog: (args) => {
                 if (args.length === 0 || args[0] === 'list') {
-                    let postList = '<p class="mb-2">Daftar artikel blog. Gunakan perintah \'blog read [id]\' untuk membaca (ex: blog read 1):</p>';
+                    let postList = '<p class="mb-2">Article in Indonesian. Use the command \'blog read [id]\' to read (e.g., blog read 1):</p>';
                     Object.entries(blogPosts).forEach(([id, post]) => {
                         postList += `<p><span class="text-light-cyan dark:text-dark-cyan">[${id}]</span> ${post.title} </p>`;
                     });
@@ -231,19 +231,19 @@
                     const post = blogPosts[args[1]];
                     if (post) {
                         window.open(post.url, '_blank');
-                        return `<p>Membuka artikel "${post.title}" di tab baru...</p>`;
+                        return `<p>Opening article: "${post.title}" in a new tab...</p>`;
                     }
-                    return `<p class="text-light-red dark:text-dark-red">Error: Post dengan ID '${args[1]}' tidak ditemukan.</p>`;
+                    return `<p class="text-light-red dark:text-dark-red">Error: Article with ID '${args[1]}' not found!</p>`;
                 }
-                return `<p class="text-light-red dark:text-dark-red">Error: Perintah blog tidak valid. Gunakan 'blog list' atau 'blog read [id]'.</p>`;
+                return `<p class="text-light-red dark:text-dark-red">Error: Invalid command. Use 'blog list' or 'blog read [id]'!</p>`;
             },
             cert: () => {
                 window.open(certUrl, '_blank');
-                return `<p>Membuka halaman di tab baru...</p>`;
+                return `<p>Open the page in a new tab...</p>`;
             },
             contact: () => {
                 return `
-                    <p>Mari terhubung...</p>
+                    <p>Let's connect...</p>
                     <ul>
                         <li>• Email: <a href="mailto:nmw.exit045@passinbox.com" class="underline text-light-blue dark:text-dark-blue">nmw.exit045@passinbox.com</a></li>
                         <li>• GitHub: <a href="https://github.com/nmwafa" target="_blank" class="underline text-light-blue dark:text-dark-blue">nmwafa</a></li>
@@ -287,7 +287,7 @@
                         const result = commands[command](args);
                         resultDiv.innerHTML = result;
                     } else {
-                        resultDiv.innerHTML = `<p class="text-light-red dark:text-dark-red">Error: Perintah tidak ditemukan: ${command}.<br>Ketik 'help' untuk melihat daftar perintah.</p>`;
+                        resultDiv.innerHTML = `<p class="text-light-red dark:text-dark-red">Error: Command not found: ${command}.<br>Type 'help' to see the list of commands.</p>`;
                     }
                                         
                     terminalBody.scrollTop = terminalBody.scrollHeight;
@@ -374,8 +374,8 @@
         // --- Inisialisasi ---
         function getWelcomeMessage() {
             return `
-                <p class="text-2xl font-bold text-light-green dark:text-dark-green mb-4">Selamat Datang di Portofolio Interaktif!</p>
-                <p>Ketik <span class="text-light-cyan dark:text-dark-cyan">'help'</span> untuk melihat daftar perintah yang tersedia.</p>
+                <p class="text-2xl font-bold text-light-green dark:text-dark-green mb-4">Welcome to the Interactive Portfolio!</p>
+                <p>Type <span class="text-light-cyan dark:text-dark-cyan">'help'</span> to see the list of available commands.</p>
                 <br>
             `;
         }
