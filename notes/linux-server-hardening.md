@@ -6,7 +6,7 @@ sudo apt update && sudo apt upgrade -y
 ```
 
 ### Keamanan akses dan SSH
-- [ ] Ubah *port*: `sed -i "s/#Port 22/Port 23456/" /etc/ssh/sshd_config`
+- Ubah *port*: `sed -i "s/#Port 22/Port 23456/" /etc/ssh/sshd_config`
   - Cek *listening port*, pastikan *port* SSH sudah berubah: `ss -tunlp | grep ssh`
   - Jika belum, kemungkinan sistem pakai *Socket Activation*. Jalankan perintah: `sudo systemctl status ssh.socket`
   - Jika statusnya *Active*, maka konfigurasi di *sshd_config* akan diabaikan karena *systemd* "memaksa" port 22 tetap berjalan
@@ -24,10 +24,10 @@ sudo apt update && sudo apt upgrade -y
   sudo systemctl restart ssh.socket
   sudo systemctl restart ssh
   ```
-- [ ] Jangan izinkan login dengan user root: `sed -i "s/PermitRootLogin yes/PermitRootLogin no/" /etc/ssh/sshd_config`
-- [ ] Putus koneksi otomatis setelah tidak ada aktivitas: `sed -i "s/#ClientAliveInterval 0/ClientAliveInterval 300/"` (300 detik x 3)
+- Jangan izinkan login dengan user root: `sed -i "s/PermitRootLogin yes/PermitRootLogin no/" /etc/ssh/sshd_config`
+- Putus koneksi otomatis setelah tidak ada aktivitas: `sed -i "s/#ClientAliveInterval 0/ClientAliveInterval 300/"` (300 detik x 3)
 
 ### Manajemen user & hak akses
-- [ ] Hapus user/grup tidak terpakai. Cek di file `/etc/passwd` dan `/etc/group`
-- [ ] Selalu gunakan `sudo` untuk tugas administratif, bukan langsung sebagai user root
-- [ ] Pastikan tidak ada user dengan *password* kosong. Cek di file `/etc/shadow`
+- Hapus user/grup tidak terpakai. Cek di file `/etc/passwd` dan `/etc/group`
+- Selalu gunakan `sudo` untuk tugas administratif, bukan langsung sebagai user root
+- Pastikan tidak ada user dengan *password* kosong. Cek di file `/etc/shadow`
