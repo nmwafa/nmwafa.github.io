@@ -1,9 +1,8 @@
 <h1 align="center">Linux Server Hardening</h1>
 
-### Selalu update
-```
-sudo apt update && sudo apt upgrade -y
-```
+### Update & Patch Management
+- Update Repositori & Package: `sudo apt update && sudo apt upgrade -y`
+- Pastikan kernel versi terbaru. Cek: `uname -r`
 
 ### Keamanan akses dan SSH
 - Ubah *port*: `sed -i "s/#Port 22/Port 23456/" /etc/ssh/sshd_config`
@@ -34,3 +33,38 @@ sudo apt update && sudo apt upgrade -y
 - Lacak user yang login saat ini: `who -H` -> membaca file `/var/log/utmp`
 - Lacak pengguna yang sebelumnya pernah login: `last -R` -> membaca file `/var/log/wtmp`
 - Lacak upaya kegagalan login ke sistem: `lastb` -> membaca file `/var/log/btmp`
+
+### Keamanan jaringan
+- Tutup semua port, kecuali yang dibutuhkan. Cek port terbuka dengan: `ss -tunlp` atau `netstat -tunlp`
+- Aktifkan UFW: `sudo systemctl enable --now ufw`. Hanya izinkan koneksi masuk ke port yang dibutuhkan
+  - Proteksi dasar SSH: `sudo ufw limit ssh` -> tolak IP yang coba login lebih dari 6x dalam 30 detik
+- Pasang iptables: `sudo apt install iptables`
+  - Tolak koneksi berlebih untuk cegah DoS di port 80,443: `sudo iptables -I INPUT 1 -p tcp -m multiport --dports 80,443 -m connlimit --connlimit-above 20 --connlimit-mask 32 -j DROP`
+  - Izinkan koneksi loopback & yang sudah *established*:
+    ```
+    sudo iptables -A INPUT -i lo -j ACCEPT
+    sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+    ```
+  - Izinkan akses standar:
+    ```
+    sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+    sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+    sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+    ```
+  - Tolak yang lain: `sudo iptables -P INPUT DROP`
+- Proteksi tambahan dengan fail2ban (proteksi *bruteforce* dengan blokir IP): `sudo apt install fail2ban`
+  - Buat salinan agar tidak tertimpa saat update: `sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local`
+  - Edit file `jail.local`:
+    ```
+    [sshd]
+    enabled = true
+    port = ssh
+    bantime = 1d
+    findtime = 5m
+    maxretry = 3
+    backend = systemd -> jika pakai distro terbaru
+    ```
+  - Jika pakai ufw, tambahkan: `banaction = ufw` di bagian `[DEFAULT]`
+  - Jika port SSH sudah diganti, sesuaikan di `/etc/services`
+  - Cek status: `fail2ban-client status ssh`
+- Matikan service tidak perlu. Cek: `systemctl list-unit-files --state=enabled`
