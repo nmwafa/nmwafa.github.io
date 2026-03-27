@@ -30,9 +30,6 @@
 - Hapus user/grup tidak terpakai. Cek di file `/etc/passwd` dan `/etc/group`
 - Selalu gunakan `sudo` untuk tugas administratif, bukan langsung sebagai user root
 - Pastikan tidak ada user dengan *password* kosong. Cek di file `/etc/shadow`
-- Lacak user yang login saat ini: `who -H` -> membaca file `/var/log/utmp`
-- Lacak pengguna yang sebelumnya pernah login: `last -R` -> membaca file `/var/log/wtmp`
-- Lacak upaya kegagalan login ke sistem: `lastb` -> membaca file `/var/log/btmp`
 
 ### Keamanan jaringan
 - Tutup semua port, kecuali yang dibutuhkan. Cek port terbuka dengan: `ss -tunlp` atau `netstat -tunlp`
@@ -68,3 +65,29 @@
   - Jika port SSH sudah diganti, sesuaikan di `/etc/services`
   - Cek status: `fail2ban-client status ssh`
 - Matikan service tidak perlu. Cek: `systemctl list-unit-files --state=enabled`
+
+### Log & Audit
+- Lacak user yang login saat ini: `who -H` -> membaca file `/var/log/utmp`
+- Lacak pengguna yang sebelumnya pernah login: `last -R` -> membaca file `/var/log/wtmp`
+- Lacak upaya kegagalan login ke sistem: `lastb` -> membaca file `/var/log/btmp`
+- Pakai `lynis` untuk audit keamanan sistem: `lynis audit system`
+
+### Pasang malware scanner
+- maldet
+  ```
+  wget  http://www.rfxn.com/downloads/maldetect-current.tar.gz
+  tar xzf maldetect-current.tar.gz
+  cd maldetect-*
+  ./install.sh
+  nano /usr/local/maldetect/conf.maldet
+  quarantine_hits="1"
+  quarantine_clean="1"
+  maldet -u
+  maldet -a /var/www/html/
+  ```
+- clamAV
+  ```
+  sudo apt install clamav clamav-daemon
+  sudo freshclam
+  sudo clamscan -r /var/www/html
+  ```
