@@ -31,3 +31,6 @@ sudo apt update && sudo apt upgrade -y
 - Hapus user/grup tidak terpakai. Cek di file `/etc/passwd` dan `/etc/group`
 - Selalu gunakan `sudo` untuk tugas administratif, bukan langsung sebagai user root
 - Pastikan tidak ada user dengan *password* kosong. Cek di file `/etc/shadow`
+- Lacak user yang login saat ini: `who -H` -> membaca file `/var/log/utmp`
+- Lacak pengguna yang sebelumnya pernah login: `last -R` -> membaca file `/var/log/wtmp`
+- Lacak upaya kegagalan login ke sistem: `lastb` -> membaca file `/var/log/btmp`
