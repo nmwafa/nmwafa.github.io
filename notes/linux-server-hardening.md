@@ -24,7 +24,7 @@
   sudo systemctl restart ssh
   ```
 - Jangan izinkan login dengan user root: `sed -i "s/PermitRootLogin yes/PermitRootLogin no/" /etc/ssh/sshd_config`
-- Putus koneksi otomatis setelah tidak ada aktivitas: `sed -i "s/#ClientAliveInterval 0/ClientAliveInterval 300/"` (300 detik x 3)
+- Putus koneksi otomatis setelah tidak ada aktivitas: `sed -i "s/#ClientAliveInterval 0/ClientAliveInterval 300/" /etc/ssh/sshd_config` (300 detik x 3)
 
 ### Manajemen user & hak akses
 - Hapus user/grup tidak terpakai. Cek di file `/etc/passwd` dan `/etc/group`
