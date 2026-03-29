@@ -63,7 +63,7 @@
     ```
   - Jika pakai ufw, tambahkan: `banaction = ufw` di bagian `[DEFAULT]`
   - Jika port SSH sudah diganti, sesuaikan di `/etc/services`
-  - Cek status: `fail2ban-client status ssh`
+  - Cek status: `fail2ban-client status sshd`
 - Matikan service tidak perlu. Cek: `systemctl list-unit-files --state=enabled`
 
 ### Log & Audit
@@ -89,5 +89,13 @@
   ```
   sudo apt install clamav clamav-daemon
   sudo freshclam
-  sudo clamscan -r /var/www/html
+  sudo clamscan -r /
   ```
+
+### Aktifkan SELinux
+- Cek status: `sestatus`
+- Jika belum, install: `sudo apt update && sudo apt install policycoreutils selinux-utils selinux-basics`
+- Aktifkan di Bootloader: `sudo selinux-activate`
+- Set ke mode *permissive* dulu sebelum reboot: `sudo selinux-config-enforcing permissive`
+- Lihat mode saat ini: `getenforce`
+- Ubah mode di file `/etc/selinux/config` jadi `SELINUX=enforcing`
