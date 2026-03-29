@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Encoder & Decoder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f3f4f6; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af; 
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl w-full max-w-3xl border border-gray-200">
+        
+        <!-- Header -->
+        <div class="mb-6 text-center">
+            <h1 class="text-3xl font-bold text-gray-800 tracking-tight">URL Encoder / Decoder</h1>
+        </div>
+
+        <!-- Main Content -->
+        <div class="space-y-6">
+            
+            <!-- Input Area -->
+            <div>
+                <label for="inputText" class="block text-sm font-semibold text-gray-700 mb-2">Teks / URL Input</label>
+                <textarea id="inputText" rows="4" 
+                    class="w-full p-4 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-gray-400 focus:outline-none transition-all resize-none shadow-sm"
+                    placeholder="Masukkan URL atau teks di sini..."></textarea>
+            </div>
+
+            <!-- Controls Toolbar -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm">
+                
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <!-- Mode Selection -->
+                    <div class="relative w-full sm:w-auto">
+                        <select id="modeSelect" class="w-full sm:w-auto appearance-none bg-white border border-gray-300 text-gray-700 py-2.5 pl-4 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 font-medium cursor-pointer shadow-sm">
+                            <option value="encode">Encode (Ubah ke URL)</option>
+                            <option value="decode">Decode (Baca URL)</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Iteration Count -->
+                    <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow-sm">
+                        <label for="iterationCount" class="text-sm text-gray-600 font-medium whitespace-nowrap">Ulangi:</label>
+                        <input type="number" id="iterationCount" min="1" max="10" value="1" 
+                            class="w-12 text-center text-gray-800 focus:outline-none font-semibold bg-transparent">
+                        <span class="text-sm text-gray-500">kali</span>
+                    </div>
+                </div>
+
+                <!-- Swap Button -->
+                <button id="switchBtn" class="w-full sm:w-auto flex items-center justify-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2.5 px-5 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 shadow-sm" title="Tukar Input & Output">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 10v12"></path>
+                        <path d="M11 18l-4 4-4-4"></path>
+                        <path d="M17 14V2"></path>
+                        <path d="M13 6l4-4 4 4"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Output Area -->
+            <div>
+                <div class="flex justify-between items-end mb-2">
+                    <label for="outputText" class="block text-sm font-semibold text-gray-700">Hasil Output</label>
+                    <button id="copyBtn" class="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-md transition-colors font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        <span id="copyText">Salin Hasil</span>
+                    </button>
+                </div>
+                <textarea id="outputText" rows="4" readonly
+                    class="w-full p-4 bg-gray-100 border border-gray-300 rounded-xl focus:outline-none text-gray-800 resize-none shadow-inner"
+                    placeholder="Hasil akan muncul di sini..."></textarea>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputText = document.getElementById('inputText');
+            const outputText = document.getElementById('outputText');
+            const modeSelect = document.getElementById('modeSelect');
+            const iterationCount = document.getElementById('iterationCount');
+            const switchBtn = document.getElementById('switchBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const copyText = document.getElementById('copyText');
+
+            // Fungsi utama untuk memproses teks
+            function processUrl() {
+                let text = inputText.value;
+                if (!text) {
+                    outputText.value = '';
+                    outputText.classList.remove('text-red-500', 'font-semibold');
+                    return;
+                }
+
+                const mode = modeSelect.value;
+                // Pastikan iterasi minimal 1
+                let iterations = parseInt(iterationCount.value);
+                if (isNaN(iterations) || iterations < 1) iterations = 1;
+
+                try {
+                    for (let i = 0; i < iterations; i++) {
+                        if (mode === 'encode') {
+                            text = encodeURIComponent(text);
+                        } else if (mode === 'decode') {
+                            text = decodeURIComponent(text);
+                        }
+                    }
+                    outputText.value = text;
+                    outputText.classList.remove('text-red-500', 'font-semibold');
+                } catch (error) {
+                    // Menangani error jika URL yang di-decode tidak valid
+                    outputText.value = "Error: Teks tidak valid untuk di-decode.";
+                    outputText.classList.add('text-red-500', 'font-semibold');
+                }
+            }
+
+            // Fungsi untuk menukar input dan output (bolak-balik)
+            function switchData() {
+                const currentOutput = outputText.value;
+                
+                // Jangan tukar jika output kosong atau berisi pesan error
+                if (!currentOutput || currentOutput.startsWith("Error:")) return;
+
+                // Pindahkan hasil ke input
+                inputText.value = currentOutput;
+                
+                // Ubah mode secara otomatis (Encode <-> Decode)
+                modeSelect.value = modeSelect.value === 'encode' ? 'decode' : 'encode';
+                
+                // Proses ulang
+                processUrl();
+            }
+
+            // Fungsi untuk menyalin hasil ke clipboard
+            function copyToClipboard() {
+                if (!outputText.value || outputText.value.startsWith("Error:")) return;
+
+                // Pilih teks
+                outputText.select();
+                outputText.setSelectionRange(0, 99999); // Untuk mobile
+
+                // Gunakan API Clipboard modern jika tersedia, jika tidak gunakan execCommand
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(outputText.value).then(showCopiedFeedback);
+                } else {
+                    try {
+                        document.execCommand('copy');
+                        showCopiedFeedback();
+                    } catch (err) {
+                        console.error('Gagal menyalin teks', err);
+                    }
+                }
+            }
+
+            function showCopiedFeedback() {
+                const originalHtml = copyText.innerHTML;
+                copyText.innerHTML = 'Tersalin!';
+                copyBtn.classList.add('bg-gray-300', 'text-gray-900');
+                
+                setTimeout(() => {
+                    copyText.innerHTML = 'Salin Hasil';
+                    copyBtn.classList.remove('bg-gray-300', 'text-gray-900');
+                }, 2000);
+            }
+
+            // Event Listeners (Live Preview / Auto Update)
+            inputText.addEventListener('input', processUrl);
+            modeSelect.addEventListener('change', processUrl);
+            iterationCount.addEventListener('input', processUrl);
+            
+            // Buttons
+            switchBtn.addEventListener('click', switchData);
+            copyBtn.addEventListener('click', copyToClipboard);
+        });
+    </script>
+</body>
+</html>
