@@ -98,11 +98,30 @@
   sudo freshclam
   sudo clamscan -r /
   ```
+- rkhunter
+  ```
+  sudo apt install rkhunter
+  sudo rkhunter --update
+  sudo rkhunter --propupd
+  sudo rkhunter --check
+  ```
+- chkrootkit
+  ```
+  sudo apt install chkrootkit
+  sudo chkrootkit
+  ```
 
-### Aktifkan SELinux
+### SELinux
 - Cek status: `sestatus`
-- Jika belum, install: `sudo apt update && sudo apt install policycoreutils selinux-utils selinux-basics`
+- Jika belum, install: `sudo apt install policycoreutils selinux-utils selinux-basics`
 - Aktifkan di Bootloader: `sudo selinux-activate`
 - Set ke mode *permissive* dulu sebelum reboot: `sudo selinux-config-enforcing permissive`
+- [Penting] Daftarkan port kustom ke SELinux. e.g.:
+  ```
+  sudo semanage port -a -t ssh_port_t -p tcp 23456
+  sudo semanage port -a -t http_port_t -p tcp 8000
+  ```
+- Jika muncul *error semanage command not found*, instal dulu: `sudo apt install policycoreutils-python-utils`
 - Lihat mode saat ini: `getenforce`
 - Ubah mode di file `/etc/selinux/config` jadi `SELINUX=enforcing`
+- [!] Hati-hati sebelum di ubah ke mode `enforcing`. Pastikan semua pengaturan sudah dilakukan dengan benar
