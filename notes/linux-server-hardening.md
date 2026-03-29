@@ -36,7 +36,10 @@
 - Aktifkan UFW: `sudo systemctl enable --now ufw`. Hanya izinkan koneksi masuk ke port yang dibutuhkan
   - Proteksi dasar SSH: `sudo ufw limit ssh` -> tolak IP yang coba login lebih dari 6x dalam 30 detik
 - Pasang iptables: `sudo apt install iptables`
-  - Tolak koneksi berlebih untuk cegah DoS di port 80,443: `sudo iptables -I INPUT 1 -p tcp -m multiport --dports 80,443 -m connlimit --connlimit-above 20 --connlimit-mask 32 -j DROP`
+  - Tolak koneksi berlebih untuk cegah DoS di port 80,443:
+    ```
+    sudo iptables -I INPUT 1 -p tcp -m multiport --dports 80,443 -m connlimit --connlimit-above 20 --connlimit-mask 32 -j DROP
+    ```
   - Izinkan koneksi loopback & yang sudah *established*:
     ```
     sudo iptables -A INPUT -i lo -j ACCEPT
