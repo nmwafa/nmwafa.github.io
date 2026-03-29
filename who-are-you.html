@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Who Are You?</title>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            font-family: sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .info-row {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dagiti paset a mangipakita iti resulta -->
+    <div class="info-row">IP = <span id="ip"></span></div>
+    <div class="info-row">ISP = <span id="isp"></span></div>
+    <div class="info-row">Organisasimu = <span id="org"></span></div>
+    <div class="info-row">Hostname = <span id="host"></span></div>
+    <div class="info-row">Latitude = <span id="lat"></span></div>
+    <div class="info-row">Longitude = <span id="long"></span></div>
+    <div class="info-row">Postal Code = <span id="post"></span></div>
+    <div class="info-row">Kota = <span id="city"></span></div>
+    <div class="info-row">kode = <span id="code"></span></div>
+    <div class="info-row">Negara = <span id="codename"></span></div>
+    <div class="info-row">Kode Kontinen = <span id="contcode"></span></div>
+    <div class="info-row">Nama kontinen = <span id="contname"></span></div>
+    <div class="info-row">Region = <span id="reg"></span></div>
+    <div class="info-row">Distrik = <span id="district"></span></div>
+    <div class="info-row">Timezone = <span id="time"></span></div>
+    <div class="info-row">Tipe Koneksi = <span id="conn"></span></div>
+    <div class="info-row">Nomor ASN Negara = <span id="asnn"></span></div>
+    <div class="info-row">Nomor ASN Organisasi = <span id="asno"></span></div>
+    <div class="info-row">Nama ASN = <span id="asn"></span></div>
+    <div class="info-row">Currency code = <span id="curcod"></span></div>
+    <div class="info-row">Currency name = <span id="curname"></span></div>
+    <div class="info-row">Keberhasilan Track? = <span id="succ"></span></div>
+
+    <script>
+        $(document).ready(function() {
+            $.getJSON('https://json.geoiplookup.io/?callback=?', function(data) {
+                $("#ip").html(data.ip);
+                $("#isp").html(data.isp);
+                $("#org").html(data.org);
+                $("#host").html(data.hostname);
+                $("#lat").html(data.latitude);
+                $("#long").html(data.longitude);
+                $("#post").html(data.postal_code);
+                $("#city").html(data.city);
+                $("#code").html(data.country_code);
+                $("#codename").html(data.country_name);
+                $("#contcode").html(data.continent_code);
+                $("#contname").html(data.continent_name);
+                $("#reg").html(data.region);
+                $("#district").html(data.district);
+                $("#time").html(data.timezone_name);
+                $("#conn").html(data.connection_type);
+                $("#asnn").html(data.asn_number);
+                $("#asno").html(data.asn_org);
+                $("#asn").html(data.asn);
+                $("#curcod").html(data.currency_code);
+                $("#curname").html(data.currency_name);
+                $("#succ").html(data.success);
+            });
+        });
+    </script>
+</body>
+</html>
