@@ -49,6 +49,10 @@
     sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
     ```
   - Tolak yang lain: `sudo iptables -P INPUT DROP`
+  - Lihat *rules* standar: `sudo iptables -L -n`
+  - Lihat *rules* detail statistik: `sudo iptables -L -n -v`
+  - Lihat *rules* nomor baris: `sudo iptables -L --line-numbers`
+  - Lihat *rules* format skrip: `sudo iptables -S`
 - Proteksi tambahan dengan fail2ban (proteksi *bruteforce* dengan blokir IP): `sudo apt install fail2ban`
   - Buat salinan agar tidak tertimpa saat update: `sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local`
   - Edit file `jail.local`:
