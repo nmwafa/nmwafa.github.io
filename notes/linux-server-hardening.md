@@ -112,16 +112,25 @@
   ```
 
 ### SELinux
-- Cek status: `sestatus`
 - Jika belum, install: `sudo apt install policycoreutils selinux-utils selinux-basics`
+- Cek status: `sestatus`
 - Aktifkan di Bootloader: `sudo selinux-activate`
-- Set ke mode *permissive* dulu sebelum reboot: `sudo selinux-config-enforcing permissive`
-- [Penting] Daftarkan port kustom ke SELinux. e.g.:
+- Set ke mode *permissive* dulu sebelum reboot: `sudo nano /etc/selinux/config` -> `SELINUX=permissive`
+- Buat file penanda kernel saat proses booting: `sudo touch /.autorelabel`
+- Reboot
+- Cek port yang diizinkan: `sudo semanage port -l`
+- Daftarkan port kustom ke SELinux. e.g.,:
   ```
   sudo semanage port -a -t ssh_port_t -p tcp 23456
   sudo semanage port -a -t http_port_t -p tcp 8000
   ```
+- Jika port 8000 sudah digunakan oleh layanan lain dalam definisi SELinux, pakai `-m` (modify) sebagai ganti `-a`
+- Izinkan *Reverse Proxy*: `sudo setbool -P httpd_can_network_connect 1`
 - Jika muncul *error semanage command not found*, instal dulu: `sudo apt install policycoreutils-python-utils`
+- Cek apakah ada proses yang hampir diblokir: `sudo ausearch -m avc -ts recent`
+- Jika tidak ada output atau tidak ada pesan *denied* yang kritikal, berarti konfigurasi sudah benar
 - Lihat mode saat ini: `getenforce`
-- Ubah mode di file `/etc/selinux/config` jadi `SELINUX=enforcing`
-- [!] Hati-hati sebelum di ubah ke mode `enforcing`. Pastikan semua pengaturan sudah dilakukan dengan benar
+- Aktifkan mode *enforcing*:
+  - Ubah mode secara instan tanpa reboot: `sudo setenforce 1`
+  - Ubah permanen: `sudo nano /etc/selinux/config` -> `SELINUX=enforcing`
+- [Penting] Hati-hati sebelum di ubah ke mode `enforcing`. Pastikan semua pengaturan sudah benar
