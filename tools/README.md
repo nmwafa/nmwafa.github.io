@@ -1,4 +1,4 @@
-# Table of contents
+# List of tools
 - ### [Crontab Editor](https://nmwafa.github.io/tools/cron)
 - ### [Konverter Basis Bilangan](https://nmwafa.github.io/tools/konverter-bilangan)
 - ### [URL Encoder / Decoder](https://nmwafa.github.io/tools/url-encoder-decoder)
