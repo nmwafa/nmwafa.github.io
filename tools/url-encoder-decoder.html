@@ -177,16 +177,26 @@
                 outputText.select();
                 outputText.setSelectionRange(0, 99999); // Untuk mobile
 
-                // Gunakan API Clipboard modern jika tersedia, jika tidak gunakan execCommand
-                if (navigator.clipboard && window.isSecureContext) {
-                    navigator.clipboard.writeText(outputText.value).then(showCopiedFeedback);
+                // Coba gunakan API Clipboard modern dengan fallback execCommand untuk sandbox/iframe
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(outputText.value)
+                        .then(showCopiedFeedback)
+                        .catch(err => {
+                            // Fallback jika API modern diblokir oleh permission iframe
+                            fallbackExecCommand();
+                        });
                 } else {
-                    try {
-                        document.execCommand('copy');
-                        showCopiedFeedback();
-                    } catch (err) {
-                        console.error('Gagal menyalin teks', err);
-                    }
+                    // Fallback untuk browser lama atau http biasa
+                    fallbackExecCommand();
+                }
+            }
+
+            function fallbackExecCommand() {
+                try {
+                    document.execCommand('copy');
+                    showCopiedFeedback();
+                } catch (err) {
+                    console.error('Gagal menyalin teks', err);
                 }
             }
 
@@ -194,6 +204,12 @@
                 const originalHtml = copyText.innerHTML;
                 copyText.innerHTML = 'Tersalin!';
                 copyBtn.classList.add('bg-gray-300', 'text-gray-900');
+                
+                // Menghilangkan efek blok/seleksi pada teks output setelah disalin
+                outputText.setSelectionRange(0, 0);
+                if (window.getSelection) {
+                    window.getSelection().removeAllRanges();
+                }
                 
                 setTimeout(() => {
                     copyText.innerHTML = 'Salin Hasil';
