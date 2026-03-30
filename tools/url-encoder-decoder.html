@@ -171,49 +171,66 @@
 
             // Fungsi untuk menyalin hasil ke clipboard
             function copyToClipboard() {
-                if (!outputText.value || outputText.value.startsWith("Error:")) return;
+                const textToCopy = outputText.value;
+                if (!textToCopy || textToCopy.startsWith("Error:")) return;
 
-                // Pilih teks
-                outputText.select();
-                outputText.setSelectionRange(0, 99999); // Untuk mobile
-
-                // Coba gunakan API Clipboard modern dengan fallback execCommand untuk sandbox/iframe
-                if (navigator.clipboard) {
-                    navigator.clipboard.writeText(outputText.value)
-                        .then(showCopiedFeedback)
-                        .catch(err => {
-                            // Fallback jika API modern diblokir oleh permission iframe
-                            fallbackExecCommand();
-                        });
+                // Use the Clipboard API with a fallback for older browsers or iFrames
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        showCopiedFeedback();
+                    }).catch(err => {
+                        fallbackCopyTextToClipboard(textToCopy);
+                    });
                 } else {
-                    // Fallback untuk browser lama atau http biasa
-                    fallbackExecCommand();
+                    fallbackCopyTextToClipboard(textToCopy);
                 }
             }
 
-            function fallbackExecCommand() {
+            // Fallback for iFrames or environments without clipboard API
+            function fallbackCopyTextToClipboard(text) {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                
+                // Avoid scrolling to bottom
+                textArea.style.top = "0";
+                textArea.style.left = "0";
+                textArea.style.position = "fixed";
+
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+
                 try {
-                    document.execCommand('copy');
-                    showCopiedFeedback();
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        showCopiedFeedback();
+                    } else {
+                        console.error('Fallback: Copying text command was unsuccessful');
+                    }
                 } catch (err) {
-                    console.error('Gagal menyalin teks', err);
+                    console.error('Fallback: Oops, unable to copy', err);
                 }
+
+                document.body.removeChild(textArea);
             }
 
+            // UI Feedback for copy
             function showCopiedFeedback() {
-                const originalHtml = copyText.innerHTML;
-                copyText.innerHTML = 'Tersalin!';
-                copyBtn.classList.add('bg-gray-300', 'text-gray-900');
+                const originalHTML = copyBtn.innerHTML;
                 
-                // Menghilangkan efek blok/seleksi pada teks output setelah disalin
-                outputText.setSelectionRange(0, 0);
-                if (window.getSelection) {
-                    window.getSelection().removeAllRanges();
-                }
-                
+                // Change button appearance to success state
+                copyBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                    <span class="text-green-600">Tersalin!</span>
+                `;
+                copyBtn.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'text-gray-600');
+                copyBtn.classList.add('bg-green-50', 'border', 'border-green-200', 'text-green-700');
+
+                // Revert back after 2 seconds
                 setTimeout(() => {
-                    copyText.innerHTML = 'Salin Hasil';
-                    copyBtn.classList.remove('bg-gray-300', 'text-gray-900');
+                    copyBtn.innerHTML = originalHTML;
+                    copyBtn.classList.remove('bg-green-50', 'border', 'border-green-200', 'text-green-700');
+                    copyBtn.classList.add('bg-gray-100', 'hover:bg-gray-200', 'text-gray-600');
                 }, 2000);
             }
 
