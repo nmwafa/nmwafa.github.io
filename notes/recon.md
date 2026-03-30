@@ -56,7 +56,7 @@ py ~/tools/JSS-Finder/js-string-finder.py -l urls.js -s "api"
 
 *Daftar kata sensitif:* <https://gist.github.com/nmwafa/352e991f3a78bf9b1baf63d15c7f0101>
 
-*Parser:* `echo "some|word" | tr '|' ' '`&#x20;
+*Parser:* `echo "some|word" | tr '|' ' '`
 
 #### Cari API/String sensitif lain dengan GitHub dork
 
@@ -68,4 +68,14 @@ py ~/tools/JSS-Finder/js-string-finder.py -l urls.js -s "api"
 
 ```
 cat urls | xargs -P 15 -n 1 sh -c 'curl -m 5 -s -I -H "Origin: https://evil.com" "$0" | grep -qi "evil.com" && echo "$0"'
+```
+
+#### Secrets Discovery
+
+```
+curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+
+trufflehog git https://github.com/trufflesecurity/test_keys --results=verified
+trufflehog github --org=trufflesecurity --results=verified
+trufflehog s3 --bucket=<bucket name> --results=verified,unknown
 ```
