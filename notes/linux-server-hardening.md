@@ -142,8 +142,8 @@
 - Cek port yang diizinkan: `sudo semanage port -l`
 - Daftarkan port kustom ke SELinux. e.g.,:
   ```
-  sudo semanage port -a -t ssh_port_t -p tcp 23456
-  sudo semanage port -a -t http_port_t -p tcp 8000
+  sudo semanage port -a 23456 -t ssh_port_t -p tcp
+  sudo semanage port -a 8000 -t http_port_t -p tcp
   ```
 - Jika port 8000 sudah digunakan oleh layanan lain dalam definisi SELinux, pakai `-m` (modify) sebagai ganti `-a`
 - Izinkan *Reverse Proxy*: `sudo setbool -P httpd_can_network_connect 1`
