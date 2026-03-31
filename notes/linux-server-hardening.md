@@ -4,7 +4,7 @@
 - Update Repositori & Package: `sudo apt update && sudo apt upgrade -y`
 - Pastikan kernel versi terbaru. Cek: `uname -r`
 
-### Keamanan akses dan SSH
+### Keamanan Akses dan SSH
 - Ubah *port*: `sed -i "s/#Port 22/Port 23456/" /etc/ssh/sshd_config`
   - Cek *listening port*, pastikan *port* SSH sudah berubah: `ss -tunlp | grep ssh`
   - Jika belum, kemungkinan sistem pakai *Socket Activation*. Jalankan perintah: `sudo systemctl status ssh.socket`
@@ -26,12 +26,12 @@
 - Jangan izinkan login dengan user root: `sed -i "s/PermitRootLogin yes/PermitRootLogin no/" /etc/ssh/sshd_config`
 - Putus koneksi otomatis setelah tidak ada aktivitas: `sed -i "s/#ClientAliveInterval 0/ClientAliveInterval 300/" /etc/ssh/sshd_config` (300 detik x 3)
 
-### Manajemen user & hak akses
+### Manajemen User & Hak Akses
 - Hapus user/grup tidak terpakai. Cek di file `/etc/passwd` dan `/etc/group`
 - Selalu gunakan `sudo` untuk tugas administratif, bukan langsung sebagai user root
 - Pastikan tidak ada user dengan *password* kosong. Cek di file `/etc/shadow`
 
-### Keamanan jaringan
+### Keamanan Jaringan
 - Tutup semua port, kecuali yang dibutuhkan. Cek port terbuka dengan: `ss -tunlp` atau `netstat -tunlp`
 - Aktifkan UFW: `sudo systemctl enable --now ufw`. Hanya izinkan koneksi masuk ke port yang dibutuhkan
   - Proteksi dasar SSH: `sudo ufw limit ssh` -> tolak IP yang coba login lebih dari 6x dalam 30 detik
@@ -73,13 +73,34 @@
   - Cek status: `fail2ban-client status sshd`
 - Matikan service tidak perlu. Cek: `systemctl list-unit-files --state=enabled`
 
-### Log & Audit
+### Log, Audit & Monitor
 - Lacak user yang login saat ini: `who -H` -> membaca file `/var/log/utmp`
 - Lacak pengguna yang sebelumnya pernah login: `last -R` -> membaca file `/var/log/wtmp`
 - Lacak upaya kegagalan login ke sistem: `lastb` -> membaca file `/var/log/btmp`
 - Pakai `lynis` untuk audit keamanan sistem: `lynis audit system`
+- Pasang `auditd`: `sudo apt install auditd`
+  - Aktifkan: `sudo systemctl enable --now auditd`
+  - Memantau File atau Direktori: `auditctl -w [path_file] -p [izin] -k [label]`
+    ```
+    sudo auditctl -w /etc/passwd -p wa -k ubah-password
+    ```
+  - Memantau Panggilan Sistem (System Calls):
+    ```
+    sudo auditctl -a exit,always -F arch=b64 -S unlink -k hapus-file
+    ```
+  - Buat aturan permanen `sudo nano /etc/audit/rules.d/audit.rules`:
+    ```
+    -w /etc/shadow -p wa -k akses-shadow
+    -w /etc/ssh/sshd_config -p wa -k konfigurasi-ssh
+    ```
+    Aktifkan perubahan: `sudo augenrules --load`
+  - Log ada di /var/log/audit/audit.log
+  - Cari event: `sudo ausearch -k ubah-password`
+  - Ringkasan laporan login: `sudo aureport -au`
+  - Laporan Perintah yang Gagal: `sudo aureport -c --failed`
+  - Ringkasan Akses File: `sudo aureport -f`
 
-### Pasang malware scanner
+### Pasang Malware Scanner
 - maldet
   ```
   wget  http://www.rfxn.com/downloads/maldetect-current.tar.gz
