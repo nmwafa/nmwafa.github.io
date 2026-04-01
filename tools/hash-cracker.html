@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hash Cracker</title>
+    <!-- Tailwind CSS untuk Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons untuk Logo/Ikon -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Mencegah highlight biru saat tap di mobile */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4 font-sans text-gray-800 antialiased">
+
+    <!-- Notifikasi Toast (Pengganti Alert) -->
+    <div id="toast" class="fixed top-4 right-4 transform transition-all duration-300 translate-x-full opacity-0 bg-white px-4 py-3 rounded-xl shadow-md border border-gray-100 z-50 flex items-center gap-3">
+        <span id="toastIcon"></span>
+        <span id="toastMsg" class="text-sm font-medium text-gray-700"></span>
+    </div>
+
+    <!-- Main Card -->
+    <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-200 w-full max-w-lg">
+        
+        <!-- Header -->
+        <div class="flex flex-col items-center mb-8">
+            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3 text-gray-700">
+                <i data-lucide="shield-alert"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 tracking-tight">Hash Cracker</h1>
+            <p class="text-sm text-gray-500 mt-1 text-center">Crack ini hanya untuk ditujukan untuk kebutuhan riset, bukan untuk tujuan ilegal.</p>
+            <p class="text-sm text-gray-500 mt-1 text-center">Wordlist ini berisi lebih dari 2 juta baris password yang merupakan gabungan dari password terbanyak digunakan oleh orang Indonesia (menurut NordPass), data kebocoran database dari pengguna asal Indonesia dan wordlist dari beragam sumber.</p>
+        </div>
+
+        <!-- Input Section -->
+        <div class="space-y-5">
+            <div>
+                <label for="hashInput" class="block text-sm font-medium text-gray-600 mb-1.5">Hash String</label>
+                <input type="text" id="hashInput" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-300 focus:border-gray-400 focus:outline-none transition-all text-gray-700 placeholder-gray-400" placeholder="Contoh: 5d41402abc4b2a76b9719d911017c592" autocomplete="off">
+            </div>
+
+            <div>
+                <label for="modeSelect" class="block text-sm font-medium text-gray-600 mb-1.5">Jenis Hash (Mode)</label>
+                <select id="modeSelect" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-300 focus:border-gray-400 focus:outline-none transition-all text-gray-700 cursor-pointer">
+                    <optgroup label="Hash Umum">
+                        <option value="0">MD5</option>
+                        <option value="100">SHA1</option>
+                        <option value="1400">SHA256</option>
+                        <option value="1700">SHA512</option>
+                    </optgroup>
+                    <optgroup label="Crypt-based (Linux)">
+                        <option value="500">MD5 Crypt ($1$)</option>
+                        <option value="1800">SHA512 Crypt ($6$)</option>
+                        <option value="3200">bcrypt ($2a$, $2b$)</option>
+                        <option value="1600">Apache $apr1$ MD5</option>
+                        <option value="1722">SHA256 Crypt (Unix)</option>
+                        <option value="3910">SHA1 (Unix)</option>
+                    </optgroup>
+                    <optgroup label="Windows Hashes">
+                        <option value="1000">NTLM</option>
+                        <option value="1100">DCC1 (Domain Cached Credentials)</option>
+                        <option value="2100">DCC2 (v2)</option>
+                        <option value="5500">NetNTLMv2 (MSCHAPv2)</option>
+                        <option value="5600">NetNTLMv1</option>
+                    </optgroup>
+                    <optgroup label="Aplikasi Web">
+                        <option value="7300">IPB2+</option>
+                        <option value="7400">MyBB</option>
+                        <option value="7900">Drupal 7</option>
+                        <option value="2811">PHPass (WordPress, phpBB3)</option>
+                        <option value="3711">MediaWiki B</option>
+                    </optgroup>
+                    <optgroup label="Variasi dan Kombinasi">
+                        <option value="5100">Half MD5</option>
+                        <option value="2600">MD5(MD5($pass))</option>
+                        <option value="3500">MD5(MD5(MD5($pass)))</option>
+                        <option value="23">Skype</option>
+                        <option value="10">MD5($pass.$salt)</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <!-- Tombol Crack (Lebih Panjang) -->
+            <button id="crackBtn" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+                <i data-lucide="unlock" class="w-4 h-4"></i>
+                <span id="btnText">Crack Hash</span>
+            </button>
+
+            <div class="pt-2 border-t border-gray-100"></div>
+
+            <!-- Output Section & Tombol Copy -->
+            <div>
+                <label for="resultOutput" class="block text-sm font-medium text-gray-600 mb-1.5">Hasil Crack</label>
+                <div class="flex gap-2">
+                    <input type="text" id="resultOutput" readonly class="flex-1 px-4 py-2.5 bg-gray-100 border border-gray-200 rounded-xl text-gray-800 focus:outline-none cursor-text font-mono text-sm" placeholder="Hasil akan muncul di sini...">
+                    
+                    <!-- Tombol Copy (Hanya Logo) -->
+                    <button id="copyBtn" class="bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-600 p-2.5 rounded-xl flex items-center justify-center transition-all active:scale-95" title="Salin Hasil">
+                        <i data-lucide="copy" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center">
+            <p class="text-xs text-gray-400">Powered by <a href="https://xcode.co.id/" target="_blank" class="text-gray-500 hover:underline">X-Code - PT. Teknologi Server Indonesia</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Inisialisasi ikon Lucide
+        lucide.createIcons();
+
+        // Elemen DOM
+        const crackBtn = document.getElementById('crackBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const hashInput = document.getElementById('hashInput');
+        const resultOutput = document.getElementById('resultOutput');
+        const btnText = document.getElementById('btnText');
+        const modeSelect = document.getElementById('modeSelect');
+
+        // Fungsi untuk menampilkan notifikasi (Toast)
+        function showNotification(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.textContent = message;
+
+            if (type === 'success') {
+                toast.className = 'fixed top-4 right-4 transform transition-all duration-300 translate-x-0 opacity-100 bg-white px-4 py-3 rounded-xl shadow-md border-l-4 border-l-gray-800 border border-gray-100 z-50 flex items-center gap-3';
+                toastIcon.innerHTML = '<i data-lucide="check-circle-2" class="text-gray-800 w-5 h-5"></i>';
+            } else {
+                toast.className = 'fixed top-4 right-4 transform transition-all duration-300 translate-x-0 opacity-100 bg-white px-4 py-3 rounded-xl shadow-md border-l-4 border-l-red-500 border border-gray-100 z-50 flex items-center gap-3';
+                toastIcon.innerHTML = '<i data-lucide="alert-circle" class="text-red-500 w-5 h-5"></i>';
+            }
+
+            lucide.createIcons();
+
+            // Sembunyikan toast setelah 3 detik
+            setTimeout(() => {
+                toast.classList.remove('translate-x-0', 'opacity-100');
+                toast.classList.add('translate-x-full', 'opacity-0');
+            }, 3000);
+        }
+
+        // Event Listener untuk tombol Crack
+        crackBtn.addEventListener('click', async () => {
+            const hash = hashInput.value.trim();
+            const mode = modeSelect.value;
+            
+            if (!hash) {
+                showNotification('Silakan masukkan hash terlebih dahulu!', 'error');
+                return;
+            }
+
+            // Status Loading
+            btnText.textContent = 'Memproses...';
+            crackBtn.disabled = true;
+            crackBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            crackBtn.querySelector('i').setAttribute('data-lucide', 'loader-2');
+            crackBtn.querySelector('i').classList.add('animate-spin');
+            lucide.createIcons();
+            
+            resultOutput.value = '';
+
+            try {
+                const apiUrl = 'https://crack.hackerbootcamp.asia:2053/cgi-bin/xcodecrack_api.cgi';
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        hash: hash,
+                        mode: mode
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Koneksi Gagal: HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Menampilkan hasil sukses (format balasan biasanya "hash:password")
+                    resultOutput.value = data.result;
+                    showNotification('Hash berhasil di-crack!', 'success');
+                } else {
+                    // Menampilkan pesan error dari API jika gagal
+                    resultOutput.value = data.error || 'Gagal / Tidak ditemukan';
+                    showNotification(data.error || 'Hash tidak ditemukan di database.', 'error');
+                }
+
+            } catch (error) {
+                console.error('API Error:', error);
+                resultOutput.value = 'Error pada koneksi API';
+                showNotification('Terjadi kesalahan saat memproses data.', 'error');
+            } finally {
+                // Kembalikan tombol ke keadaan semula
+                btnText.textContent = 'Crack Hash';
+                crackBtn.disabled = false;
+                crackBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                crackBtn.querySelector('i').classList.remove('animate-spin');
+                crackBtn.querySelector('i').setAttribute('data-lucide', 'unlock');
+                lucide.createIcons();
+            }
+        });
+
+        // Event Listener untuk tombol Copy
+        copyBtn.addEventListener('click', () => {
+            if (!resultOutput.value) {
+                showNotification('Belum ada hasil untuk disalin.', 'error');
+                return;
+            }
+
+            // Metode salin kompatibel untuk iFrame
+            resultOutput.select();
+            resultOutput.setSelectionRange(0, 99999); // Untuk perangkat mobile
+
+            try {
+                document.execCommand('copy');
+                showNotification('Hasil berhasil disalin!', 'success');
+                
+                // Efek visual klik pada tombol copy
+                const icon = copyBtn.querySelector('i');
+                icon.setAttribute('data-lucide', 'check');
+                icon.classList.add('text-green-600');
+                lucide.createIcons();
+                
+                setTimeout(() => {
+                    icon.setAttribute('data-lucide', 'copy');
+                    icon.classList.remove('text-green-600');
+                    lucide.createIcons();
+                }, 2000);
+
+            } catch (err) {
+                showNotification('Gagal menyalin teks.', 'error');
+            }
+            
+            window.getSelection().removeAllRanges();
+        });
+    </script>
+</body>
+</html>
