@@ -17,10 +17,10 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4 font-sans text-gray-800 antialiased">
 
-    <!-- Notifikasi Toast (Pengganti Alert) -->
-    <div id="toast" class="fixed top-4 right-4 transform transition-all duration-300 translate-x-full opacity-0 bg-white px-4 py-3 rounded-xl shadow-md border border-gray-100 z-50 flex items-center gap-3">
-        <span id="toastIcon"></span>
-        <span id="toastMsg" class="text-sm font-medium text-gray-700"></span>
+    <!-- Notifikasi Toast -->
+    <div id="toast" class="fixed top-4 right-4 transform transition-all duration-300 translate-x-full opacity-0 bg-white px-4 py-3 rounded-xl shadow-md border border-gray-100 z-50 flex items-center gap-3 max-w-sm">
+        <span id="toastIcon" class="flex-shrink-0"></span>
+        <span id="toastMsg" class="text-sm font-medium text-gray-700 leading-tight"></span>
     </div>
 
     <!-- Main Card -->
@@ -39,7 +39,7 @@
         <div class="space-y-5">
             <div>
                 <label for="hashInput" class="block text-sm font-medium text-gray-600 mb-1.5">Hash String</label>
-                <input type="text" id="hashInput" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-300 focus:border-gray-400 focus:outline-none transition-all text-gray-700 placeholder-gray-400" placeholder="Contoh: 5d41402abc4b2a76b9719d911017c592" autocomplete="off">
+                <input type="text" id="hashInput" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-300 focus:border-gray-400 focus:outline-none transition-all text-gray-700 placeholder-gray-400" placeholder="Contoh: 5f4dcc3b5aa765d61d8327deb882cf99" autocomplete="off">
             </div>
 
             <div>
@@ -83,23 +83,25 @@
                 </select>
             </div>
 
-            <!-- Tombol Crack (Lebih Panjang) -->
+            <!-- Tombol Crack -->
             <button id="crackBtn" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
-                <span id="crackIcon"><i data-lucide="unlock" class="w-4 h-4"></i></span>
+                <span id="wrapUnlock" class="flex"><i data-lucide="unlock" class="w-4 h-4"></i></span>
+                <span id="wrapLoading" class="hidden"><i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i></span>
                 <span id="btnText">Crack Hash</span>
             </button>
 
             <div class="pt-2 border-t border-gray-100"></div>
 
-            <!-- Output Section & Tombol Copy -->
+            <!-- Output Section -->
             <div>
                 <label for="resultOutput" class="block text-sm font-medium text-gray-600 mb-1.5">Hasil Crack</label>
                 <div class="flex gap-2">
                     <input type="text" id="resultOutput" readonly class="flex-1 px-4 py-2.5 bg-gray-100 border border-gray-200 rounded-xl text-gray-800 focus:outline-none cursor-text font-mono text-sm" placeholder="Hasil akan muncul di sini...">
                     
-                    <!-- Tombol Copy (Hanya Logo) -->
+                    <!-- Tombol Copy -->
                     <button id="copyBtn" class="bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-600 p-2.5 rounded-xl flex items-center justify-center transition-all active:scale-95" title="Salin Hasil">
-                        <span id="copyIcon"><i data-lucide="copy" class="w-5 h-5"></i></span>
+                        <span id="wrapCopy" class="flex"><i data-lucide="copy" class="w-5 h-5"></i></span>
+                        <span id="wrapCheck" class="hidden"><i data-lucide="check" class="w-5 h-5 text-green-600"></i></span>
                     </button>
                 </div>
             </div>
@@ -112,21 +114,21 @@
     </div>
 
     <script>
-        // Inisialisasi ikon Lucide
         lucide.createIcons();
 
-        // Elemen DOM
         const crackBtn = document.getElementById('crackBtn');
         const copyBtn = document.getElementById('copyBtn');
         const hashInput = document.getElementById('hashInput');
         const resultOutput = document.getElementById('resultOutput');
         const btnText = document.getElementById('btnText');
         const modeSelect = document.getElementById('modeSelect');
-        const crackIcon = document.getElementById('crackIcon');
-        const copyIcon = document.getElementById('copyIcon');
+        
+        const wrapUnlock = document.getElementById('wrapUnlock');
+        const wrapLoading = document.getElementById('wrapLoading');
+        const wrapCopy = document.getElementById('wrapCopy');
+        const wrapCheck = document.getElementById('wrapCheck');
 
-        // Fungsi untuk menampilkan notifikasi (Toast)
-        function showNotification(message, type = 'success') {
+        function showNotification(message, type = 'success', duration = 4000) {
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toastMsg');
             const toastIcon = document.getElementById('toastIcon');
@@ -134,126 +136,158 @@
             toastMsg.textContent = message;
 
             if (type === 'success') {
-                toast.className = 'fixed top-4 right-4 transform transition-all duration-300 translate-x-0 opacity-100 bg-white px-4 py-3 rounded-xl shadow-md border-l-4 border-l-gray-800 border border-gray-100 z-50 flex items-center gap-3';
+                toast.className = 'fixed top-4 right-4 transform transition-all translate-x-0 opacity-100 bg-white px-4 py-3 rounded-xl shadow-md border-l-4 border-l-gray-800 border border-gray-100 z-50 flex items-center gap-3 max-w-sm';
                 toastIcon.innerHTML = '<i data-lucide="check-circle-2" class="text-gray-800 w-5 h-5"></i>';
             } else {
-                toast.className = 'fixed top-4 right-4 transform transition-all duration-300 translate-x-0 opacity-100 bg-white px-4 py-3 rounded-xl shadow-md border-l-4 border-l-red-500 border border-gray-100 z-50 flex items-center gap-3';
+                toast.className = 'fixed top-4 right-4 transform transition-all translate-x-0 opacity-100 bg-white px-4 py-3 rounded-xl shadow-md border-l-4 border-l-red-500 border border-gray-100 z-50 flex items-center gap-3 max-w-sm';
                 toastIcon.innerHTML = '<i data-lucide="alert-circle" class="text-red-500 w-5 h-5"></i>';
             }
 
             lucide.createIcons();
 
-            // Sembunyikan toast setelah 3 detik
             setTimeout(() => {
                 toast.classList.remove('translate-x-0', 'opacity-100');
                 toast.classList.add('translate-x-full', 'opacity-0');
-            }, 3000);
+            }, duration);
         }
 
-        // Event Listener untuk tombol Crack
         crackBtn.addEventListener('click', async () => {
-            const hash = hashInput.value.trim();
-            const mode = modeSelect.value;
-            
-            if (!hash) {
-                showNotification('Silakan masukkan hash terlebih dahulu!', 'error');
-                return;
-            }
-
-            // Status Loading
-            btnText.textContent = 'Memproses...';
-            crackBtn.disabled = true;
-            crackBtn.classList.add('opacity-75', 'cursor-not-allowed');
-            
-            // Mengganti ikon ke loading spin dengan menggunakan wrapper
-            crackIcon.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>';
-            lucide.createIcons();
-            
-            resultOutput.value = '';
-
             try {
-                const apiUrl = 'https://crack.hackerbootcamp.asia:2053/cgi-bin/xcodecrack_api.cgi';
+                const hash = hashInput.value.trim();
+                const mode = modeSelect.value;
                 
-                // Menyiapkan opsi permintaan
+                if (!hash) {
+                    showNotification('Silakan masukkan hash terlebih dahulu!', 'error');
+                    return;
+                }
+
+                // UI Loading state
+                btnText.textContent = 'Memproses...';
+                crackBtn.disabled = true;
+                crackBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                
+                if(wrapUnlock && wrapLoading) {
+                    wrapUnlock.classList.add('hidden');
+                    wrapLoading.classList.remove('hidden');
+                }
+                
+                resultOutput.value = '';
+
+                // Menggunakan endpoint GET berbasis HTML (Parameter dimasukkan langsung ke URL)
+                const targetUrl = `https://crack.hackerbootcamp.asia:2053/cgi-bin/xcodecrack.cgi?hash=${encodeURIComponent(hash)}&mode=${encodeURIComponent(mode)}`;
+                
                 const fetchOptions = {
-                    method: 'POST',
+                    method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        hash: hash,
-                        mode: mode
-                    })
+                        'Accept': 'text/html'
+                    }
                 };
 
-                let response;
+                let htmlData = null;
+                let requestSuccessful = false;
 
+                // 1. Coba koneksi langsung
                 try {
-                    // Percobaan 1: Fetch secara langsung
-                    response = await fetch(apiUrl, fetchOptions);
+                    const response = await fetch(targetUrl, fetchOptions);
+                    htmlData = await response.text();
+                    requestSuccessful = true;
                 } catch (directError) {
-                    console.warn('Koneksi langsung gagal (Kemungkinan terblokir CORS/Port). Mencoba via Proxy...', directError);
-                    // Percobaan 2: Fallback ke layanan CORS Proxy gratis jika diblokir
-                    const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(apiUrl);
-                    response = await fetch(proxyUrl, fetchOptions);
+                    console.warn("Direct fetch diblokir oleh CORS.");
                 }
 
-                if (!response.ok) {
-                    throw new Error(`Koneksi Gagal: HTTP ${response.status}`);
+                // 2. Jika gagal, coba proxy (Metode GET lebih di-support banyak proxy)
+                if (!requestSuccessful) {
+                    const proxyList = [
+                        'https://corsproxy.io/?' + encodeURIComponent(targetUrl),
+                        'https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl) // Tambahan proxy khusus GET
+                    ];
+                    
+                    for (const proxyUrl of proxyList) {
+                        try {
+                            const response = await fetch(proxyUrl, fetchOptions);
+                            const text = await response.text();
+                            
+                            // Validasi sederhana: pastikan respon adalah halaman hasil dari X-Code
+                            if (text && text.includes('Hasil Crack')) {
+                                htmlData = text;
+                                requestSuccessful = true;
+                                break;
+                            }
+                        } catch (proxyError) {
+                            console.error("Proxy diblokir atau gagal.");
+                        }
+                    }
                 }
 
-                const data = await response.json();
+                if (!requestSuccessful || !htmlData) {
+                    throw new Error('CORS_AND_CLOUDFLARE_BLOCKED');
+                }
 
-                if (data.success) {
-                    // Menampilkan hasil sukses
-                    resultOutput.value = data.result;
+                // 3. Parsing DOM (Scraping Data dari HTML)
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlData, 'text/html');
+
+                const preElement = doc.querySelector('pre');
+                const errorElement = doc.querySelector('p.error');
+
+                // Logika pencarian hasil berdasarkan tag HTML
+                if (preElement) {
+                    // Jika ada tag <pre>, artinya sukses mendapatkan hasil (Membersihkan karakter aneh \b jika ada)
+                    let cleanResult = preElement.textContent.replace(/\\b/g, '').trim(); 
+                    resultOutput.value = cleanResult;
                     showNotification('Hash berhasil di-crack!', 'success');
+                } else if (errorElement) {
+                    // Jika ada tag <p class="error">, ambil tulisan di dalamnya
+                    let errorMsg = errorElement.textContent.trim();
+                    resultOutput.value = 'Gagal / Tidak ditemukan';
+                    showNotification(errorMsg, 'error');
                 } else {
-                    // Menampilkan pesan error dari API jika gagal
-                    resultOutput.value = data.error || 'Gagal / Tidak ditemukan';
-                    showNotification(data.error || 'Hash tidak ditemukan di database.', 'error');
+                    throw new Error('Format balasan HTML tidak dikenali');
                 }
 
             } catch (error) {
-                console.error('API Error:', error);
-                resultOutput.value = 'Error pada koneksi API atau Proxy';
-                showNotification('Terjadi kesalahan koneksi saat menghubungi server.', 'error');
+                if (error.message === 'CORS_AND_CLOUDFLARE_BLOCKED') {
+                    resultOutput.value = 'Diblokir oleh Server (CORS/Port)';
+                    showNotification('Akses ditolak oleh browser Anda. Gunakan ekstensi browser "Allow CORS" untuk menjalankan tool ini.', 'error', 7000);
+                } else {
+                    resultOutput.value = 'Error Parsing/Koneksi';
+                    showNotification('Terjadi kesalahan saat memproses balasan HTML.', 'error');
+                }
             } finally {
-                // Kembalikan tombol ke keadaan semula
                 btnText.textContent = 'Crack Hash';
                 crackBtn.disabled = false;
                 crackBtn.classList.remove('opacity-75', 'cursor-not-allowed');
                 
-                // Mengembalikan ikon kunci menggunakan wrapper
-                crackIcon.innerHTML = '<i data-lucide="unlock" class="w-4 h-4"></i>';
-                lucide.createIcons();
+                if(wrapUnlock && wrapLoading) {
+                    wrapUnlock.classList.remove('hidden');
+                    wrapLoading.classList.add('hidden');
+                }
             }
         });
 
         // Event Listener untuk tombol Copy
         copyBtn.addEventListener('click', () => {
-            if (!resultOutput.value) {
-                showNotification('Belum ada hasil untuk disalin.', 'error');
+            if (!resultOutput.value || resultOutput.value.includes('Diblokir') || resultOutput.value.includes('Error')) {
+                showNotification('Tidak ada hasil valid untuk disalin.', 'error');
                 return;
             }
 
-            // Metode salin kompatibel untuk iFrame
             resultOutput.select();
-            resultOutput.setSelectionRange(0, 99999); // Untuk perangkat mobile
+            resultOutput.setSelectionRange(0, 99999);
 
             try {
                 document.execCommand('copy');
                 showNotification('Hasil berhasil disalin!', 'success');
                 
-                // Efek visual klik pada tombol copy menggunakan wrapper
-                copyIcon.innerHTML = '<i data-lucide="check" class="w-5 h-5 text-green-600"></i>';
-                lucide.createIcons();
-                
-                setTimeout(() => {
-                    copyIcon.innerHTML = '<i data-lucide="copy" class="w-5 h-5"></i>';
-                    lucide.createIcons();
-                }, 2000);
-
+                if(wrapCopy && wrapCheck) {
+                    wrapCopy.classList.add('hidden');
+                    wrapCheck.classList.remove('hidden');
+                    
+                    setTimeout(() => {
+                        wrapCopy.classList.remove('hidden');
+                        wrapCheck.classList.add('hidden');
+                    }, 2000);
+                }
             } catch (err) {
                 showNotification('Gagal menyalin teks.', 'error');
             }
