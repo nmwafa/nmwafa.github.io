@@ -123,6 +123,8 @@
         const resultOutput = document.getElementById('resultOutput');
         const btnText = document.getElementById('btnText');
         const modeSelect = document.getElementById('modeSelect');
+        const crackIcon = document.getElementById('crackIcon');
+        const copyIcon = document.getElementById('copyIcon');
 
         // Fungsi untuk menampilkan notifikasi (Toast)
         function showNotification(message, type = 'success') {
@@ -142,11 +144,11 @@
 
             lucide.createIcons();
 
-            // Sembunyikan toast setelah 3 detik
+            // Sembunyikan toast setelah 4 detik (diperlama agar mudah dibaca jika error)
             setTimeout(() => {
                 toast.classList.remove('translate-x-0', 'opacity-100');
                 toast.classList.add('translate-x-full', 'opacity-0');
-            }, 3000);
+            }, 4000);
         }
 
         // Event Listener untuk tombol Crack
@@ -163,84 +165,114 @@
             btnText.textContent = 'Memproses...';
             crackBtn.disabled = true;
             crackBtn.classList.add('opacity-75', 'cursor-not-allowed');
-            crackBtn.querySelector('i').setAttribute('data-lucide', 'loader-2');
-            crackBtn.querySelector('i').classList.add('animate-spin');
+            crackIcon.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>';
             lucide.createIcons();
-            
             resultOutput.value = '';
 
             try {
                 const apiUrl = 'https://crack.hackerbootcamp.asia:2053/cgi-bin/xcodecrack_api.cgi';
                 
-                const response = await fetch(apiUrl, {
+                // Menyiapkan opsi permintaan
+                const fetchOptions = {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({
                         hash: hash,
                         mode: mode
                     })
-                });
+                };
 
-                if (!response.ok) {
-                    throw new Error(`Koneksi Gagal: HTTP ${response.status}`);
+                let data;
+
+                // SISTEM MULTI-PROXY UNTUK MENCEGAH BLOKIR CORS/JARINGAN
+                try {
+                    // Percobaan 1: Koneksi Langsung
+                    const response = await fetch(apiUrl, fetchOptions);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    data = await response.json();
+                } catch (directError) {
+                    console.warn('Koneksi langsung gagal. Mencoba Proxy Alternatif 1...', directError);
+                    
+                    try {
+                        // Percobaan 2: Menggunakan codetabs proxy (mendukung POST JSON dengan baik)
+                        const proxyUrl1 = 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(apiUrl);
+                        const response1 = await fetch(proxyUrl1, fetchOptions);
+                        if (!response1.ok) throw new Error(`HTTP ${response1.status}`);
+                        data = await response1.json();
+                    } catch (proxyError1) {
+                        console.warn('Proxy 1 gagal. Mencoba Proxy Alternatif 2...', proxyError1);
+                        
+                        try {
+                            // Percobaan 3: Menggunakan corsproxy.io
+                            const proxyUrl2 = 'https://corsproxy.io/?' + encodeURIComponent(apiUrl);
+                            const response2 = await fetch(proxyUrl2, fetchOptions);
+                            if (!response2.ok) throw new Error(`HTTP ${response2.status}`);
+                            data = await response2.json();
+                        } catch (proxyError2) {
+                            console.error('Semua percobaan koneksi gagal diblokir lingkungan.', proxyError2);
+                            throw new Error('NETWORK_BLOCKED');
+                        }
+                    }
                 }
 
-                const data = await response.json();
-
-                if (data.success) {
-                    // Menampilkan hasil sukses (format balasan biasanya "hash:password")
-                    resultOutput.value = data.result;
-                    showNotification('Hash berhasil di-crack!', 'success');
+                // Proses data jika berhasil didapat
+                if (data && data.success !== undefined) {
+                    if (data.success) {
+                        resultOutput.value = data.result;
+                        showNotification('Hash berhasil di-crack!', 'success');
+                    } else {
+                        resultOutput.value = data.error || 'Gagal / Tidak ditemukan';
+                        showNotification(data.error || 'Hash tidak ditemukan di database.', 'error');
+                    }
                 } else {
-                    // Menampilkan pesan error dari API jika gagal
-                    resultOutput.value = data.error || 'Gagal / Tidak ditemukan';
-                    showNotification(data.error || 'Hash tidak ditemukan di database.', 'error');
+                    throw new Error('Format balasan server tidak valid');
                 }
 
             } catch (error) {
-                console.error('API Error:', error);
-                resultOutput.value = 'Error pada koneksi API';
-                showNotification('Terjadi kesalahan saat memproses data.', 'error');
+                console.error('API Error details:', error);
+                
+                // Penanganan pesan error spesifik kepada user
+                if (error.message === 'NETWORK_BLOCKED' || error.name === 'TypeError') {
+                    resultOutput.value = 'Akses diblokir (CORS / CSP Sandbox)';
+                    showNotification('Koneksi diblokir oleh sistem pratinjau. Silakan salin kode ini dan buka sebagai file HTML di PC Anda.', 'error');
+                } else {
+                    resultOutput.value = 'Error pada koneksi server';
+                    showNotification('Terjadi kesalahan saat memproses data.', 'error');
+                }
             } finally {
                 // Kembalikan tombol ke keadaan semula
                 btnText.textContent = 'Crack Hash';
                 crackBtn.disabled = false;
                 crackBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-                crackBtn.querySelector('i').classList.remove('animate-spin');
-                crackBtn.querySelector('i').setAttribute('data-lucide', 'unlock');
+                crackIcon.innerHTML = '<i data-lucide="unlock" class="w-4 h-4"></i>';
                 lucide.createIcons();
             }
         });
 
         // Event Listener untuk tombol Copy
         copyBtn.addEventListener('click', () => {
-            if (!resultOutput.value) {
-                showNotification('Belum ada hasil untuk disalin.', 'error');
+            if (!resultOutput.value || resultOutput.value.includes('Akses diblokir') || resultOutput.value.includes('Error')) {
+                showNotification('Tidak ada hasil valid untuk disalin.', 'error');
                 return;
             }
 
-            // Metode salin kompatibel untuk iFrame
             resultOutput.select();
-            resultOutput.setSelectionRange(0, 99999); // Untuk perangkat mobile
+            resultOutput.setSelectionRange(0, 99999);
 
             try {
                 document.execCommand('copy');
                 showNotification('Hasil berhasil disalin!', 'success');
                 
-                // Efek visual klik pada tombol copy
-                const icon = copyBtn.querySelector('i');
-                icon.setAttribute('data-lucide', 'check');
-                icon.classList.add('text-green-600');
+                copyIcon.innerHTML = '<i data-lucide="check" class="w-5 h-5 text-green-600"></i>';
                 lucide.createIcons();
                 
                 setTimeout(() => {
-                    icon.setAttribute('data-lucide', 'copy');
-                    icon.classList.remove('text-green-600');
+                    copyIcon.innerHTML = '<i data-lucide="copy" class="w-5 h-5"></i>';
                     lucide.createIcons();
                 }, 2000);
-
             } catch (err) {
                 showNotification('Gagal menyalin teks.', 'error');
             }
