@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hash Cracker</title>
+    <title>X-Code Hash Cracker</title>
     <!-- Tailwind CSS untuk Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons untuk Logo/Ikon -->
@@ -32,8 +32,7 @@
                 <i data-lucide="shield-alert"></i>
             </div>
             <h1 class="text-2xl font-bold text-gray-800 tracking-tight">Hash Cracker</h1>
-            <p class="text-sm text-gray-500 mt-1 text-center">Hanya ditujukan untuk kebutuhan riset, bukan untuk tujuan ilegal.</p>
-            <p class="text-sm text-gray-500 mt-1 text-center">Wordlist berisi lebih dari 2 juta baris password yang merupakan gabungan dari password terbanyak digunakan oleh orang Indonesia (menurut NordPass), data kebocoran database dari pengguna asal Indonesia dan wordlist dari berbagai sumber.</p>
+            <p class="text-sm text-gray-500 mt-1 text-center">Masukkan string hash untuk melakukan proses crack melalui API.</p>
         </div>
 
         <!-- Input Section -->
@@ -46,13 +45,13 @@
             <div>
                 <label for="modeSelect" class="block text-sm font-medium text-gray-600 mb-1.5">Jenis Hash (Mode)</label>
                 <select id="modeSelect" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-300 focus:border-gray-400 focus:outline-none transition-all text-gray-700 cursor-pointer">
-                    <optgroup label="Hash Umum">
+                    <optgroup label="📦 Hash Umum">
                         <option value="0">MD5</option>
                         <option value="100">SHA1</option>
                         <option value="1400">SHA256</option>
                         <option value="1700">SHA512</option>
                     </optgroup>
-                    <optgroup label="Crypt-based (Linux)">
+                    <optgroup label="🔐 Crypt-based (Linux)">
                         <option value="500">MD5 Crypt ($1$)</option>
                         <option value="1800">SHA512 Crypt ($6$)</option>
                         <option value="3200">bcrypt ($2a$, $2b$)</option>
@@ -60,21 +59,21 @@
                         <option value="1722">SHA256 Crypt (Unix)</option>
                         <option value="3910">SHA1 (Unix)</option>
                     </optgroup>
-                    <optgroup label="Windows Hashes">
+                    <optgroup label="🪟 Windows Hashes">
                         <option value="1000">NTLM</option>
                         <option value="1100">DCC1 (Domain Cached Credentials)</option>
                         <option value="2100">DCC2 (v2)</option>
                         <option value="5500">NetNTLMv2 (MSCHAPv2)</option>
                         <option value="5600">NetNTLMv1</option>
                     </optgroup>
-                    <optgroup label="Aplikasi Web">
+                    <optgroup label="🌐 Aplikasi Web">
                         <option value="7300">IPB2+</option>
                         <option value="7400">MyBB</option>
                         <option value="7900">Drupal 7</option>
                         <option value="2811">PHPass (WordPress, phpBB3)</option>
                         <option value="3711">MediaWiki B</option>
                     </optgroup>
-                    <optgroup label="Variasi dan Kombinasi">
+                    <optgroup label="⚙️ Variasi dan Kombinasi">
                         <option value="5100">Half MD5</option>
                         <option value="2600">MD5(MD5($pass))</option>
                         <option value="3500">MD5(MD5(MD5($pass)))</option>
@@ -86,7 +85,9 @@
 
             <!-- Tombol Crack (Lebih Panjang) -->
             <button id="crackBtn" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
-                <i data-lucide="unlock" class="w-4 h-4"></i>
+                <!-- Trik: Tanam kedua ikon di HTML, hanya sembunyikan salah satu pakai CSS -->
+                <span id="wrapUnlock" class="flex"><i data-lucide="unlock" class="w-4 h-4"></i></span>
+                <span id="wrapLoading" class="hidden"><i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i></span>
                 <span id="btnText">Crack Hash</span>
             </button>
 
@@ -100,7 +101,9 @@
                     
                     <!-- Tombol Copy (Hanya Logo) -->
                     <button id="copyBtn" class="bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-600 p-2.5 rounded-xl flex items-center justify-center transition-all active:scale-95" title="Salin Hasil">
-                        <i data-lucide="copy" class="w-5 h-5"></i>
+                        <!-- Trik yang sama untuk tombol copy -->
+                        <span id="wrapCopy" class="flex"><i data-lucide="copy" class="w-5 h-5"></i></span>
+                        <span id="wrapCheck" class="hidden"><i data-lucide="check" class="w-5 h-5 text-green-600"></i></span>
                     </button>
                 </div>
             </div>
@@ -108,12 +111,12 @@
 
         <!-- Footer -->
         <div class="mt-8 text-center">
-            <p class="text-xs text-gray-400">Powered by <a href="https://xcode.co.id/" target="_blank" class="text-gray-500 hover:underline">X-Code - PT. Teknologi Server Indonesia</a></p>
+            <p class="text-xs text-gray-400">Powered by <a href="https://xcode.co.id/xcodecrack_api.html" target="_blank" class="text-gray-500 hover:underline">X-Code API</a></p>
         </div>
     </div>
 
     <script>
-        // Inisialisasi ikon Lucide
+        // Inisialisasi ikon Lucide pertama kali
         lucide.createIcons();
 
         // Elemen DOM
@@ -123,8 +126,12 @@
         const resultOutput = document.getElementById('resultOutput');
         const btnText = document.getElementById('btnText');
         const modeSelect = document.getElementById('modeSelect');
-        const crackIcon = document.getElementById('crackIcon');
-        const copyIcon = document.getElementById('copyIcon');
+        
+        // Pembungkus Ikon (Digunakan untuk di-toggle)
+        const wrapUnlock = document.getElementById('wrapUnlock');
+        const wrapLoading = document.getElementById('wrapLoading');
+        const wrapCopy = document.getElementById('wrapCopy');
+        const wrapCheck = document.getElementById('wrapCheck');
 
         // Fungsi untuk menampilkan notifikasi (Toast)
         function showNotification(message, type = 'success') {
@@ -144,7 +151,6 @@
 
             lucide.createIcons();
 
-            // Sembunyikan toast setelah 4 detik (diperlama agar mudah dibaca jika error)
             setTimeout(() => {
                 toast.classList.remove('translate-x-0', 'opacity-100');
                 toast.classList.add('translate-x-full', 'opacity-0');
@@ -153,43 +159,44 @@
 
         // Event Listener untuk tombol Crack
         crackBtn.addEventListener('click', async () => {
-            const hash = hashInput.value.trim();
-            const mode = modeSelect.value;
-            
-            if (!hash) {
-                showNotification('Silakan masukkan hash terlebih dahulu!', 'error');
-                return;
-            }
-
-            // Status Loading
-            btnText.textContent = 'Memproses...';
-            crackBtn.disabled = true;
-            crackBtn.classList.add('opacity-75', 'cursor-not-allowed');
-            crackIcon.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>';
-            lucide.createIcons();
-            resultOutput.value = '';
-
+            // Semua proses dibungkus blok TRY agar tombol dijamin kembali normal melalui FINALLY
             try {
+                const hash = hashInput.value.trim();
+                const mode = modeSelect.value;
+                
+                if (!hash) {
+                    showNotification('Silakan masukkan hash terlebih dahulu!', 'error');
+                    return;
+                }
+
+                // Status Loading UI
+                btnText.textContent = 'Memproses...';
+                crackBtn.disabled = true;
+                crackBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                
+                // Toggle kelas hidden (Sembunyikan gembok, tampilkan loading)
+                if(wrapUnlock && wrapLoading) {
+                    wrapUnlock.classList.add('hidden');
+                    wrapLoading.classList.remove('hidden');
+                }
+                
+                resultOutput.value = '';
+
                 const apiUrl = 'https://crack.hackerbootcamp.asia:2053/cgi-bin/xcodecrack_api.cgi';
                 
-                // Menyiapkan opsi permintaan
                 const fetchOptions = {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({
-                        hash: hash,
-                        mode: mode
-                    })
+                    body: JSON.stringify({ hash: hash, mode: mode })
                 };
 
                 let data;
 
-                // SISTEM MULTI-PROXY UNTUK MENCEGAH BLOKIR CORS/JARINGAN
+                // SISTEM MULTI-PROXY (Sama seperti versi sebelumnya)
                 try {
-                    // Percobaan 1: Koneksi Langsung
                     const response = await fetch(apiUrl, fetchOptions);
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     data = await response.json();
@@ -197,7 +204,6 @@
                     console.warn('Koneksi langsung gagal. Mencoba Proxy Alternatif 1...', directError);
                     
                     try {
-                        // Percobaan 2: Menggunakan codetabs proxy (mendukung POST JSON dengan baik)
                         const proxyUrl1 = 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(apiUrl);
                         const response1 = await fetch(proxyUrl1, fetchOptions);
                         if (!response1.ok) throw new Error(`HTTP ${response1.status}`);
@@ -206,19 +212,16 @@
                         console.warn('Proxy 1 gagal. Mencoba Proxy Alternatif 2...', proxyError1);
                         
                         try {
-                            // Percobaan 3: Menggunakan corsproxy.io
                             const proxyUrl2 = 'https://corsproxy.io/?' + encodeURIComponent(apiUrl);
                             const response2 = await fetch(proxyUrl2, fetchOptions);
                             if (!response2.ok) throw new Error(`HTTP ${response2.status}`);
                             data = await response2.json();
                         } catch (proxyError2) {
-                            console.error('Semua percobaan koneksi gagal diblokir lingkungan.', proxyError2);
                             throw new Error('NETWORK_BLOCKED');
                         }
                     }
                 }
 
-                // Proses data jika berhasil didapat
                 if (data && data.success !== undefined) {
                     if (data.success) {
                         resultOutput.value = data.result;
@@ -234,21 +237,24 @@
             } catch (error) {
                 console.error('API Error details:', error);
                 
-                // Penanganan pesan error spesifik kepada user
                 if (error.message === 'NETWORK_BLOCKED' || error.name === 'TypeError') {
                     resultOutput.value = 'Akses diblokir (CORS / CSP Sandbox)';
-                    showNotification('Koneksi diblokir oleh sistem pratinjau. Silakan salin kode ini dan buka sebagai file HTML di PC Anda.', 'error');
+                    showNotification('Koneksi diblokir oleh sistem pratinjau. Buka file HTML di PC Anda.', 'error');
                 } else {
                     resultOutput.value = 'Error pada koneksi server';
                     showNotification('Terjadi kesalahan saat memproses data.', 'error');
                 }
             } finally {
-                // Kembalikan tombol ke keadaan semula
+                // FINALLY SELALU DIJALANKAN - Mengembalikan tombol ke keadaan semula
                 btnText.textContent = 'Crack Hash';
                 crackBtn.disabled = false;
                 crackBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-                crackIcon.innerHTML = '<i data-lucide="unlock" class="w-4 h-4"></i>';
-                lucide.createIcons();
+                
+                // Toggle kelas hidden kembali (Sembunyikan loading, tampilkan gembok)
+                if(wrapUnlock && wrapLoading) {
+                    wrapUnlock.classList.remove('hidden');
+                    wrapLoading.classList.add('hidden');
+                }
             }
         });
 
@@ -266,13 +272,16 @@
                 document.execCommand('copy');
                 showNotification('Hasil berhasil disalin!', 'success');
                 
-                copyIcon.innerHTML = '<i data-lucide="check" class="w-5 h-5 text-green-600"></i>';
-                lucide.createIcons();
-                
-                setTimeout(() => {
-                    copyIcon.innerHTML = '<i data-lucide="copy" class="w-5 h-5"></i>';
-                    lucide.createIcons();
-                }, 2000);
+                // Tampilkan ikon centang, sembunyikan ikon copy
+                if(wrapCopy && wrapCheck) {
+                    wrapCopy.classList.add('hidden');
+                    wrapCheck.classList.remove('hidden');
+                    
+                    setTimeout(() => {
+                        wrapCopy.classList.remove('hidden');
+                        wrapCheck.classList.add('hidden');
+                    }, 2000);
+                }
             } catch (err) {
                 showNotification('Gagal menyalin teks.', 'error');
             }
