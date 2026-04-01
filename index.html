@@ -23,8 +23,10 @@
             background-color: transparent;
             color: #16a34a;
         }
+        
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 5px; /* DIUBAH: Lebar scrollbar kanan diperkecil dari 8px menjadi 5px */
+            height: 0px; /* DITAMBAHKAN: Menghilangkan scrollbar horizontal di bagian bawah */
         }
         ::-webkit-scrollbar-track {
             background: #1e1e1e;
@@ -34,11 +36,13 @@
             border-radius: 4px;
         }
         html.light ::-webkit-scrollbar-track {
-            background: #f0f0f0;
+            background: #e2e8f0; /* DIUBAH: Warna track disesuaikan agar lebih lembut untuk light mode */
         }
         html.light ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
+            background: #94a3b8; /* DIUBAH: Warna thumb disesuaikan agar lebih elegan untuk light mode */
+            border-radius: 4px;
         }
+
         /* Menghilangkan panah pada input number (jika ada) */
         input[type="text"] {
             caret-color: #4ade80; /* Warna kursor input */
@@ -46,6 +50,7 @@
         html.light input[type="text"] {
             caret-color: #16a34a;
         }
+        
         /* Efek kursor berkedip */
         .blinking-cursor {
             animation: blink 1s step-end infinite;
@@ -58,11 +63,9 @@
                 color: inherit;
             }
         }
-        /* Sembunyikan kursor vertikal dan teks default dari input field */
-        input[type="text"] {
-            caret-color: transparent;
-            color: transparent;
-        }
+        
+        /* DIUBAH: Aturan color dan caret transparan dihapus karena input sekarang disembunyikan menggunakan opacity-0 di HTML */
+        
         /* Memastikan background tetap penuh saat fullscreen */
         :fullscreen {
             background-color: transparent;
