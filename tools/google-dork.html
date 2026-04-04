@@ -543,6 +543,23 @@ var CATS = [
     { id:'sf19', label:'filetype:py',              query:'filetype:py',                           desc:'Python source files' },
     { id:'sf20', label:'filetype:zip|tar|gz',      query:'filetype:zip OR filetype:tar OR filetype:gz', desc:'Archive files' },
   ]},
+  { id:'url_params', name:'Vulnerable Parameters', dorks:[
+    { id:'up1',  label:'inurl:"?id="',           query:'inurl:"?id="',                              desc:'ID parameter (SQLi target)' },
+    { id:'up2',  label:'inurl:"?page="',         query:'inurl:"?page="',                            desc:'Page parameter (LFI/RFI)' },
+    { id:'up3',  label:'inurl:"?file="',         query:'inurl:"?file="',                            desc:'File parameter (LFI/RFI)' },
+    { id:'up4',  label:'inurl:"?cat="',          query:'inurl:"?cat="',                             desc:'Category parameter' },
+    { id:'up5',  label:'inurl:"?include="',      query:'inurl:"?include="',                         desc:'Include parameter (RFI)' },
+    { id:'up6',  label:'inurl:"?dir="',          query:'inurl:"?dir="',                             desc:'Directory traversal param' },
+    { id:'up7',  label:'inurl:"?path="',         query:'inurl:"?path="',                            desc:'Path traversal param' },
+    { id:'up8',  label:'inurl:"?cmd="',          query:'inurl:"?cmd="',                             desc:'Command injection param' },
+    { id:'up9',  label:'inurl:"?exec="',         query:'inurl:"?exec="',                            desc:'Exec parameter' },
+    { id:'up10', label:'inurl:"?search="',       query:'inurl:"?search="',                          desc:'Search param (XSS target)' },
+    { id:'up11', label:'inurl:"?q="|"?query="',  query:'inurl:"?q=" OR inurl:"?query="',            desc:'Query params' },
+    { id:'up12', label:'inurl:"?redirect="',     query:'inurl:"?redirect="',                        desc:'Open redirect param' },
+    { id:'up13', label:'inurl:"?url="',          query:'inurl:"?url="',                             desc:'URL param (open redirect)' },
+    { id:'up14', label:'inurl:"?token="|"?key="',query:'inurl:"?token=" OR inurl:"?key="',          desc:'Token/key in URL' },
+    { id:'up15', label:'inurl:".php?user="',     query:'inurl:".php?user="',                        desc:'User param in PHP' },
+  ]},
   { id:'credentials', name:'Credentials & Secrets', dorks:[
     { id:'cr1',  label:'"password" filetype:txt',      query:'"password" filetype:txt',          desc:'Passwords in text files' },
     { id:'cr2',  label:'"password" filetype:log',      query:'"password" filetype:log',          desc:'Passwords in log files' },
@@ -557,16 +574,6 @@ var CATS = [
     { id:'cr11', label:'intext:"default password"',    query:'intext:"default password"',        desc:'Default credential pages' },
     { id:'cr12', label:'"smtp_password"|"mail_pass"',  query:'"smtp_password" OR "mail_pass"',   desc:'Mail server passwords' },
   ]},
-  { id:'directories', name:'Open Directories', dorks:[
-    { id:'di1', label:'intitle:"Index of /"',             query:'intitle:"Index of /"',                  desc:'Apache directory listing' },
-    { id:'di2', label:'intitle:"Index of" "parent dir"',  query:'intitle:"Index of" "parent directory"', desc:'Directory index with parent' },
-    { id:'di3', label:'intitle:"Index of" passwords',     query:'intitle:"Index of" passwords',          desc:'Password file directories' },
-    { id:'di4', label:'intitle:"Index of" backup',        query:'intitle:"Index of" backup',             desc:'Backup file directories' },
-    { id:'di5', label:'intitle:"Directory listing for"',  query:'intitle:"Directory listing for"',       desc:'Jetty/Tomcat listing' },
-    { id:'di6', label:'intitle:"Index of" .git',          query:'intitle:"Index of" ".git"',             desc:'Exposed .git repos' },
-    { id:'di7', label:'intitle:"Index of" uploads',       query:'intitle:"Index of" uploads',            desc:'Exposed uploads directory' },
-    { id:'di8', label:'intitle:"Index of" config',        query:'intitle:"Index of" config',             desc:'Exposed config directories' },
-  ]},
   { id:'login_panels', name:'Login & Admin Panels', dorks:[
     { id:'lp1',  label:'inurl:admin inurl:login',     query:'inurl:admin inurl:login',      desc:'Admin login pages' },
     { id:'lp2',  label:'intitle:"admin panel"',       query:'intitle:"admin panel"',        desc:'Admin panel pages' },
@@ -580,6 +587,16 @@ var CATS = [
     { id:'lp10', label:'inurl:signin inurl:admin',    query:'inurl:signin inurl:admin',     desc:'Admin sign-in pages' },
     { id:'lp11', label:'intitle:"webmin"',            query:'intitle:"webmin"',             desc:'Webmin server control' },
     { id:'lp12', label:'intitle:"Plesk"',             query:'intitle:"Plesk"',              desc:'Plesk hosting panels' },
+  ]},
+  { id:'directories', name:'Open Directories', dorks:[
+    { id:'di1', label:'intitle:"Index of /"',             query:'intitle:"Index of /"',                  desc:'Apache directory listing' },
+    { id:'di2', label:'intitle:"Index of" "parent dir"',  query:'intitle:"Index of" "parent directory"', desc:'Directory index with parent' },
+    { id:'di3', label:'intitle:"Index of" passwords',     query:'intitle:"Index of" passwords',          desc:'Password file directories' },
+    { id:'di4', label:'intitle:"Index of" backup',        query:'intitle:"Index of" backup',             desc:'Backup file directories' },
+    { id:'di5', label:'intitle:"Directory listing for"',  query:'intitle:"Directory listing for"',       desc:'Jetty/Tomcat listing' },
+    { id:'di6', label:'intitle:"Index of" .git',          query:'intitle:"Index of" ".git"',             desc:'Exposed .git repos' },
+    { id:'di7', label:'intitle:"Index of" uploads',       query:'intitle:"Index of" uploads',            desc:'Exposed uploads directory' },
+    { id:'di8', label:'intitle:"Index of" config',        query:'intitle:"Index of" config',             desc:'Exposed config directories' },
   ]},
   { id:'database', name:'Database Exposure', dorks:[
     { id:'db1', label:'filetype:sql "INSERT INTO"',   query:'filetype:sql "INSERT INTO"',            desc:'SQL dumps with data' },
@@ -600,23 +617,6 @@ var CATS = [
     { id:'em6', label:'"Stack trace" exception',        query:'"Stack trace"',                        desc:'App stack traces' },
     { id:'em7', label:'"Microsoft OLE DB" error',       query:'"Microsoft OLE DB Provider" error',    desc:'ODBC error messages' },
     { id:'em8', label:'intitle:"500 Internal Server"',  query:'intitle:"500 Internal Server Error"',  desc:'Exposed 500 errors' },
-  ]},
-  { id:'url_params', name:'Vulnerable Parameters', dorks:[
-    { id:'up1',  label:'inurl:"?id="',           query:'inurl:"?id="',                              desc:'ID parameter (SQLi target)' },
-    { id:'up2',  label:'inurl:"?page="',         query:'inurl:"?page="',                            desc:'Page parameter (LFI/RFI)' },
-    { id:'up3',  label:'inurl:"?file="',         query:'inurl:"?file="',                            desc:'File parameter (LFI/RFI)' },
-    { id:'up4',  label:'inurl:"?cat="',          query:'inurl:"?cat="',                             desc:'Category parameter' },
-    { id:'up5',  label:'inurl:"?include="',      query:'inurl:"?include="',                         desc:'Include parameter (RFI)' },
-    { id:'up6',  label:'inurl:"?dir="',          query:'inurl:"?dir="',                             desc:'Directory traversal param' },
-    { id:'up7',  label:'inurl:"?path="',         query:'inurl:"?path="',                            desc:'Path traversal param' },
-    { id:'up8',  label:'inurl:"?cmd="',          query:'inurl:"?cmd="',                             desc:'Command injection param' },
-    { id:'up9',  label:'inurl:"?exec="',         query:'inurl:"?exec="',                            desc:'Exec parameter' },
-    { id:'up10', label:'inurl:"?search="',       query:'inurl:"?search="',                          desc:'Search param (XSS target)' },
-    { id:'up11', label:'inurl:"?q="|"?query="',  query:'inurl:"?q=" OR inurl:"?query="',            desc:'Query params' },
-    { id:'up12', label:'inurl:"?redirect="',     query:'inurl:"?redirect="',                        desc:'Open redirect param' },
-    { id:'up13', label:'inurl:"?url="',          query:'inurl:"?url="',                             desc:'URL param (open redirect)' },
-    { id:'up14', label:'inurl:"?token="|"?key="',query:'inurl:"?token=" OR inurl:"?key="',          desc:'Token/key in URL' },
-    { id:'up15', label:'inurl:".php?user="',     query:'inurl:".php?user="',                        desc:'User param in PHP' },
   ]},
   { id:'network_devices', name:'Network & IoT Devices', dorks:[
     { id:'nd1', label:'intitle:"RouterOS"',            query:'intitle:"RouterOS"',            desc:'MikroTik RouterOS' },
@@ -658,6 +658,14 @@ var CATS = [
     { id:'pd6', label:'"date of birth" filetype:xls',      query:'"date of birth" filetype:xls',               desc:'DOB in spreadsheets' },
     { id:'pd7', label:'"NPWP" OR "KTP" filetype:pdf',      query:'"NPWP" OR "KTP" filetype:pdf',               desc:'Indonesian ID documents' },
   ]},
+  { id:'git_svn', name:'Version Control Exposure', dorks:[
+    { id:'vc1', label:'inurl:/.git/config',        query:'inurl:"/.git/config"',        desc:'Git config files' },
+    { id:'vc2', label:'inurl:/.svn/entries',       query:'inurl:"/.svn/entries"',       desc:'SVN entries files' },
+    { id:'vc3', label:'inurl:/.DS_Store',          query:'inurl:"/.DS_Store"',          desc:'macOS DS_Store files' },
+    { id:'vc4', label:'intitle:"Index of" ".git"', query:'intitle:"Index of" ".git"',   desc:'Open .git directories' },
+    { id:'vc5', label:'filetype:env DB_PASSWORD',  query:'filetype:env "DB_PASSWORD"',  desc:'.env with DB password' },
+    { id:'vc6', label:'filetype:env "APP_SECRET"', query:'filetype:env "APP_SECRET"',   desc:'.env with app secret' },
+  ]},
   { id:'server_info', name:'Server & Infrastructure', dorks:[
     { id:'si1',  label:'inurl:server-status Apache',  query:'inurl:server-status "Apache"',    desc:'Apache server-status pages' },
     { id:'si2',  label:'intitle:"Apache Status"',     query:'intitle:"Apache Status"',         desc:'Apache status pages' },
@@ -670,14 +678,30 @@ var CATS = [
     { id:'si9',  label:'inurl:.htaccess',             query:'inurl:".htaccess"',               desc:'Exposed .htaccess files' },
     { id:'si10', label:'inurl:.htpasswd',             query:'inurl:".htpasswd"',               desc:'Exposed .htpasswd files' },
   ]},
-  { id:'git_svn', name:'Version Control Exposure', dorks:[
-    { id:'vc1', label:'inurl:/.git/config',        query:'inurl:"/.git/config"',        desc:'Git config files' },
-    { id:'vc2', label:'inurl:/.svn/entries',       query:'inurl:"/.svn/entries"',       desc:'SVN entries files' },
-    { id:'vc3', label:'inurl:/.DS_Store',          query:'inurl:"/.DS_Store"',          desc:'macOS DS_Store files' },
-    { id:'vc4', label:'intitle:"Index of" ".git"', query:'intitle:"Index of" ".git"',   desc:'Open .git directories' },
-    { id:'vc5', label:'filetype:env DB_PASSWORD',  query:'filetype:env "DB_PASSWORD"',  desc:'.env with DB password' },
-    { id:'vc6', label:'filetype:env "APP_SECRET"', query:'filetype:env "APP_SECRET"',   desc:'.env with app secret' },
-  ]},
+  { id: 'api_hacking_collection', name: 'API Hacking & Sensitive Data', dorks: [
+    /* API Documentation */
+    { id: 'api1', label: 'Swagger UI Dashboard', query: 'intitle:"Swagger UI" inurl:"/swagger-ui/"', desc: 'Exposed Swagger UI interfaces' },
+    { id: 'api2', label: 'OpenAPI Spec (JSON)', query: 'filetype:json "openapi": "3.0.0"', desc: 'OpenAPI/Swagger JSON definitions' },
+    { id: 'api3', label: 'OpenAPI Spec (YAML)', query: 'filetype:yaml "openapi": "3.0.0"', desc: 'OpenAPI/Swagger YAML definitions' },
+    { id: 'api4', label: 'Postman Collections', query: 'filetype:json "postman_collection" "info"', desc: 'Exported Postman API collections' },
+    { id: 'api5', label: 'ReDoc Documentation', query: 'intitle:"ReDoc" inurl:api', desc: 'ReDoc generated documentation' },
+    
+    /* Secrets & Config */
+    { id: 'api6', label: '.env Files (Keys)', query: 'ext:env "API_KEY=" | "STRIPE_KEY=" | "AWS_SECRET_ACCESS_KEY="', desc: 'Environment configuration files' },
+    { id: 'api7', label: 'Firebase Configuration', query: 'filetype:js "apiKey" "authDomain" "projectId"', desc: 'Firebase web configuration snippets' },
+    { id: 'api8', label: 'Config JSON Secrets', query: 'filetype:json inurl:config "api_key" | "secret"', desc: 'JSON files containing API credentials' },
+    { id: 'api9', label: 'YAML API Tokens', query: 'ext:yaml "api_key" | "access_token" | "bearer"', desc: 'YAML configuration with tokens' },
+    
+    /* Endpoints & Directory Listing */
+    { id: 'api10', label: 'Index of /api/v1/', query: 'intitle:"index of" inurl:/api/v1/', desc: 'Directory listing for API v1' },
+    { id: 'api11', label: 'Index of /api/bin/', query: 'intitle:"index of" "api/bin" | "api/src"', desc: 'Directory listing for API source/binary' },
+    { id: 'api12', label: 'GraphQL Interface', query: 'inurl:graphql intitle:"index of" | "Query Anywhere"', desc: 'Exposed GraphQL interfaces' },
+    
+    /* Logs & Debugging */
+    { id: 'api13', label: 'Bearer Token Logs', query: 'ext:log "Authorization: Bearer" | "access_token"', desc: 'Access logs containing auth tokens' },
+    { id: 'api14', label: 'API Error/Debug Logs', query: 'intitle:"index of" "error.log" | "debug.log" api', desc: 'Raw log files from API services' },
+    { id: 'api15', label: 'S3 API Buckets', query: 'site:s3.amazonaws.com "api" "access_key"', desc: 'AWS S3 buckets containing API info' }
+  ]}
 ];
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
