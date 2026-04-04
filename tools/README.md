@@ -1,3 +1,7 @@
+---
+title: Tools
+---
+
 # List of tools
 - ### [Crontab Editor](https://nmwafa.github.io/tools/cron)
 - ### [Konverter Basis Bilangan](https://nmwafa.github.io/tools/konverter-bilangan)
