@@ -402,7 +402,7 @@
             placeholder="e.g. evil.com  then press Enter to add more..." autocomplete="off" spellcheck="false">
         </div>
         <p class="domain-hint">
-          Enter any domain including TLD (e.g. <code>evil.com</code>, <code>evil.co.id</code>).
+          Enter any domain (e.g. <code>evil.com</code>, <code>evil.co.id</code>).
           Multiple targets are automatically joined with OR logic. Leave empty to run dorks globally.
         </p>
       </div>
@@ -480,18 +480,25 @@
           <div class="search-info">
             <div class="search-info-item">Operators:&nbsp;<span class="search-info-val" id="infoCount">0</span></div>
             <div class="search-info-item">Query length:&nbsp;<span class="search-info-val" id="infoLen">0</span>&nbsp;chars</div>
-          </div>
-          
-          <div class="action-buttons">
-            <button class="btn-outline" id="copyBtn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-              Copy
-            </button>
-            <button class="btn-search" id="searchBtn">
+        </div>
+        
+        <div class="action-buttons" style="flex-direction: column;">
+          <button class="btn-search" id="searchBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            Search on Google
+          </button>
+          <div style="display: flex; gap: 10px; width: 100%;">
+            <button class="btn-outline" id="searchDdgBtn">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
               </svg>
-              Search
+              DuckDuckGo
+            </button>
+            <button class="btn-outline" id="copyBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              Copy Dork
             </button>
           </div>
         </div>
@@ -501,12 +508,12 @@
 
 </main>
 
-<footer>Vibe coded with Claude and Gemini &mdash; For authorized security research only. Use responsibly.</footer>
+<footer>Vibe coded with Claude and Gemini &mdash; For authorized security research.</footer>
 
 <!-- Toast Element -->
 <div id="toast" class="toast">
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-  Query copied to clipboard!
+  Dork copied to clipboard!
 </div>
 
 <script>
@@ -1014,6 +1021,12 @@ function runSearch() {
   window.open('https://www.google.com/search?q=' + encodeURIComponent(q), '_blank', 'noopener,noreferrer');
 }
 
+function runSearchDdg() {
+  var q = document.getElementById('previewTextarea').value.trim();
+  if (!q) { alert('Please configure a domain or select dork operators first.'); return; }
+  window.open('https://duckduckgo.com/?q=' + encodeURIComponent(q), '_blank', 'noopener,noreferrer');
+}
+
 function copyQuery() {
   var q = document.getElementById('previewTextarea').value.trim();
   if (!q) return;
@@ -1102,6 +1115,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Search & Copy
   document.getElementById('searchBtn').addEventListener('click', runSearch);
+  document.getElementById('searchDdgBtn').addEventListener('click', runSearchDdg);
   document.getElementById('copyBtn').addEventListener('click', copyQuery);
 
   syncMeta();
