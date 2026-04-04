@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Dork Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f4f4;
+    --surface: #ffffff;
+    --surface-2: #ececec;
+    --surface-3: #e2e2e2;
+    --border: #d0d0d0;
+    --border-strong: #b0b0b0;
+    --text: #1a1a1a;
+    --text-2: #555;
+    --text-3: #888;
+    --accent: #1a1a1a;
+    --accent-hover: #333;
+    --danger: #c0392b;
+    --warning: #f39c12;
+    --success: #27ae60;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06);
+    --radius: 6px;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --transition: all 0.2s ease;
+  }
+
+  [data-theme="dark"] {
+    --bg: #121212;
+    --surface: #1e1e1e;
+    --surface-2: #2a2a2a;
+    --surface-3: #3a3a3a;
+    --border: #333333;
+    --border-strong: #555555;
+    --text: #f0f0f0;
+    --text-2: #bbbbbb;
+    --text-3: #777777;
+    --accent: #ffffff;
+    --accent-hover: #dddddd;
+    --danger: #e74c3c;
+    --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.2);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+    transition: background-color var(--transition), color var(--transition);
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: background-color var(--transition), border-color var(--transition);
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--mono); font-weight: 600; font-size: 15px;
+  }
+  .logo-icon {
+    width: 28px; height: 28px; background: var(--accent);
+    border-radius: 4px; display: flex; align-items: center; justify-content: center;
+    color: var(--surface); font-size: 13px; font-weight: 700;
+  }
+  .header-actions { display: flex; align-items: center; gap: 12px; }
+  .header-tag {
+    font-family: var(--mono); font-size: 11px; color: var(--text-3);
+    background: var(--surface-2); border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 20px; letter-spacing: 0.5px;
+    display: none;
+  }
+  @media (min-width: 600px) { .header-tag { display: block; } }
+
+  /* LAYOUT - TWO COLUMNS */
+  .main {
+    max-width: 1200px; margin: 0 auto;
+    padding: 28px 24px 64px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .left-panel {
+    display: flex; flex-direction: column; gap: 18px;
+  }
+
+  .right-panel {
+    display: flex; flex-direction: column; gap: 18px;
+    position: sticky; top: 80px;
+  }
+
+  /* HINT */
+  .hint {
+    grid-column: 1 / -1; /* Span across all columns */
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--border-strong);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 10px 14px; font-size: 12px; color: var(--text-2);
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .hint-icon { flex-shrink: 0; font-style: normal; opacity: 0.5; }
+
+  /* CARD */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+    transition: background-color var(--transition), border-color var(--transition);
+  }
+  .card-header {
+    padding: 12px 18px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px; background: var(--surface-2);
+    flex-wrap: wrap;
+  }
+  .card-header-icon {
+    width: 20px; height: 20px; background: var(--accent); border-radius: 3px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--surface); font-size: 10px; font-family: var(--mono); font-weight: 700; flex-shrink: 0;
+  }
+  .card-title {
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.8px; text-transform: uppercase; color: var(--text); flex: 1;
+    min-width: 120px;
+  }
+  .card-body { padding: 18px; }
+
+  /* FIELDS */
+  .field-label {
+    font-family: var(--mono); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.7px; text-transform: uppercase; color: var(--text-3);
+    display: block; margin-bottom: 6px;
+  }
+  .field-input {
+    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 8px 12px; font-family: var(--mono); font-size: 13px; color: var(--text);
+    outline: none; transition: border-color 0.15s, box-shadow 0.15s, background-color var(--transition); width: 100%;
+  }
+  .field-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(128,128,128,0.15); }
+  .field-input::placeholder { color: var(--text-3); }
+  .field-select {
+    padding: 4px 8px; font-family: var(--mono); font-size: 11px;
+    background: var(--surface); color: var(--text); border: 1px solid var(--border);
+    border-radius: 4px; outline: none; cursor: pointer;
+  }
+
+  /* DOMAIN TAG INPUT */
+  .domain-tags-wrap {
+    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 6px 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    cursor: text; transition: border-color 0.15s, box-shadow 0.15s; min-height: 42px;
+  }
+  .domain-tags-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(128,128,128,0.15); }
+  .domain-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--accent); color: var(--surface); border-radius: 4px;
+    padding: 3px 8px 3px 10px; font-family: var(--mono); font-size: 12px; white-space: nowrap;
+    animation: fadeIn 0.2s ease;
+  }
+  .domain-tag span { overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+  .domain-tag-rm {
+    cursor: pointer; opacity: 0.7; font-size: 13px; line-height: 1;
+    padding: 0 1px; background: none; border: none; color: var(--surface); flex-shrink: 0;
+  }
+  .domain-tag-rm:hover { opacity: 1; }
+  .domain-tags-input {
+    background: none; border: none; outline: none; font-family: var(--mono);
+    font-size: 13px; color: var(--text); flex: 1; min-width: 180px; padding: 2px 4px;
+  }
+  .domain-tags-input::placeholder { color: var(--text-3); }
+  .domain-hint { font-size: 11px; color: var(--text-3); margin-top: 6px; font-family: var(--mono); }
+  .domain-hint code {
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 3px; padding: 0 4px; font-size: 11px; color: var(--text-2);
+  }
+
+  /* BUTTONS */
+  .btn-sm {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 7px 13px; font-family: var(--mono); font-size: 12px; cursor: pointer;
+    transition: all 0.12s; color: var(--text); white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-sm:hover { background: var(--surface-3); border-color: var(--border-strong); }
+  .btn-link {
+    background: none; border: none; font-family: var(--mono); font-size: 10px;
+    color: var(--text-3); cursor: pointer; padding: 1px 4px; border-radius: 2px;
+    text-decoration: underline; text-underline-offset: 2px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .btn-link:hover { color: var(--text); }
+  .btn-danger { color: var(--danger); }
+  .btn-danger:hover { color: #a93226; }
+
+  /* DORK GRID */
+  .dork-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+  .dork-category { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: border-color 0.2s; }
+  .dork-category.has-checked { border-color: var(--border-strong); box-shadow: 0 0 0 1px var(--border-strong); }
+  .dork-cat-header {
+    background: var(--surface-2); border-bottom: 1px solid var(--border);
+    padding: 8px 12px; display: flex; align-items: center; gap: 6px;
+  }
+  .dork-cat-title {
+    font-family: var(--mono); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-2); flex: 1;
+  }
+  .dork-cat-count {
+    font-family: var(--mono); font-size: 10px; color: var(--text-3);
+    background: var(--surface-3); padding: 1px 6px; border-radius: 10px; border: 1px solid var(--border);
+  }
+  .dork-items { padding: 6px; display: flex; flex-direction: column; gap: 1px; }
+  .dork-item {
+    display: flex; align-items: flex-start; gap: 8px; padding: 5px 7px;
+    border-radius: 4px; cursor: pointer; user-select: none; transition: background-color 0.1s;
+  }
+  .dork-item:hover { background: var(--surface-2); }
+  .dork-item input[type="checkbox"] {
+    width: 13px; height: 13px; margin-top: 3px;
+    accent-color: var(--accent); cursor: pointer; flex-shrink: 0;
+  }
+  .dork-item-info { flex: 1; min-width: 0; }
+  .dork-item-label {
+    font-family: var(--mono); font-size: 11px; color: var(--text); font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .dork-item-desc { font-size: 11px; color: var(--text-3); line-height: 1.3; margin-top: 1px; }
+
+  /* CUSTOM DORKS */
+  .inline-row { display: flex; gap: 8px; align-items: center; }
+  .inline-row .field-input { flex: 1; }
+  .custom-dorks-list { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+  .custom-dork-tag {
+    display: flex; align-items: center; gap: 8px; background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: 4px;
+    padding: 5px 10px; font-family: var(--mono); font-size: 11px; color: var(--text);
+    animation: fadeIn 0.2s ease;
+  }
+  .custom-dork-tag .rm-btn {
+    margin-left: auto; cursor: pointer; color: var(--text-3); font-size: 14px;
+    line-height: 1; background: none; border: none; padding: 0 2px; border-radius: 2px; flex-shrink: 0;
+  }
+  .custom-dork-tag .rm-btn:hover { background: var(--surface-3); color: var(--danger); }
+
+  /* PREVIEW CARD */
+  .preview-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-lg); overflow: hidden;
+    position: relative;
+  }
+  .preview-header {
+    background: var(--surface-2); border-bottom: 1px solid var(--border);
+    padding: 10px 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .preview-header-title {
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-2); flex: 1;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .modified-badge {
+    display: none; background: var(--warning); color: #fff; font-size: 9px;
+    padding: 1px 5px; border-radius: 3px; font-weight: bold; letter-spacing: 0.5px;
+  }
+  .is-dirty .modified-badge { display: inline-block; }
+  
+  .preview-badge {
+    font-family: var(--mono); font-size: 10px; background: var(--surface-3);
+    border: 1px solid var(--border); color: var(--text-3); padding: 2px 8px; border-radius: 10px;
+  }
+  .preview-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .preview-textarea {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 14px; font-family: var(--mono);
+    font-size: 13px; color: var(--text); line-height: 1.7; resize: vertical;
+    min-height: 180px; outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .preview-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(128,128,128,0.15); }
+  .is-dirty .preview-textarea { border-color: var(--warning); border-left-width: 4px; }
+  
+  .preview-url-row { display: flex; align-items: flex-start; gap: 8px; }
+  .preview-url-label {
+    font-family: var(--mono); font-size: 10px; color: var(--text-3);
+    white-space: nowrap; letter-spacing: 0.5px; padding-top: 1px;
+  }
+  .preview-url-text { font-family: var(--mono); font-size: 10px; color: var(--text-3); word-break: break-all; }
+  .preview-note { font-size: 11px; color: var(--text-3); font-family: var(--mono); }
+
+  /* SEARCH ROW (SIDEBAR LAYOUT) */
+  .search-row {
+    display: flex; flex-direction: column; gap: 16px; align-items: stretch;
+  }
+  .search-info {
+    font-family: var(--mono); font-size: 11px; color: var(--text-3);
+    display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; flex: 1;
+  }
+  .search-info-item { display: flex; gap: 5px; }
+  .search-info-val { color: var(--text-2); font-weight: 600; }
+  
+  .action-buttons { display: flex; gap: 10px; width: 100%; }
+  .action-buttons button { flex: 1; justify-content: center; }
+  
+  .btn-search {
+    background: var(--accent); color: var(--surface); border: 1px solid var(--accent); 
+    border-radius: var(--radius); padding: 11px 16px; font-family: var(--mono); 
+    font-size: 13px; font-weight: 600; letter-spacing: 0.3px; cursor: pointer; 
+    transition: background 0.15s, transform 0.1s; display: flex; align-items: center; gap: 8px;
+  }
+  .btn-search:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn-search:active { transform: scale(0.98); }
+  
+  .btn-outline {
+    background: transparent; color: var(--text); border: 1px solid var(--border-strong);
+    border-radius: var(--radius); padding: 11px 16px; font-family: var(--mono);
+    font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-outline:hover { background: var(--surface-2); border-color: var(--text); }
+  .btn-outline:active { transform: scale(0.98); }
+
+  /* TOAST NOTIFICATION */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--accent); color: var(--surface);
+    padding: 12px 20px; border-radius: var(--radius);
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+    box-shadow: var(--shadow-lg); z-index: 1000;
+    transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  footer {
+    text-align: center; padding: 20px; font-family: var(--mono); font-size: 11px;
+    color: var(--text-3); border-top: 1px solid var(--border); background: var(--surface);
+    letter-spacing: 0.3px; transition: background-color var(--transition);
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* MOBILE RESPONSIVE */
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; padding: 14px 12px 48px; }
+    .header { padding: 0 16px; }
+    .dork-grid { grid-template-columns: 1fr; }
+    .right-panel { position: relative; top: 0; }
+    .action-buttons { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-icon">W</div>
+    maswafa
+  </div>
+  <div class="header-actions">
+    <span class="header-tag">GOOGLE DORK GENERATOR</span>
+    <button id="themeToggle" class="btn-sm" title="Toggle Dark/Light Mode">
+      <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+    </button>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="hint">
+    <i class="hint-icon">&#9888;</i>
+    <div>This tool generates Google search operators for legitimate security research, penetration testing, and OSINT. Use responsibly and only on systems you have authorization to test. All queries open in <strong>Google Search</strong> — no direct server requests are made.</div>
+  </div>
+
+  <!-- LEFT PANEL: Controls & Selectors -->
+  <div class="left-panel">
+    <!-- 01 TARGET DOMAINS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon">01</div>
+        <span class="card-title">Target Domains</span>
+        <button class="btn-link btn-danger" id="btnClearDomains" style="margin-left: auto;">clear all</button>
+      </div>
+      <div class="card-body">
+        <label class="field-label" for="domainTagInput">Domains — press Enter or comma to add each one</label>
+        <div class="domain-tags-wrap" id="domainTagsWrap">
+          <input class="domain-tags-input" id="domainTagInput" type="text"
+            placeholder="e.g. evil.com  then press Enter to add more..." autocomplete="off" spellcheck="false">
+        </div>
+        <p class="domain-hint">
+          Enter any domain including TLD (e.g. <code>evil.com</code>, <code>evil.co.id</code>).
+          Multiple targets are automatically joined with OR logic. Leave empty to run dorks globally.
+        </p>
+      </div>
+    </div>
+
+    <!-- 02 DORK SELECTION -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon">02</div>
+        <span class="card-title">Dork Operators</span>
+        
+        <div style="display: flex; align-items: center; gap: 8px; margin-left: auto; margin-right: 12px;">
+          <label for="combineMode" style="font-family: var(--mono); font-size: 10px; color: var(--text-3); text-transform: uppercase;">Combine with:</label>
+          <select id="combineMode" class="field-select">
+            <option value="AND">AND (Space)</option>
+            <option value="OR">OR ( | )</option>
+          </select>
+        </div>
+
+        <button class="btn-link" id="btnSelectAll">select all</button>
+        <button class="btn-link btn-danger" id="btnSelectNone">clear</button>
+      </div>
+      <div class="card-body">
+        <div class="dork-grid" id="dorkGrid"></div>
+      </div>
+    </div>
+
+    <!-- 03 CUSTOM DORKS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon">03</div>
+        <span class="card-title">Custom Operators</span>
+      </div>
+      <div class="card-body">
+        <p style="font-size:12px; color:var(--text-3); margin-bottom:10px;">
+          Add any operator not listed above. Press <code style="font-family:var(--mono); background:var(--surface-2); border:1px solid var(--border); padding:0 4px; border-radius:3px; font-size:11px;">Enter</code> or click Add.
+          Example: <code style="font-family:var(--mono); background:var(--surface-2); border:1px solid var(--border); padding:0 4px; border-radius:3px; font-size:11px;">inurl:wp-admin filetype:php</code>
+        </p>
+        <div class="inline-row">
+          <input class="field-input" id="customDorkInput" type="text"
+            placeholder='inurl:wp-admin  OR  filetype:sql "password"' autocomplete="off" spellcheck="false">
+          <button class="btn-sm" id="btnAddCustomDork">+ Add</button>
+        </div>
+        <div class="custom-dorks-list" id="customDorksList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL: Sticky Preview & Search -->
+  <div class="right-panel">
+    <!-- LIVE PREVIEW -->
+    <div class="preview-card" id="previewContainer">
+      <div class="preview-header">
+        <span class="preview-header-title">
+          Live Query
+          <span class="modified-badge">MODIFIED</span>
+        </span>
+        <button class="btn-link btn-danger" id="btnResetPreview" title="Reset to auto-generated query" style="opacity:0.8; text-decoration:none; display:none;">&#8635; reset sync</button>
+      </div>
+      <div class="preview-body">
+        <textarea class="preview-textarea" id="previewTextarea"
+          placeholder="Configure targets and select dork operators above — the query will appear here and can be freely edited."></textarea>
+        <div class="preview-url-row">
+          <span class="preview-url-label">URL&nbsp;&rarr;</span>
+          <span class="preview-url-text" id="previewUrl">https://www.google.com/search?q=</span>
+        </div>
+        <p class="preview-note">&#9998; You can freely edit this query before searching. Modifying it will detach it from the auto-generator.</p>
+      </div>
+    </div>
+
+    <!-- SEARCH PANEL -->
+    <div class="card">
+      <div class="card-body">
+        <div class="search-row">
+          <div class="search-info">
+            <div class="search-info-item">Operators:&nbsp;<span class="search-info-val" id="infoCount">0</span></div>
+            <div class="search-info-item">Query length:&nbsp;<span class="search-info-val" id="infoLen">0</span>&nbsp;chars</div>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="btn-outline" id="copyBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              Copy
+            </button>
+            <button class="btn-search" id="searchBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              Search
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>Vibe coded with Claude and Gemini &mdash; For authorized security research only. Use responsibly.</footer>
+
+<!-- Toast Element -->
+<div id="toast" class="toast">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+  Query copied to clipboard!
+</div>
+
+<script>
+'use strict';
+
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+var CATS = [
+  { id:'sensitive_files', name:'Sensitive Files', dorks:[
+    { id:'sf1',  label:'filetype:pdf',            query:'filetype:pdf',                          desc:'Exposed PDF documents' },
+    { id:'sf2',  label:'filetype:doc|docx',        query:'filetype:doc OR filetype:docx',         desc:'Word documents' },
+    { id:'sf3',  label:'filetype:xls|xlsx',        query:'filetype:xls OR filetype:xlsx',         desc:'Excel spreadsheets' },
+    { id:'sf4',  label:'filetype:csv',             query:'filetype:csv',                          desc:'CSV data files' },
+    { id:'sf5',  label:'filetype:txt',             query:'filetype:txt',                          desc:'Plain text files' },
+    { id:'sf6',  label:'filetype:log',             query:'filetype:log',                          desc:'Log files' },
+    { id:'sf7',  label:'filetype:sql',             query:'filetype:sql',                          desc:'SQL database dumps' },
+    { id:'sf8',  label:'filetype:env',             query:'filetype:env',                          desc:'.env config files' },
+    { id:'sf9',  label:'filetype:bak|backup',      query:'filetype:bak OR filetype:backup',       desc:'Backup files' },
+    { id:'sf10', label:'filetype:conf|config',     query:'filetype:conf OR filetype:config',      desc:'Config files' },
+    { id:'sf11', label:'filetype:xml',             query:'filetype:xml',                          desc:'XML files' },
+    { id:'sf12', label:'filetype:json',            query:'filetype:json',                         desc:'JSON data files' },
+    { id:'sf13', label:'filetype:yaml|yml',        query:'filetype:yaml OR filetype:yml',         desc:'YAML config files' },
+    { id:'sf14', label:'filetype:ini',             query:'filetype:ini',                          desc:'INI configuration files' },
+    { id:'sf15', label:'filetype:php',             query:'filetype:php',                          desc:'PHP source files' },
+    { id:'sf16', label:'filetype:asp|aspx',        query:'filetype:asp OR filetype:aspx',         desc:'ASP/ASPX pages' },
+    { id:'sf17', label:'filetype:jsp',             query:'filetype:jsp',                          desc:'JSP pages' },
+    { id:'sf18', label:'filetype:sh',              query:'filetype:sh',                           desc:'Shell scripts' },
+    { id:'sf19', label:'filetype:py',              query:'filetype:py',                           desc:'Python source files' },
+    { id:'sf20', label:'filetype:zip|tar|gz',      query:'filetype:zip OR filetype:tar OR filetype:gz', desc:'Archive files' },
+  ]},
+  { id:'credentials', name:'Credentials & Secrets', dorks:[
+    { id:'cr1',  label:'"password" filetype:txt',      query:'"password" filetype:txt',          desc:'Passwords in text files' },
+    { id:'cr2',  label:'"password" filetype:log',      query:'"password" filetype:log',          desc:'Passwords in log files' },
+    { id:'cr3',  label:'"username" "password"',        query:'"username" "password"',            desc:'Credential pairs' },
+    { id:'cr4',  label:'"db_password"|"db_pass"',      query:'"db_password" OR "db_pass"',       desc:'Database passwords' },
+    { id:'cr5',  label:'"api_key"|"apikey"',           query:'"api_key" OR "apikey"',            desc:'API keys exposed' },
+    { id:'cr6',  label:'"secret_key"|"secret"',        query:'"secret_key" OR "secret"',         desc:'Secret keys' },
+    { id:'cr7',  label:'"access_token"',               query:'"access_token"',                   desc:'OAuth/access tokens' },
+    { id:'cr8',  label:'"BEGIN RSA PRIVATE KEY"',      query:'"BEGIN RSA PRIVATE KEY"',          desc:'RSA private keys' },
+    { id:'cr9',  label:'"BEGIN PRIVATE KEY"',          query:'"BEGIN PRIVATE KEY"',              desc:'Private key files' },
+    { id:'cr10', label:'"Authorization: Bearer"',      query:'"Authorization: Bearer"',          desc:'Bearer tokens' },
+    { id:'cr11', label:'intext:"default password"',    query:'intext:"default password"',        desc:'Default credential pages' },
+    { id:'cr12', label:'"smtp_password"|"mail_pass"',  query:'"smtp_password" OR "mail_pass"',   desc:'Mail server passwords' },
+  ]},
+  { id:'directories', name:'Open Directories', dorks:[
+    { id:'di1', label:'intitle:"Index of /"',             query:'intitle:"Index of /"',                  desc:'Apache directory listing' },
+    { id:'di2', label:'intitle:"Index of" "parent dir"',  query:'intitle:"Index of" "parent directory"', desc:'Directory index with parent' },
+    { id:'di3', label:'intitle:"Index of" passwords',     query:'intitle:"Index of" passwords',          desc:'Password file directories' },
+    { id:'di4', label:'intitle:"Index of" backup',        query:'intitle:"Index of" backup',             desc:'Backup file directories' },
+    { id:'di5', label:'intitle:"Directory listing for"',  query:'intitle:"Directory listing for"',       desc:'Jetty/Tomcat listing' },
+    { id:'di6', label:'intitle:"Index of" .git',          query:'intitle:"Index of" ".git"',             desc:'Exposed .git repos' },
+    { id:'di7', label:'intitle:"Index of" uploads',       query:'intitle:"Index of" uploads',            desc:'Exposed uploads directory' },
+    { id:'di8', label:'intitle:"Index of" config',        query:'intitle:"Index of" config',             desc:'Exposed config directories' },
+  ]},
+  { id:'login_panels', name:'Login & Admin Panels', dorks:[
+    { id:'lp1',  label:'inurl:admin inurl:login',     query:'inurl:admin inurl:login',      desc:'Admin login pages' },
+    { id:'lp2',  label:'intitle:"admin panel"',       query:'intitle:"admin panel"',        desc:'Admin panel pages' },
+    { id:'lp3',  label:'inurl:wp-login.php',          query:'inurl:wp-login.php',           desc:'WordPress login pages' },
+    { id:'lp4',  label:'inurl:wp-admin',              query:'inurl:wp-admin',               desc:'WordPress admin pages' },
+    { id:'lp5',  label:'inurl:administrator',         query:'inurl:administrator',          desc:'Joomla/generic admin' },
+    { id:'lp6',  label:'inurl:phpmyadmin',            query:'inurl:phpmyadmin',             desc:'phpMyAdmin panels' },
+    { id:'lp7',  label:'inurl:cpanel',                query:'inurl:cpanel',                 desc:'cPanel hosting panels' },
+    { id:'lp8',  label:'intitle:"Login" inurl:admin', query:'intitle:"Login" inurl:admin',  desc:'Generic admin login' },
+    { id:'lp9',  label:'inurl:login.php',             query:'inurl:login.php',              desc:'PHP login pages' },
+    { id:'lp10', label:'inurl:signin inurl:admin',    query:'inurl:signin inurl:admin',     desc:'Admin sign-in pages' },
+    { id:'lp11', label:'intitle:"webmin"',            query:'intitle:"webmin"',             desc:'Webmin server control' },
+    { id:'lp12', label:'intitle:"Plesk"',             query:'intitle:"Plesk"',              desc:'Plesk hosting panels' },
+  ]},
+  { id:'database', name:'Database Exposure', dorks:[
+    { id:'db1', label:'filetype:sql "INSERT INTO"',   query:'filetype:sql "INSERT INTO"',            desc:'SQL dumps with data' },
+    { id:'db2', label:'filetype:sql "CREATE TABLE"',  query:'filetype:sql "CREATE TABLE"',           desc:'SQL schema files' },
+    { id:'db3', label:'inurl:phpinfo.php',            query:'inurl:phpinfo.php',                     desc:'phpinfo() pages' },
+    { id:'db4', label:'intitle:"phpMyAdmin"',         query:'intitle:"phpMyAdmin"',                  desc:'phpMyAdmin interfaces' },
+    { id:'db5', label:'"mysql_connect" filetype:php', query:'"mysql_connect" filetype:php',          desc:'PHP MySQL connections' },
+    { id:'db6', label:'inurl:db.php|database.php',    query:'inurl:db.php OR inurl:database.php',    desc:'Database config PHP files' },
+    { id:'db7', label:'filetype:sql "password"',      query:'filetype:sql "password"',               desc:'SQL files with passwords' },
+    { id:'db8', label:'inurl:adminer.php',            query:'inurl:adminer.php',                     desc:'Adminer DB interface' },
+  ]},
+  { id:'error_messages', name:'Error Messages', dorks:[
+    { id:'em1', label:'"Fatal error:" "on line"',       query:'"Fatal error:" "on line"',             desc:'PHP fatal errors' },
+    { id:'em2', label:'"Warning:" "on line"',           query:'"Warning:" "on line"',                 desc:'PHP warnings' },
+    { id:'em3', label:'"SQL syntax error"',             query:'"SQL syntax error"',                   desc:'SQL error messages' },
+    { id:'em4', label:'"mysql_fetch_array()"',          query:'"mysql_fetch_array()"',                desc:'MySQL function errors' },
+    { id:'em5', label:'"ORA-00933" Oracle',             query:'"ORA-00933"',                          desc:'Oracle DB errors' },
+    { id:'em6', label:'"Stack trace" exception',        query:'"Stack trace"',                        desc:'App stack traces' },
+    { id:'em7', label:'"Microsoft OLE DB" error',       query:'"Microsoft OLE DB Provider" error',    desc:'ODBC error messages' },
+    { id:'em8', label:'intitle:"500 Internal Server"',  query:'intitle:"500 Internal Server Error"',  desc:'Exposed 500 errors' },
+  ]},
+  { id:'url_params', name:'Vulnerable Parameters', dorks:[
+    { id:'up1',  label:'inurl:"?id="',           query:'inurl:"?id="',                              desc:'ID parameter (SQLi target)' },
+    { id:'up2',  label:'inurl:"?page="',         query:'inurl:"?page="',                            desc:'Page parameter (LFI/RFI)' },
+    { id:'up3',  label:'inurl:"?file="',         query:'inurl:"?file="',                            desc:'File parameter (LFI/RFI)' },
+    { id:'up4',  label:'inurl:"?cat="',          query:'inurl:"?cat="',                             desc:'Category parameter' },
+    { id:'up5',  label:'inurl:"?include="',      query:'inurl:"?include="',                         desc:'Include parameter (RFI)' },
+    { id:'up6',  label:'inurl:"?dir="',          query:'inurl:"?dir="',                             desc:'Directory traversal param' },
+    { id:'up7',  label:'inurl:"?path="',         query:'inurl:"?path="',                            desc:'Path traversal param' },
+    { id:'up8',  label:'inurl:"?cmd="',          query:'inurl:"?cmd="',                             desc:'Command injection param' },
+    { id:'up9',  label:'inurl:"?exec="',         query:'inurl:"?exec="',                            desc:'Exec parameter' },
+    { id:'up10', label:'inurl:"?search="',       query:'inurl:"?search="',                          desc:'Search param (XSS target)' },
+    { id:'up11', label:'inurl:"?q="|"?query="',  query:'inurl:"?q=" OR inurl:"?query="',            desc:'Query params' },
+    { id:'up12', label:'inurl:"?redirect="',     query:'inurl:"?redirect="',                        desc:'Open redirect param' },
+    { id:'up13', label:'inurl:"?url="',          query:'inurl:"?url="',                             desc:'URL param (open redirect)' },
+    { id:'up14', label:'inurl:"?token="|"?key="',query:'inurl:"?token=" OR inurl:"?key="',          desc:'Token/key in URL' },
+    { id:'up15', label:'inurl:".php?user="',     query:'inurl:".php?user="',                        desc:'User param in PHP' },
+  ]},
+  { id:'network_devices', name:'Network & IoT Devices', dorks:[
+    { id:'nd1', label:'intitle:"RouterOS"',            query:'intitle:"RouterOS"',            desc:'MikroTik RouterOS' },
+    { id:'nd2', label:'intitle:"Cisco" inurl:login',   query:'intitle:"Cisco" inurl:login',   desc:'Cisco device login' },
+    { id:'nd3', label:'intitle:"webcamXP"',            query:'intitle:"webcamXP"',            desc:'WebcamXP live cameras' },
+    { id:'nd4', label:'inurl:view/index.shtml',        query:'inurl:view/index.shtml',        desc:'IP camera streams' },
+    { id:'nd5', label:'intitle:"Live View / - AXIS"',  query:'intitle:"Live View / - AXIS"',  desc:'Axis network cameras' },
+    { id:'nd6', label:'intitle:"NETGEAR" inurl:login', query:'intitle:"NETGEAR" inurl:login', desc:'NETGEAR router login' },
+    { id:'nd7', label:'intitle:"Hikvision"',           query:'intitle:"Hikvision"',           desc:'Hikvision IP cameras' },
+    { id:'nd8', label:'intitle:"Home Router Login"',   query:'intitle:"Home Router Login"',   desc:'Generic router pages' },
+  ]},
+  { id:'cloud_storage', name:'Cloud & Storage', dorks:[
+    { id:'cs1', label:'site:s3.amazonaws.com',        query:'site:s3.amazonaws.com',        desc:'AWS S3 public buckets' },
+    { id:'cs2', label:'site:blob.core.windows.net',   query:'site:blob.core.windows.net',   desc:'Azure Blob storage' },
+    { id:'cs3', label:'site:storage.googleapis.com',  query:'site:storage.googleapis.com',  desc:'Google Cloud Storage' },
+    { id:'cs4', label:'site:drive.google.com',        query:'site:drive.google.com',        desc:'Public Google Drive files' },
+    { id:'cs5', label:'site:pastebin.com password',   query:'site:pastebin.com password',   desc:'Passwords on Pastebin' },
+    { id:'cs6', label:'site:github.com password',     query:'site:github.com password',     desc:'Passwords on GitHub' },
+    { id:'cs7', label:'site:trello.com inurl:board',  query:'site:trello.com inurl:board',  desc:'Public Trello boards' },
+    { id:'cs8', label:'site:docs.google.com',         query:'site:docs.google.com',         desc:'Public Google Docs' },
+  ]},
+  { id:'cms_version', name:'CMS & Tech Fingerprint', dorks:[
+    { id:'cv1', label:'inurl:wp-content',              query:'inurl:wp-content',              desc:'WordPress installations' },
+    { id:'cv2', label:'inurl:wp-includes',             query:'inurl:wp-includes',             desc:'WordPress core files' },
+    { id:'cv3', label:'intitle:"Joomla" inurl:index',  query:'intitle:"Joomla" inurl:index',  desc:'Joomla CMS sites' },
+    { id:'cv4', label:'inurl:/drupal/',                query:'inurl:"/drupal/"',              desc:'Drupal CMS sites' },
+    { id:'cv5', label:'intitle:"Laravel"',             query:'intitle:"Laravel"',             desc:'Laravel apps' },
+    { id:'cv6', label:'inurl:magento inurl:admin',     query:'inurl:magento inurl:admin',     desc:'Magento e-commerce admin' },
+    { id:'cv7', label:'inurl:prestashop',              query:'inurl:prestashop',              desc:'PrestaShop stores' },
+    { id:'cv8', label:'"Powered by vBulletin"',        query:'intext:"Powered by vBulletin"', desc:'vBulletin forums' },
+    { id:'cv9', label:'"struts" filetype:action',      query:'inurl:"struts" filetype:action',desc:'Apache Struts (CVE risk)' },
+  ]},
+  { id:'personal_data', name:'Personal & PII Data', dorks:[
+    { id:'pd1', label:'"email" "phone" filetype:xls',      query:'"email" "phone" filetype:xls',               desc:'Contact lists in Excel' },
+    { id:'pd2', label:'"@gmail.com" "password"',           query:'"@gmail.com" "password"',                    desc:'Gmail/password combos' },
+    { id:'pd3', label:'"SSN" filetype:xls',                query:'"SSN" OR "social security number" filetype:xls', desc:'Social security numbers' },
+    { id:'pd4', label:'"credit card" "cvv" filetype:txt',  query:'"credit card" "cvv" filetype:txt',           desc:'Credit card data' },
+    { id:'pd5', label:'"passport" filetype:pdf',           query:'"passport" filetype:pdf',                    desc:'Passport documents' },
+    { id:'pd6', label:'"date of birth" filetype:xls',      query:'"date of birth" filetype:xls',               desc:'DOB in spreadsheets' },
+    { id:'pd7', label:'"NPWP" OR "KTP" filetype:pdf',      query:'"NPWP" OR "KTP" filetype:pdf',               desc:'Indonesian ID documents' },
+  ]},
+  { id:'server_info', name:'Server & Infrastructure', dorks:[
+    { id:'si1',  label:'inurl:server-status Apache',  query:'inurl:server-status "Apache"',    desc:'Apache server-status pages' },
+    { id:'si2',  label:'intitle:"Apache Status"',     query:'intitle:"Apache Status"',         desc:'Apache status pages' },
+    { id:'si3',  label:'inurl:/nginx_status',         query:'inurl:"/nginx_status"',           desc:'Nginx status pages' },
+    { id:'si4',  label:'intitle:"phpinfo()"',         query:'intitle:"phpinfo()"',             desc:'PHP configuration dumps' },
+    { id:'si5',  label:'inurl:/actuator/env',         query:'inurl:"/actuator/env"',           desc:'Spring Boot actuator env' },
+    { id:'si6',  label:'inurl:/actuator/dump',        query:'inurl:"/actuator/dump"',          desc:'Spring Boot thread dump' },
+    { id:'si7',  label:'inurl:robots.txt',            query:'inurl:robots.txt',                desc:'Robots.txt (disallow map)' },
+    { id:'si8',  label:'inurl:sitemap.xml',           query:'inurl:sitemap.xml',               desc:'Sitemap for enumeration' },
+    { id:'si9',  label:'inurl:.htaccess',             query:'inurl:".htaccess"',               desc:'Exposed .htaccess files' },
+    { id:'si10', label:'inurl:.htpasswd',             query:'inurl:".htpasswd"',               desc:'Exposed .htpasswd files' },
+  ]},
+  { id:'git_svn', name:'Version Control Exposure', dorks:[
+    { id:'vc1', label:'inurl:/.git/config',        query:'inurl:"/.git/config"',        desc:'Git config files' },
+    { id:'vc2', label:'inurl:/.svn/entries',       query:'inurl:"/.svn/entries"',       desc:'SVN entries files' },
+    { id:'vc3', label:'inurl:/.DS_Store',          query:'inurl:"/.DS_Store"',          desc:'macOS DS_Store files' },
+    { id:'vc4', label:'intitle:"Index of" ".git"', query:'intitle:"Index of" ".git"',   desc:'Open .git directories' },
+    { id:'vc5', label:'filetype:env DB_PASSWORD',  query:'filetype:env "DB_PASSWORD"',  desc:'.env with DB password' },
+    { id:'vc6', label:'filetype:env "APP_SECRET"', query:'filetype:env "APP_SECRET"',   desc:'.env with app secret' },
+  ]},
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+var domains      = [];   // full domain strings
+var selectedKeys = {};   // { "id||query": true }
+var customDorks  = [];   // user-added strings
+var previewDirty = false;
+var combineMode  = 'AND'; // 'AND' or 'OR'
+
+// ─── THEME MANAGER ───────────────────────────────────────────────────────────
+function initTheme() {
+  const toggleBtn = document.getElementById('themeToggle');
+  const moonIcon = document.getElementById('moonIcon');
+  const sunIcon = document.getElementById('sunIcon');
+  
+  // Periksa preferensi sebelumnya
+  const savedTheme = localStorage.getItem('dorkcraft-theme') || 'light';
+  if (savedTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    moonIcon.style.display = 'none';
+    sunIcon.style.display = 'block';
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    if (currentTheme === 'dark') {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('dorkcraft-theme', 'light');
+      moonIcon.style.display = 'block';
+      sunIcon.style.display = 'none';
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('dorkcraft-theme', 'dark');
+      moonIcon.style.display = 'none';
+      sunIcon.style.display = 'block';
+    }
+  });
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function dorkKey(d) { return d.id + '||' + d.query; }
+
+// ─── DOMAIN TAGS ─────────────────────────────────────────────────────────────
+function normalizeDomain(raw) {
+  return raw.trim()
+    .replace(/^https?:\/\//i, '')
+    .replace(/\/.*$/, '')
+    .toLowerCase()
+    .replace(/^\./, '');
+}
+
+function addDomain(raw) {
+  var val = normalizeDomain(raw);
+  if (!val) return;
+  if (domains.indexOf(val) !== -1) return;
+  domains.push(val);
+  renderDomainTags();
+  autoUpdatePreview();
+}
+
+function removeDomain(idx) {
+  domains.splice(idx, 1);
+  renderDomainTags();
+  autoUpdatePreview();
+}
+
+function clearAllDomains() {
+  domains = [];
+  renderDomainTags();
+  autoUpdatePreview();
+}
+
+function renderDomainTags() {
+  var wrap  = document.getElementById('domainTagsWrap');
+  var input = document.getElementById('domainTagInput');
+  wrap.querySelectorAll('.domain-tag').forEach(function(el){ el.remove(); });
+  for (var i = 0; i < domains.length; i++) {
+    (function(idx){
+      var tag = document.createElement('span');
+      tag.className = 'domain-tag';
+      var sp = document.createElement('span');
+      sp.textContent = domains[idx];
+      var rm = document.createElement('button');
+      rm.className = 'domain-tag-rm';
+      rm.textContent = '\u2715';
+      rm.setAttribute('type', 'button');
+      rm.addEventListener('click', function(e){ e.preventDefault(); removeDomain(idx); });
+      tag.appendChild(sp);
+      tag.appendChild(rm);
+      wrap.insertBefore(tag, input);
+    })(i);
+  }
+}
+
+// ─── DORK GRID ───────────────────────────────────────────────────────────────
+function renderDorkGrid() {
+  var grid = document.getElementById('dorkGrid');
+  grid.innerHTML = '';
+
+  CATS.forEach(function(cat) {
+    var catEl = document.createElement('div');
+    catEl.className = 'dork-category';
+    catEl.setAttribute('data-cat-id', cat.id);
+
+    // header
+    var hdr = document.createElement('div');
+    hdr.className = 'dork-cat-header';
+
+    var title = document.createElement('span');
+    title.className = 'dork-cat-title';
+    title.textContent = cat.name;
+
+    var cnt = document.createElement('span');
+    cnt.className = 'dork-cat-count';
+    cnt.id = 'count-' + cat.id;
+    cnt.textContent = '0/' + cat.dorks.length;
+
+    var btnAll = document.createElement('button');
+    btnAll.className = 'btn-link';
+    btnAll.textContent = 'all';
+    btnAll.setAttribute('type', 'button');
+    btnAll.addEventListener('click', function(){ setCat(cat.id, true); });
+
+    var btnNone = document.createElement('button');
+    btnNone.className = 'btn-link';
+    btnNone.textContent = 'none';
+    btnNone.setAttribute('type', 'button');
+    btnNone.addEventListener('click', function(){ setCat(cat.id, false); });
+
+    hdr.appendChild(title);
+    hdr.appendChild(cnt);
+    hdr.appendChild(btnAll);
+    hdr.appendChild(btnNone);
+    catEl.appendChild(hdr);
+
+    // items
+    var itemsEl = document.createElement('div');
+    itemsEl.className = 'dork-items';
+
+    cat.dorks.forEach(function(d) {
+      var lbl = document.createElement('label');
+      lbl.className = 'dork-item';
+
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.setAttribute('data-id', d.id);
+      cb.setAttribute('data-query', d.query);
+      var key = dorkKey(d);
+      cb.addEventListener('change', function() {
+        if (cb.checked) selectedKeys[key] = true;
+        else delete selectedKeys[key];
+        updateCatCount(cat.id);
+        updateCatHighlight(cat.id);
+        autoUpdatePreview();
+      });
+
+      var info = document.createElement('div');
+      info.className = 'dork-item-info';
+
+      var lbEl = document.createElement('div');
+      lbEl.className = 'dork-item-label';
+      lbEl.title = d.query;
+      lbEl.textContent = d.label;
+
+      var dscEl = document.createElement('div');
+      dscEl.className = 'dork-item-desc';
+      dscEl.textContent = d.desc;
+
+      info.appendChild(lbEl);
+      info.appendChild(dscEl);
+      lbl.appendChild(cb);
+      lbl.appendChild(info);
+      itemsEl.appendChild(lbl);
+    });
+
+    catEl.appendChild(itemsEl);
+    grid.appendChild(catEl);
+  });
+}
+
+function updateCatCount(catId) {
+  var cat = CATS.find(function(c){ return c.id === catId; });
+  if (!cat) return;
+  var checked = cat.dorks.filter(function(d){ return selectedKeys[dorkKey(d)]; }).length;
+  var el = document.getElementById('count-' + catId);
+  if (el) el.textContent = checked + '/' + cat.dorks.length;
+}
+
+function updateCatHighlight(catId) {
+  var catEl = document.querySelector('[data-cat-id="' + catId + '"]');
+  if (!catEl) return;
+  var any = catEl.querySelector('input[type=checkbox]:checked');
+  if (any) catEl.classList.add('has-checked');
+  else catEl.classList.remove('has-checked');
+}
+
+function setCat(catId, select) {
+  var cat = CATS.find(function(c){ return c.id === catId; });
+  if (!cat) return;
+  cat.dorks.forEach(function(d) {
+    var key = dorkKey(d);
+    var cb = document.querySelector('input[data-id="' + d.id + '"]');
+    if (select) { selectedKeys[key] = true; if (cb) cb.checked = true; }
+    else { delete selectedKeys[key]; if (cb) cb.checked = false; }
+  });
+  updateCatCount(catId);
+  updateCatHighlight(catId);
+  autoUpdatePreview();
+}
+
+function selectAll()  { CATS.forEach(function(c){ setCat(c.id, true); }); }
+function selectNone() { CATS.forEach(function(c){ setCat(c.id, false); }); }
+
+// ─── CUSTOM DORKS ─────────────────────────────────────────────────────────────
+function addCustomDork() {
+  var input = document.getElementById('customDorkInput');
+  var val = input.value.trim();
+  if (!val) return;
+  customDorks.push(val);
+  input.value = '';
+  renderCustomDorks();
+  autoUpdatePreview();
+}
+
+function removeCustomDork(idx) {
+  customDorks.splice(idx, 1);
+  renderCustomDorks();
+  autoUpdatePreview();
+}
+
+function renderCustomDorks() {
+  var list = document.getElementById('customDorksList');
+  list.innerHTML = '';
+  customDorks.forEach(function(d, i) {
+    var row = document.createElement('div');
+    row.className = 'custom-dork-tag';
+    var sp = document.createElement('span');
+    sp.textContent = d;
+    var rm = document.createElement('button');
+    rm.className = 'rm-btn';
+    rm.setAttribute('type', 'button');
+    rm.textContent = '\u2715';
+    rm.title = 'Remove';
+    (function(idx){ rm.addEventListener('click', function(){ removeCustomDork(idx); }); })(i);
+    row.appendChild(sp);
+    row.appendChild(rm);
+    list.appendChild(row);
+  });
+}
+
+// ─── QUERY BUILDER ───────────────────────────────────────────────────────────
+function buildQuery() {
+  var parts = [];
+
+  // Ambil domain yang sudah disubmit (tags) + domain yang sedang diketik
+  var liveDomain = document.getElementById('domainTagInput').value.replace(/,$/, '').trim();
+  var allDomains = domains.slice();
+  if (liveDomain) {
+    var liveNorm = normalizeDomain(liveDomain);
+    if (liveNorm && allDomains.indexOf(liveNorm) === -1) {
+      allDomains.push(liveNorm);
+    }
+  }
+
+  // Kombinasi domain selalu menggunakan OR (|)
+  if (allDomains.length === 1) {
+    parts.push('site:' + allDomains[0]);
+  } else if (allDomains.length > 1) {
+    parts.push('(' + allDomains.map(function(d){ return 'site:' + d; }).join(' | ') + ')');
+  }
+
+  // Mengumpulkan operator yang dipilih
+  var ops = [];
+  Object.keys(selectedKeys).forEach(function(key) {
+    var q = key.split('||').slice(1).join('||');
+    if (q) ops.push(q);
+  });
+  
+  // Custom dorks digabungkan juga
+  customDorks.forEach(function(d){ if (d) ops.push(d); });
+
+  // Live custom dork yang sedang diketik
+  var liveCustomDork = document.getElementById('customDorkInput').value.trim();
+  if (liveCustomDork) {
+    ops.push(liveCustomDork);
+  }
+
+  if (ops.length > 0) {
+    var separator = combineMode === 'OR' ? ' | ' : ' ';
+    // Jika OR dipilih, gabungkan dengan | dan gunakan tanda kurung jika digabung dengan domain
+    if (combineMode === 'OR' && ops.length > 1 && allDomains.length > 0) {
+        parts.push('(' + ops.join(separator) + ')');
+    } else {
+        parts.push(ops.join(separator));
+    }
+  }
+
+  return parts.join(' ');
+}
+
+// ─── PREVIEW ─────────────────────────────────────────────────────────────────
+function countSelectedOps() {
+  var count = Object.keys(selectedKeys).length + customDorks.length;
+  if (document.getElementById('customDorkInput').value.trim()) count++;
+  return count;
+}
+
+function autoUpdatePreview() {
+  if (!previewDirty) {
+    document.getElementById('previewTextarea').value = buildQuery();
+    document.getElementById('previewContainer').classList.remove('is-dirty');
+    document.getElementById('btnResetPreview').style.display = 'none';
+  } else {
+    document.getElementById('previewContainer').classList.add('is-dirty');
+    document.getElementById('btnResetPreview').style.display = 'inline-block';
+  }
+  syncMeta();
+}
+
+function syncMeta() {
+  var q = document.getElementById('previewTextarea').value;
+  var ops = countSelectedOps();
+
+  document.getElementById('infoCount').textContent = ops;
+  document.getElementById('infoLen').textContent = q.length;
+  
+  var url = q ? 'https://www.google.com/search?q=' + encodeURIComponent(q) : 'https://www.google.com/search?q=';
+  document.getElementById('previewUrl').textContent = url.length > 140 ? url.slice(0, 137) + '\u2026' : url;
+}
+
+// ─── SEARCH & COPY ───────────────────────────────────────────────────────────
+function runSearch() {
+  var q = document.getElementById('previewTextarea').value.trim();
+  if (!q) { alert('Please configure a domain or select dork operators first.'); return; }
+  window.open('https://www.google.com/search?q=' + encodeURIComponent(q), '_blank', 'noopener,noreferrer');
+}
+
+function copyQuery() {
+  var q = document.getElementById('previewTextarea').value.trim();
+  if (!q) return;
+
+  const tempTextArea = document.createElement('textarea');
+  tempTextArea.value = q;
+  document.body.appendChild(tempTextArea);
+  tempTextArea.select();
+  
+  try {
+    document.execCommand('copy');
+    showToast();
+  } catch (err) {
+    console.error('Failed to copy text', err);
+  }
+  
+  document.body.removeChild(tempTextArea);
+}
+
+function showToast() {
+  var toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(function() {
+    toast.classList.remove('show');
+  }, 3000);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  initTheme();
+  renderDorkGrid();
+
+  // Domain input
+  var domainInput = document.getElementById('domainTagInput');
+  var domainWrap  = document.getElementById('domainTagsWrap');
+
+  domainInput.addEventListener('input', autoUpdatePreview);
+  domainInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      var raw = domainInput.value.replace(/,$/, '').trim();
+      if (raw) { addDomain(raw); domainInput.value = ''; }
+    } else if (e.key === 'Backspace' && domainInput.value === '' && domains.length > 0) {
+      removeDomain(domains.length - 1);
+    }
+  });
+  domainInput.addEventListener('blur', function() {
+    var raw = domainInput.value.replace(/,$/, '').trim();
+    if (raw) { addDomain(raw); domainInput.value = ''; }
+  });
+  domainWrap.addEventListener('click', function() { domainInput.focus(); });
+  
+  // Clear Domains
+  document.getElementById('btnClearDomains').addEventListener('click', clearAllDomains);
+
+  // Combine Mode Select
+  document.getElementById('combineMode').addEventListener('change', function(e) {
+    combineMode = e.target.value;
+    autoUpdatePreview();
+  });
+
+  // Dork controls
+  document.getElementById('btnSelectAll').addEventListener('click', selectAll);
+  document.getElementById('btnSelectNone').addEventListener('click', selectNone);
+
+  // Custom dork
+  var customDorkInput = document.getElementById('customDorkInput');
+  document.getElementById('btnAddCustomDork').addEventListener('click', addCustomDork);
+  customDorkInput.addEventListener('input', autoUpdatePreview);
+  customDorkInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); addCustomDork(); }
+  });
+
+  // Preview textarea
+  var ta = document.getElementById('previewTextarea');
+  ta.addEventListener('input', function() {
+    previewDirty = true;
+    autoUpdatePreview();
+  });
+
+  // Reset button
+  document.getElementById('btnResetPreview').addEventListener('click', function() {
+    previewDirty = false;
+    autoUpdatePreview();
+  });
+
+  // Search & Copy
+  document.getElementById('searchBtn').addEventListener('click', runSearch);
+  document.getElementById('copyBtn').addEventListener('click', copyQuery);
+
+  syncMeta();
+});
+</script>
+</body>
+</html>
