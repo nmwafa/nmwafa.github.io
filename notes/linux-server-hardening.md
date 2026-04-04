@@ -1,3 +1,7 @@
+---
+title: Linux Server Hardening
+---
+
 <h1 align="center">Linux Server Hardening</h1>
 
 ### Update & Patch Management
