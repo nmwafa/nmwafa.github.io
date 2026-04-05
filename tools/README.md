@@ -4,4 +4,4 @@
 - ### [URL Encoder / Decoder](https://nmwafa.github.io/tools/url-encoder-decoder)
 - ### [Password Generator](https://nmwafa.github.io/tools/password-generator)
 - ### [Google Dork Generator](https://nmwafa.github.io/tools/google-dork)
-- ###[OTX AlienVault URL Extractor](https://nmwafa.github.io/tools/otx-url-extractor)
+- ### [OTX AlienVault URL Extractor](https://nmwafa.github.io/tools/otx-url-extractor)
