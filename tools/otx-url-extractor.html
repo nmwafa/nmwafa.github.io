@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTX URL Extractor</title>
+    <style>
+        :root {
+            --bg-color: #f3f4f6; /* Gray 100 */
+            --card-bg: #ffffff;  /* White */
+            --text-main: #374151; /* Gray 700 */
+            --text-muted: #6b7280; /* Gray 500 */
+            --border-color: #d1d5db; /* Gray 300 */
+            --btn-bg: #4b5563; /* Gray 600 */
+            --btn-hover: #374151; /* Gray 700 */
+            --btn-secondary: #e5e7eb; /* Gray 200 */
+            --btn-secondary-hover: #d1d5db; /* Gray 300 */
+            --focus-ring: #9ca3af; /* Gray 400 */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--focus-ring);
+            box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.3);
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        button.primary {
+            background-color: var(--btn-bg);
+            color: white;
+        }
+
+        button.primary:hover:not(:disabled) {
+            background-color: var(--btn-hover);
+        }
+
+        button.secondary {
+            background-color: var(--btn-secondary);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        button.secondary:hover:not(:disabled) {
+            background-color: var(--btn-secondary-hover);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            min-height: 1.25rem; /* Reserve space */
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-family: monospace;
+            resize: vertical;
+            margin-bottom: 1rem;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: var(--focus-ring);
+        }
+
+        .action-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* Toast Message Box */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: var(--text-main);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 12px;
+            position: fixed;
+            z-index: 1;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.875rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .input-group {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+            .action-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>OTX URL Extractor</h1>
+        <p class="subtitle">Extract all unique URLs from AlienVault OTX for a specific domain.</p>
+
+        <div class="input-group">
+            <input type="text" id="domainInput" placeholder="Enter domain (e.g., www.adidas.com)" onkeypress="handleEnter(event)">
+            <button id="fetchBtn" class="primary" onclick="fetchUrls()">Extract URLs</button>
+        </div>
+
+        <div class="status" id="statusMsg">Ready to fetch.</div>
+
+        <textarea id="resultArea" readonly placeholder="Extracted URLs will appear here..."></textarea>
+
+        <div class="action-group">
+            <button id="copyBtn" class="secondary" onclick="copyUrls()" disabled>Copy All</button>
+            <button id="downloadBtn" class="secondary" onclick="downloadUrls()" disabled>Download TXT</button>
+        </div>
+    </div>
+
+    <!-- Custom Message Box (Toast) -->
+    <div id="toast">Message goes here</div>
+
+    <script>
+        let fetchedUrls = new Set();
+
+        // Allow pressing Enter to trigger fetch
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                fetchUrls();
+            }
+        }
+
+        // Display a Toast message
+        function showMessage(msg) {
+            const toast = document.getElementById("toast");
+            toast.textContent = msg;
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        async function fetchUrls() {
+            const domainInput = document.getElementById('domainInput').value.trim();
+            const statusMsg = document.getElementById('statusMsg');
+            const resultArea = document.getElementById('resultArea');
+            const fetchBtn = document.getElementById('fetchBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            if (!domainInput) {
+                showMessage("Please enter a valid domain.");
+                return;
+            }
+
+            // Reset UI and data
+            fetchedUrls.clear();
+            resultArea.value = '';
+            fetchBtn.disabled = true;
+            copyBtn.disabled = true;
+            downloadBtn.disabled = true;
+            
+            let page = 1;
+            const limit = 500;
+            let isFetching = true;
+
+            try {
+                while (isFetching) {
+                    statusMsg.textContent = `Fetching page ${page}... (Found ${fetchedUrls.size} unique URLs so far)`;
+                    
+                    // API Endpoint logic
+                    const apiUrl = `https://otx.alienvault.com/api/v1/indicators/hostname/${encodeURIComponent(domainInput)}/url_list?limit=${limit}&page=${page}`;
+                    
+                    const response = await fetch(apiUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+
+                    // Process response and add to Set to ensure uniqueness
+                    if (data.url_list && data.url_list.length > 0) {
+                        data.url_list.forEach(item => {
+                            if (item.url) {
+                                fetchedUrls.add(item.url);
+                            }
+                        });
+
+                        // Check if we reached the last page
+                        // Some APIs use 'has_next', others just return fewer items than the limit
+                        if (data.has_next === false || data.url_list.length < limit) {
+                            isFetching = false;
+                        } else {
+                            page++;
+                        }
+                    } else {
+                        // Empty url_list array means no more data
+                        isFetching = false;
+                    }
+                }
+
+                // Finalize output
+                if (fetchedUrls.size > 0) {
+                    const sortedUrls = Array.from(fetchedUrls).sort();
+                    resultArea.value = sortedUrls.join('\n');
+                    statusMsg.textContent = `Success! Extracted ${fetchedUrls.size} unique URLs.`;
+                    copyBtn.disabled = false;
+                    downloadBtn.disabled = false;
+                } else {
+                    statusMsg.textContent = "No URLs found for this domain.";
+                }
+
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                statusMsg.textContent = `Error: ${error.message}`;
+                showMessage("Failed to fetch data. Check console or CORS policy.");
+            } finally {
+                fetchBtn.disabled = false;
+            }
+        }
+
+        function copyUrls() {
+            const resultArea = document.getElementById('resultArea');
+            if (resultArea.value.length === 0) return;
+
+            // Select the text field
+            resultArea.select();
+            resultArea.setSelectionRange(0, 9999999); // For mobile devices
+
+            try {
+                // Execute the copy command
+                document.execCommand('copy');
+                showMessage("URLs copied to clipboard!");
+            } catch (err) {
+                showMessage("Failed to copy URLs.");
+            }
+            
+            // Unselect the text to keep UI clean
+            window.getSelection().removeAllRanges();
+        }
+
+        function downloadUrls() {
+            const textToSave = document.getElementById('resultArea').value;
+            if (!textToSave) return;
+
+            const domain = document.getElementById('domainInput').value.trim();
+            const fileName = `${domain}_urls.txt`;
+
+            // Create a Blob and generate a URL
+            const blob = new Blob([textToSave], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+
+            // Create an anchor tag, trigger click, and remove it
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            
+            // Clean up
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showMessage(`Downloading ${fileName}...`);
+        }
+    </script>
+</body>
+</html>
