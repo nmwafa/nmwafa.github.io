@@ -254,6 +254,7 @@
             },
             tools: () => {
                 window.open(toolsUrl, '_self');
+                return '';
             },
             contact: () => {
                 return `
@@ -279,20 +280,25 @@
             if (e.key === 'Enter' && !commandInput.disabled) {
                 commandInput.disabled = true;
                 const fullCommand = commandInput.value.trim();
+                
+                // Selalu buat dan tampilkan baris prompt baru (meskipun input kosong)
+                const promptLine = document.createElement('div');
+                promptLine.innerHTML = `
+                    <div class="flex">
+                        <div class="flex-shrink-0 mr-2 font-bold">
+                            <span class="text-light-green dark:text-dark-green">root@localhost</span><span class="text-light-fg dark:text-dark-fg">:</span><span class="text-light-blue dark:text-dark-blue">~</span><span class="text-light-fg dark:text-dark-fg">#</span>
+                        </div>
+                        <div class="flex-grow break-all">${fullCommand}</div>
+                    </div>`;
+                output.appendChild(promptLine);
+                
+                // Reset input
+                commandInput.value = '';
+                inputTextDisplay.textContent = '';
+
+                // Eksekusi pencarian perintah hanya jika ada teks
                 if (fullCommand) {
                     const [command, ...args] = fullCommand.split(' ');
-                                        
-                    const promptLine = document.createElement('div');
-                    promptLine.innerHTML = `
-                        <div class="flex">
-                            <div class="flex-shrink-0 mr-2">
-                                <span class="text-light-green dark:text-dark-green">root@localhost</span><span class="text-light-fg dark:text-dark-fg">:</span><span class="text-light-blue dark:text-dark-blue">~</span><span class="text-light-fg dark:text-dark-fg">#</span>
-                            </div>
-                            <div class="flex-grow break-all">${fullCommand}</div>
-                        </div>`;
-                    output.appendChild(promptLine);
-                    commandInput.value = '';
-                    inputTextDisplay.textContent = '';
 
                     const resultDiv = document.createElement('div');
                     output.appendChild(resultDiv);
@@ -301,11 +307,12 @@
                         const result = commands[command](args);
                         resultDiv.innerHTML = result;
                     } else {
-                        resultDiv.innerHTML = `<p class="text-light-red dark:text-dark-red">${command}: command not found!<br>Type 'help' to see the list of commands.</p>`;
+                        resultDiv.innerHTML = `<p class="text-light-red dark:text-dark-red font-bold">${command}: command not found!<br>Type 'help' to see the list of commands.</p>`;
                     }
-                                        
-                    terminalBody.scrollTop = terminalBody.scrollHeight;
                 }
+                                    
+                // Scroll ke bawah & kembalikan fokus
+                terminalBody.scrollTop = terminalBody.scrollHeight;
                 commandInput.disabled = false;
                 commandInput.focus();
             }
