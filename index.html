@@ -177,7 +177,6 @@
         const fsIconExpand = document.getElementById('fs-icon-expand');
         const fsIconCompress = document.getElementById('fs-icon-compress');
 
-        // --- Data Mock untuk Blog dan Proyek ---
         const blogPosts = {
             '1': { title: 'Lagi browsing ketemu CAPTCHA? Awas palsu!!!', url: 'https://medium.com/@nmwafa/lagi-browsing-ketemu-captcha-awas-palsu-c90586326b86' },
             '2': { title: 'Kenalan dengan GNS3', url: 'https://medium.com/@nmwafa/kenalan-dengan-gns3-29c227e07d0d' },
@@ -194,7 +193,8 @@
 
         const certUrl = 'https://drive.google.com/drive/folders/1LydeHP-hpuWUZEipSZV-B0h8dJloc89W?usp=sharing';
 
-        // --- Fungsi-fungsi Perintah ---
+        const toolsUrl = 'https://nmwafa.github.io/tools/';
+
         const commands = {
             help: () => {
                 return `
@@ -202,8 +202,9 @@
                     <ul class="list-inside list-disc">
                         <li><span class="text-light-green dark:text-dark-green">about</span>        - Show information about me</li>
                         <li><span class="text-light-green dark:text-dark-green">projects</span>     - See the list of projects</li>
-                        <li><span class="text-light-green dark:text-dark-green">blog</span>         - List of blog articles. Use 'blog list' or 'blog read [id]'</li>
+                        <li><span class="text-light-green dark:text-dark-green">blog</span>         - List of blog articles.</li>
                         <li><span class="text-light-green dark:text-dark-green">cert</span>         - See the certificate and letter of appreciation</li>
+                        <li><span class="text-light-green dark:text-dark-green">tools</span>        - See the list of tools</li>
                         <li><span class="text-light-green dark:text-dark-green">contact</span>      - Show contact information</li>
                         <li><span class="text-light-green dark:text-dark-green">clear</span>        - Clean the terminal screen</li>
                         <li><span class="text-light-green dark:text-dark-green">welcome</span>      - Show the welcome message again</li>
@@ -250,6 +251,9 @@
             cert: () => {
                 window.open(certUrl, '_blank');
                 return `<p>Opening page in a new tab...</p>`;
+            },
+            tools: () => {
+                window.open(toolsUrl, '_self');
             },
             contact: () => {
                 return `
