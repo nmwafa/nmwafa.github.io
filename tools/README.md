@@ -5,3 +5,4 @@
 - ### [Password Generator](https://nmwafa.github.io/tools/password-generator)
 - ### [Google Dork Generator](https://nmwafa.github.io/tools/google-dork)
 - ### [OTX AlienVault URL Extractor](https://nmwafa.github.io/tools/otx-url-extractor)
+- ### [CSRF PoC Generator](https://nmwafa.github.io/tools/csrf-poc-gen)
