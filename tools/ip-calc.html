@@ -479,6 +479,13 @@
       border-radius: 999px;
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
     .search-input {
       background: var(--input-bg);
       border: 1.5px solid var(--input-border);
@@ -629,7 +636,35 @@
       margin: 1.8rem 0;
     }
 
-    /* copy btn */
+    /* ACTION BUTTONS (Copy & Download) */
+    .action-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.8rem;
+      color: var(--text2);
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover { 
+      background: var(--surface2); 
+      color: var(--text); 
+      border-color: var(--text3);
+    }
+    
+    .action-btn.copied, .copy-btn.copied { 
+      background: var(--green-bg) !important; 
+      color: var(--green) !important; 
+      border-color: var(--green) !important; 
+    }
+
     .copy-btn {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -644,7 +679,6 @@
     }
 
     .copy-btn:hover { background: var(--surface3); color: var(--text); }
-    .copied { background: var(--green-bg) !important; color: var(--green) !important; border-color: var(--green) !important; }
 
     /* Scrollbar */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -797,7 +831,17 @@
           <div class="card-title" style="margin:0">Tabel Alamat IP</div>
           <span class="ip-count-badge" id="ipCountBadge">0 IP</span>
         </div>
-        <input class="search-input" id="searchInput" type="text" placeholder="Cari IP spesifik..." />
+        <div class="header-actions">
+          <button id="copyAllBtn" class="action-btn" onclick="copyAllIPs()" style="display:none;" title="Salin semua IP ke Clipboard">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            Salin Semua
+          </button>
+          <button id="downloadBtn" class="action-btn" onclick="downloadIPs()" style="display:none;" title="Unduh semua IP dalam format TXT">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Unduh (.txt)
+          </button>
+          <input class="search-input" id="searchInput" type="text" placeholder="Cari IP spesifik..." />
+        </div>
       </div>
 
       <div id="ipListContent"></div>
@@ -1010,6 +1054,9 @@
     // Build IP list
     document.getElementById('ipCountBadge').textContent = `${total.toLocaleString('id-ID')} IP`;
 
+    const copyAllBtn = document.getElementById('copyAllBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+
     if (total > 65536) {
       document.getElementById('ipListContent').innerHTML = `
         <div class="big-notice">
@@ -1019,6 +1066,8 @@
         </div>`;
       document.getElementById('pagination').innerHTML = '';
       allIPs = [];
+      copyAllBtn.style.display = 'none';
+      downloadBtn.style.display = 'none';
     } else {
       allIPs = [];
       for (let i = netInt; i <= bcastInt; i++) {
@@ -1028,6 +1077,8 @@
       currentPage = 1;
       document.getElementById('searchInput').value = '';
       renderIPTable();
+      copyAllBtn.style.display = 'flex';
+      downloadBtn.style.display = 'flex';
     }
 
     document.getElementById('results').classList.add('show');
@@ -1121,13 +1172,57 @@
     renderIPTable();
   });
 
-  // Copy
+  // Copy Single IP
   function copyIP(btn, ip) {
     navigator.clipboard.writeText(ip).then(() => {
       btn.textContent = 'Berhasil';
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Salin'; btn.classList.remove('copied'); }, 1500);
     });
+  }
+
+  // Copy All IPs
+  function copyAllIPs() {
+    if (allIPs.length === 0) return;
+    const btn = document.getElementById('copyAllBtn');
+    const originalHTML = btn.innerHTML;
+    const textToCopy = allIPs.join('\n');
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Tersalin!`;
+      btn.classList.add('copied');
+      setTimeout(() => { 
+        btn.innerHTML = originalHTML; 
+        btn.classList.remove('copied'); 
+      }, 2000);
+    }).catch(err => {
+      console.error('Gagal menyalin:', err);
+    });
+  }
+
+  // Download All IPs as TXT
+  function downloadIPs() {
+    if (allIPs.length === 0) return;
+    
+    const textData = allIPs.join('\n');
+    const blob = new Blob([textData], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    
+    // Create a dynamic filename
+    const netIp = document.getElementById('resNetwork').textContent;
+    const cidrText = document.getElementById('resCidr').textContent;
+    const cidrMatch = cidrText.match(/\/\d+/);
+    const cidr = cidrMatch ? cidrMatch[0].replace('/', '') : 'mask';
+    
+    a.href = url;
+    a.download = `IP_Calculator_${netIp}_${cidr}.txt`;
+    
+    document.body.appendChild(a);
+    a.click();
+    
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
   }
 
   // Auto-format Input IP Address (Hanya izinkan angka dan titik)
