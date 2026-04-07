@@ -4,26 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IP Calculator</title>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f4f4f5;
+      /* Light Theme Colors */
+      --bg: #fafafa;
       --surface: #ffffff;
-      --surface2: #f0f0f2;
+      --surface2: #f4f4f5;
       --surface3: #e4e4e8;
-      --border: #d4d4d8;
-      --text: #18181b;
-      --text2: #52525b;
-      --text3: #a1a1aa;
-      --accent: #3f3f46;
-      --accent-bright: #18181b;
-      --tag-bg: #e4e4e8;
-      --tag-text: #3f3f46;
-      --input-bg: #f9f9fb;
-      --shadow: 0 2px 12px rgba(0,0,0,0.07);
-      --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
-      --green: #16a34a;
-      --green-bg: #dcfce7;
+      --border: #e4e4e7;
+      --text: #0f172a;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --accent: #0f172a; /* Modern Black/Dark Slate */
+      --accent-hover: #000000;
+      --accent-bright: #e2e8f0;
+      --accent-fg: #ffffff;
+      --accent-shadow: rgba(0, 0, 0, 0.2);
+      --tag-bg: #f1f5f9;
+      --tag-text: #334155;
+      --input-bg: #f8fafc;
+      --input-border: #cbd5e1;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow: 0 4px 20px rgba(0,0,0,0.04);
+      --shadow-lg: 0 10px 30px rgba(0,0,0,0.08);
+      
+      /* Status Colors */
+      --green: #059669;
+      --green-bg: #d1fae5;
       --blue: #2563eb;
       --blue-bg: #dbeafe;
       --orange: #ea580c;
@@ -35,31 +43,39 @@
     }
 
     [data-theme="dark"] {
+      /* Dark Theme Colors */
       --bg: #09090b;
       --surface: #18181b;
-      --surface2: #1f1f23;
-      --surface3: #27272a;
+      --surface2: #27272a;
+      --surface3: #3f3f46;
       --border: #3f3f46;
-      --text: #fafafa;
-      --text2: #a1a1aa;
-      --text3: #52525b;
-      --accent: #d4d4d8;
-      --accent-bright: #fafafa;
+      --text: #f8fafc;
+      --text2: #cbd5e1;
+      --text3: #64748b;
+      --accent: #f8fafc; /* White/Light for Dark Mode */
+      --accent-hover: #ffffff;
+      --accent-bright: #334155;
+      --accent-fg: #0f172a;
+      --accent-shadow: rgba(255, 255, 255, 0.15);
       --tag-bg: #27272a;
-      --tag-text: #d4d4d8;
-      --input-bg: #27272a;
-      --shadow: 0 2px 12px rgba(0,0,0,0.4);
-      --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
-      --green: #22c55e;
-      --green-bg: #14532d33;
+      --tag-text: #e2e8f0;
+      --input-bg: #18181b;
+      --input-border: #3f3f46;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow: 0 4px 20px rgba(0,0,0,0.4);
+      --shadow-lg: 0 10px 40px rgba(0,0,0,0.5);
+      
+      /* Status Colors Dark */
+      --green: #34d399;
+      --green-bg: rgba(5, 150, 105, 0.2);
       --blue: #60a5fa;
-      --blue-bg: #1e3a5f33;
+      --blue-bg: rgba(37, 99, 235, 0.2);
       --orange: #fb923c;
-      --orange-bg: #431a0533;
+      --orange-bg: rgba(234, 88, 12, 0.2);
       --purple: #a78bfa;
-      --purple-bg: #2e1065aa;
+      --purple-bg: rgba(124, 58, 237, 0.2);
       --red: #f87171;
-      --red-bg: #450a0a33;
+      --red-bg: rgba(220, 38, 38, 0.2);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -68,8 +84,11 @@
       font-family: 'Sora', sans-serif;
       background: var(--bg);
       color: var(--text);
+      /* Fix layout untuk footer */
+      display: flex;
+      flex-direction: column;
       min-height: 100vh;
-      transition: background 0.3s, color 0.3s;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     /* HEADER */
@@ -77,44 +96,46 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: var(--surface);
+      background: rgba(var(--surface), 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       padding: 0 2rem;
-      height: 60px;
+      height: 64px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow-sm);
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .logo-icon {
-      width: 32px;
-      height: 32px;
-      background: var(--text);
-      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
       display: grid;
       place-items: center;
+      box-shadow: 0 2px 8px var(--accent-shadow);
     }
 
-    .logo-icon svg { width: 18px; height: 18px; fill: var(--bg); }
+    .logo-icon svg { width: 20px; height: 20px; stroke: var(--accent-fg); }
 
     .logo-text {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 700;
       letter-spacing: -0.5px;
       color: var(--text);
     }
 
     .logo-text span {
-      color: var(--text3);
-      font-weight: 400;
+      color: var(--accent);
     }
 
     .theme-btn {
@@ -122,68 +143,83 @@
       height: 40px;
       border-radius: 10px;
       border: 1px solid var(--border);
-      background: var(--surface2);
+      background: var(--surface);
       cursor: pointer;
       display: grid;
       place-items: center;
-      transition: all 0.2s;
-      color: var(--text);
+      transition: all 0.2s ease;
+      color: var(--text2);
     }
 
-    .theme-btn:hover { background: var(--surface3); transform: scale(1.05); }
+    .theme-btn:hover { 
+      background: var(--surface2); 
+      color: var(--accent);
+      border-color: var(--accent);
+    }
 
     /* MAIN */
     main {
-      max-width: 860px;
+      flex: 1; /* Biarkan konten utama mengisi sisa ruang */
+      width: 100%;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 2.5rem 1.5rem 4rem;
+      padding: 3rem 1.5rem 5rem;
     }
 
     .hero {
       text-align: center;
-      margin-bottom: 2.5rem;
+      margin-bottom: 3rem;
     }
 
     .hero h1 {
-      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-size: clamp(2rem, 5vw, 2.8rem);
       font-weight: 700;
-      letter-spacing: -1.5px;
-      line-height: 1.1;
+      letter-spacing: -1px;
+      line-height: 1.2;
       color: var(--text);
     }
 
     .hero p {
-      margin-top: 0.6rem;
+      margin-top: 0.8rem;
       color: var(--text2);
-      font-size: 0.95rem;
-      font-weight: 300;
+      font-size: 1rem;
+      font-weight: 400;
+      max-width: 500px;
+      margin-inline: auto;
     }
 
     /* CARD */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.75rem;
+      border-radius: 20px;
+      padding: 2rem;
       box-shadow: var(--shadow);
-      margin-bottom: 1.25rem;
-      transition: background 0.3s, border 0.3s;
+      margin-bottom: 1.5rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-lg);
     }
 
     .card-title {
-      font-size: 0.7rem;
-      font-weight: 600;
+      font-size: 0.75rem;
+      font-weight: 700;
       letter-spacing: 1.5px;
       text-transform: uppercase;
       color: var(--text3);
-      margin-bottom: 1.2rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     /* INPUT SECTION */
     .input-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1rem;
+      gap: 1.2rem;
     }
 
     @media (max-width: 560px) {
@@ -193,14 +229,13 @@
     .input-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
 
     .input-group label {
-      font-size: 0.78rem;
+      font-size: 0.85rem;
       font-weight: 600;
       color: var(--text2);
-      letter-spacing: 0.3px;
     }
 
     .input-wrap {
@@ -210,73 +245,96 @@
     .input-wrap input {
       width: 100%;
       background: var(--input-bg);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 0.7rem 1rem 0.7rem 2.6rem;
+      border: 1.5px solid var(--input-border);
+      border-radius: 12px;
+      padding: 0.8rem 1rem 0.8rem 2.8rem;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.92rem;
+      font-size: 0.95rem;
       color: var(--text);
       outline: none;
-      transition: border 0.2s, box-shadow 0.2s;
+      transition: all 0.2s ease;
     }
 
     .input-wrap input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+      background: var(--surface);
+      box-shadow: 0 0 0 4px var(--accent-bright);
     }
 
     .input-wrap input::placeholder { color: var(--text3); font-weight: 400; }
 
     .input-icon {
       position: absolute;
-      left: 10px;
+      left: 12px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--text3);
       pointer-events: none;
+      transition: color 0.2s;
+    }
+
+    .input-wrap input:focus + .input-icon,
+    .input-wrap input:focus ~ .input-icon {
+      color: var(--accent);
     }
 
     .calc-btn {
-      margin-top: 1.2rem;
+      margin-top: 1.5rem;
       width: 100%;
-      padding: 0.8rem;
-      background: var(--text);
-      color: var(--bg);
+      padding: 0.9rem;
+      background: var(--accent);
+      color: var(--accent-fg);
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       font-family: 'Sora', sans-serif;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
-      letter-spacing: 0.3px;
-      transition: all 0.2s;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
+      box-shadow: 0 4px 12px var(--accent-shadow);
     }
 
-    .calc-btn:hover { opacity: 0.85; transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+    .calc-btn:hover { 
+      background: var(--accent-hover); 
+      transform: translateY(-2px); 
+      box-shadow: 0 6px 16px var(--accent-shadow); 
+    }
     .calc-btn:active { transform: translateY(0); }
 
     .error-msg {
-      margin-top: 0.75rem;
+      margin-top: 1rem;
+      padding: 0.8rem 1rem;
+      background: var(--red-bg);
+      border-left: 4px solid var(--red);
       color: var(--red);
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 500;
+      border-radius: 8px;
       display: none;
-      align-items: center;
-      gap: 6px;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.4;
     }
 
-    .error-msg.show { display: flex; }
+    .error-msg.show { display: flex; animation: shake 0.4s ease; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
 
     /* RESULTS */
     #results { display: none; }
-    #results.show { display: block; animation: fadeUp 0.4s ease; }
+    #results.show { display: block; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
 
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
+      from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
@@ -290,22 +348,22 @@
     }
 
     .class-info h2 {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       font-weight: 700;
       letter-spacing: -0.5px;
     }
 
     .class-info p {
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       color: var(--text2);
-      margin-top: 3px;
+      margin-top: 4px;
     }
 
     .class-badge {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
+      font-size: 0.85rem;
       font-weight: 700;
-      padding: 4px 14px;
+      padding: 6px 16px;
       border-radius: 999px;
       letter-spacing: 1px;
     }
@@ -313,62 +371,68 @@
     /* STATS GRID */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.2rem;
     }
 
     .stat-item {
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem 1.1rem;
+      border-radius: 14px;
+      padding: 1.2rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .stat-item:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
     }
 
     .stat-label {
-      font-size: 0.7rem;
-      font-weight: 600;
+      font-size: 0.72rem;
+      font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
       color: var(--text3);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .stat-value {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 600;
       color: var(--text);
     }
 
     .stat-sub {
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       color: var(--text3);
-      margin-top: 2px;
+      margin-top: 4px;
     }
 
     /* BINARY ROW */
     .binary-row {
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem 1.2rem;
+      border-radius: 14px;
+      padding: 1.2rem;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
     }
 
     .binary-row .br-label {
-      font-size: 0.68rem;
-      font-weight: 600;
+      font-size: 0.72rem;
+      font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
       color: var(--text3);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .binary-row .br-bits {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
@@ -378,21 +442,21 @@
     }
 
     .bit {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       border-radius: 4px;
       display: grid;
       place-items: center;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       font-weight: 700;
     }
 
-    .bit.one  { background: var(--text); color: var(--bg); }
-    .bit.zero { background: var(--surface3); color: var(--text3); }
+    .bit.one  { background: var(--text); color: var(--surface); }
+    .bit.zero { background: var(--surface3); color: var(--text2); }
 
     .bit-sep {
       color: var(--text3);
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       margin: 0 2px;
     }
 
@@ -401,39 +465,42 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1rem;
+      margin-bottom: 1.2rem;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 1rem;
     }
 
     .ip-count-badge {
       background: var(--tag-bg);
       color: var(--tag-text);
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       font-weight: 600;
-      padding: 3px 10px;
+      padding: 4px 12px;
       border-radius: 999px;
     }
 
     .search-input {
       background: var(--input-bg);
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      padding: 0.45rem 0.75rem;
+      border: 1.5px solid var(--input-border);
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       color: var(--text);
       outline: none;
-      width: 200px;
-      transition: border 0.2s;
+      width: 240px;
+      transition: all 0.2s;
     }
 
-    .search-input:focus { border-color: var(--accent); }
+    .search-input:focus { 
+      border-color: var(--accent); 
+      box-shadow: 0 0 0 3px var(--accent-bright);
+    }
     .search-input::placeholder { color: var(--text3); }
 
     .ip-table-wrap {
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 14px;
       overflow: hidden;
     }
 
@@ -444,20 +511,20 @@
 
     .ip-table th {
       background: var(--surface2);
-      font-size: 0.68rem;
+      font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
       color: var(--text3);
-      padding: 0.6rem 1rem;
+      padding: 0.8rem 1.2rem;
       text-align: left;
       border-bottom: 1px solid var(--border);
     }
 
     .ip-table td {
-      padding: 0.55rem 1rem;
+      padding: 0.7rem 1.2rem;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       border-bottom: 1px solid var(--border);
       color: var(--text);
     }
@@ -466,19 +533,17 @@
 
     .ip-table tr:hover td { background: var(--surface2); }
 
-    .ip-table .special {
-      font-weight: 600;
-    }
+    .ip-table .special { font-weight: 600; }
 
     .ip-tag {
       display: inline-block;
-      font-size: 0.65rem;
+      font-size: 0.68rem;
       font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
       letter-spacing: 0.5px;
       vertical-align: middle;
-      margin-left: 6px;
+      margin-left: 8px;
     }
 
     .tag-network  { background: var(--blue-bg); color: var(--blue); }
@@ -491,7 +556,7 @@
       align-items: center;
       gap: 6px;
       justify-content: center;
-      margin-top: 1rem;
+      margin-top: 1.5rem;
       flex-wrap: wrap;
     }
 
@@ -499,80 +564,93 @@
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 5px 12px;
-      font-size: 0.8rem;
+      padding: 6px 14px;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
-      color: var(--text);
-      transition: all 0.15s;
+      color: var(--text2);
+      transition: all 0.2s;
       font-family: 'Sora', sans-serif;
     }
 
-    .pg-btn:hover { background: var(--surface3); }
-    .pg-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
-    .pg-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .pg-btn:hover:not(:disabled) { 
+      background: var(--surface3); 
+      color: var(--text);
+    }
+    .pg-btn.active { 
+      background: var(--accent); 
+      color: #fff; 
+      border-color: var(--accent); 
+    }
+    .pg-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .pg-info {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       color: var(--text3);
-      font-weight: 400;
+      font-weight: 500;
     }
 
     /* TOO LARGE NOTICE */
     .big-notice {
       text-align: center;
-      padding: 2rem;
+      padding: 3rem 2rem;
       color: var(--text2);
+      background: var(--surface2);
+      border-radius: 14px;
+      border: 1px dashed var(--border);
     }
 
     .big-notice .big-num {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 2rem;
+      font-size: 2.5rem;
       font-weight: 700;
-      color: var(--text);
-      margin-bottom: 4px;
+      color: var(--accent);
+      margin-bottom: 8px;
     }
 
-    .big-notice p { font-size: 0.85rem; }
+    .big-notice p { font-size: 0.95rem; line-height: 1.5; }
 
     /* FOOTER */
     footer {
       text-align: center;
       color: var(--text3);
-      font-size: 0.75rem;
-      padding: 2rem 1rem;
+      font-size: 0.8rem;
+      padding: 1.5rem 1rem;
       border-top: 1px solid var(--border);
+      background: var(--surface);
+      margin-top: auto; /* Ini yang membuat footer menempel di bawah jika konten sedikit */
+      width: 100%;
     }
 
     /* DIVIDER */
     .divider {
       height: 1px;
       background: var(--border);
-      margin: 1.5rem 0;
+      margin: 1.8rem 0;
     }
 
     /* copy btn */
     .copy-btn {
-      background: none;
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 3px 9px;
-      font-size: 0.72rem;
+      border-radius: 8px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
       color: var(--text2);
       cursor: pointer;
       font-family: 'Sora', sans-serif;
       font-weight: 600;
-      transition: all 0.15s;
+      transition: all 0.2s;
     }
 
-    .copy-btn:hover { background: var(--surface3); }
-
-    .copied { color: var(--green) !important; border-color: var(--green) !important; }
+    .copy-btn:hover { background: var(--surface3); color: var(--text); }
+    .copied { background: var(--green-bg) !important; color: var(--green) !important; border-color: var(--green) !important; }
 
     /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
   </style>
 </head>
 <body>
@@ -580,21 +658,25 @@
 <header>
   <div class="logo">
     <div class="logo-icon">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="4" width="20" height="16" rx="3"/>
-        <path fill="none" stroke="currentColor" stroke-width="1.5" d="M6 8h2m-2 4h4m-4 4h3"/>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+        <path d="M6 8h.01"></path>
+        <path d="M10 8h.01"></path>
+        <path d="M14 8h.01"></path>
+        <path d="M18 8h.01"></path>
+        <path d="M8 16h8"></path>
       </svg>
     </div>
     <span class="logo-text">IP<span>calc</span></span>
   </div>
   <button class="theme-btn" id="themeBtn" title="Toggle dark mode">
-    <svg id="iconSun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+    <svg id="iconSun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
       <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
       <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
       <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
       <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
     </svg>
-    <svg id="iconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <svg id="iconMoon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
     </svg>
   </button>
@@ -603,43 +685,46 @@
 <main>
   <div class="hero">
     <h1>IP Address Calculator</h1>
-    <p>Hitung subnet, range IP, dan klasifikasi kelas jaringan secara instan</p>
+    <p>Hitung subnet mask, range IP host, dan identifikasi kelas jaringan secara instan dengan presisi.</p>
   </div>
 
   <!-- INPUT CARD -->
   <div class="card">
-    <div class="card-title">Input Jaringan</div>
+    <div class="card-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Konfigurasi Jaringan
+    </div>
     <div class="input-grid">
       <div class="input-group">
         <label for="ipInput">Alamat IP</label>
         <div class="input-wrap">
+          <input type="text" id="ipInput" placeholder="Contoh: 192.168.1.0" maxlength="15" autocomplete="off" />
           <span class="input-icon">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="2" width="20" height="20" rx="3"/><path d="M8 12h8M12 8v8"/>
             </svg>
           </span>
-          <input type="text" id="ipInput" placeholder="192.168.1.0" maxlength="15" autocomplete="off" />
         </div>
       </div>
       <div class="input-group">
-        <label for="subnetInput">Subnet / Prefix</label>
+        <label for="subnetInput">Subnet Mask / Prefix</label>
         <div class="input-wrap">
+          <input type="text" id="subnetInput" placeholder="Contoh: /24 atau 255.255.255.0" autocomplete="off" />
           <span class="input-icon">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
             </svg>
           </span>
-          <input type="text" id="subnetInput" placeholder="/24 atau 255.255.255.0" autocomplete="off" />
         </div>
       </div>
     </div>
     <div class="error-msg" id="errorMsg">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <span id="errorText"></span>
     </div>
     <button class="calc-btn" id="calcBtn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      Hitung
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/><polyline points="9 11 12 14 22 4"/></svg>
+      Hitung Subnet
     </button>
   </div>
 
@@ -663,7 +748,7 @@
         <div class="stat-item">
           <div class="stat-label">Network Address</div>
           <div class="stat-value" id="resNetwork">—</div>
-          <div class="stat-sub">Alamat jaringan</div>
+          <div class="stat-sub">Identitas Jaringan</div>
         </div>
         <div class="stat-item">
           <div class="stat-label">Subnet Mask</div>
@@ -673,34 +758,34 @@
         <div class="stat-item">
           <div class="stat-label">Broadcast Address</div>
           <div class="stat-value" id="resBroadcast">—</div>
-          <div class="stat-sub">Alamat broadcast</div>
+          <div class="stat-sub">Alamat Broadcast</div>
         </div>
         <div class="stat-item">
-          <div class="stat-label">IP Usable</div>
+          <div class="stat-label">IP Host Usable</div>
           <div class="stat-value" id="resUsable">—</div>
-          <div class="stat-sub">Host yang bisa digunakan</div>
+          <div class="stat-sub">Kapasitas Maksimal</div>
         </div>
         <div class="stat-item">
-          <div class="stat-label">IP Pertama</div>
+          <div class="stat-label">IP Pertama (Min)</div>
           <div class="stat-value" id="resFirst">—</div>
-          <div class="stat-sub">Host pertama</div>
+          <div class="stat-sub">Host Tersedia Pertama</div>
         </div>
         <div class="stat-item">
-          <div class="stat-label">IP Terakhir</div>
+          <div class="stat-label">IP Terakhir (Max)</div>
           <div class="stat-value" id="resLast">—</div>
-          <div class="stat-sub">Host terakhir</div>
+          <div class="stat-sub">Host Tersedia Terakhir</div>
         </div>
       </div>
 
       <div class="divider"></div>
 
       <div class="binary-row">
-        <div class="br-label">Binary — IP Address</div>
+        <div class="br-label">Representasi Biner — IP Address</div>
         <div class="br-bits" id="binaryIP"></div>
       </div>
 
-      <div class="binary-row" style="margin-top:0.75rem;">
-        <div class="br-label">Binary — Subnet Mask</div>
+      <div class="binary-row" style="margin-top:1rem;">
+        <div class="br-label">Representasi Biner — Subnet Mask</div>
         <div class="br-bits" id="binaryMask"></div>
       </div>
     </div>
@@ -709,10 +794,10 @@
     <div class="card">
       <div class="ip-list-header">
         <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
-          <div class="card-title" style="margin:0">Daftar Semua IP</div>
+          <div class="card-title" style="margin:0">Tabel Alamat IP</div>
           <span class="ip-count-badge" id="ipCountBadge">0 IP</span>
         </div>
-        <input class="search-input" id="searchInput" type="text" placeholder="Cari IP..." />
+        <input class="search-input" id="searchInput" type="text" placeholder="Cari IP spesifik..." />
       </div>
 
       <div id="ipListContent"></div>
@@ -723,7 +808,7 @@
 </main>
 
 <footer>
-  IP Calculator &mdash; Subnet &amp; Network Utility &bull;
+  IP Calculator &mdash; Utility Subnetting Modern &bull;
 </footer>
 
 <script>
@@ -740,15 +825,19 @@
     localStorage.setItem('ipcalc-theme', dark ? 'dark' : 'light');
   }
 
+  // Set default ke Light. Hanya menggunakan mode Dark jika pengguna sebelumnya menyimpannya secara eksplisit.
+  let preferDark = false; 
   const saved = localStorage.getItem('ipcalc-theme');
-  const preferDark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (saved && saved === 'dark') {
+    preferDark = true;
+  }
   applyTheme(preferDark);
 
   themeBtn.addEventListener('click', () => {
     applyTheme(html.getAttribute('data-theme') !== 'dark');
   });
 
-  // ─── Utils ───────────────────────────────────────────────────
+  // ─── Utils & Validations ──────────────────────────────────────
   function ipToInt(ip) {
     return ip.split('.').reduce((acc, oct) => (acc << 8) | parseInt(oct, 10), 0) >>> 0;
   }
@@ -769,20 +858,37 @@
     return n;
   }
 
+  // Validasi: Cek apakah deretan bit Subnet valid (bit 1 harus berurutan lalu diikuti bit 0)
+  function isValidSubnetMask(maskInt) {
+    if (maskInt === 0) return true; // Kasus /0
+    // Balik bit-nya (~maskInt). Jika valid, bentuknya akan menjadi deretan 0 lalu 1 (misal 00001111)
+    // Menambah 1 pada nilai ini akan menghasilkan format pangkat 2 tunggal (misal 00010000)
+    // Jadi ((~mask+1) & ~mask) harus bernilai 0.
+    const inv = (~maskInt) >>> 0;
+    return ((inv + 1) & inv) === 0;
+  }
+
   function parseMaskInput(raw) {
     raw = raw.trim();
     if (raw.startsWith('/')) raw = raw.slice(1);
+
+    // Jika format hanya angka (CIDR)
     if (/^\d+$/.test(raw)) {
       const cidr = parseInt(raw);
-      if (cidr < 0 || cidr > 32) return null;
+      if (cidr < 0 || cidr > 32) return -2; // Error code untuk range CIDR
       return cidrToMask(cidr);
     }
+
+    // Jika format menyerupai IP Address (Desimal Subnet)
     if (/^\d+\.\d+\.\d+\.\d+$/.test(raw)) {
       const parts = raw.split('.').map(Number);
-      if (parts.some(p => p < 0 || p > 255)) return null;
-      return ipToInt(raw);
+      if (parts.some(p => p < 0 || p > 255)) return -1;
+      
+      const maskInt = ipToInt(raw);
+      if (!isValidSubnetMask(maskInt)) return -3; // Error code untuk bit subnet acak
+      return maskInt;
     }
-    return null;
+    return null; // Format tidak diketahui
   }
 
   function isValidIp(ip) {
@@ -794,7 +900,7 @@
   function getClass(ip) {
     const first = parseInt(ip.split('.')[0]);
     if (first >= 1   && first <= 126) return { cls: 'A', color: 'green',  desc: 'Kelas A — Jaringan skala besar' };
-    if (first === 127)                 return { cls: 'A*', color: 'green', desc: 'Loopback (127.x.x.x)' };
+    if (first === 127)                return { cls: 'A*', color: 'green', desc: 'Loopback (127.x.x.x)' };
     if (first >= 128 && first <= 191) return { cls: 'B', color: 'blue',   desc: 'Kelas B — Jaringan menengah' };
     if (first >= 192 && first <= 223) return { cls: 'C', color: 'orange', desc: 'Kelas C — Jaringan skala kecil' };
     if (first >= 224 && first <= 239) return { cls: 'D', color: 'purple', desc: 'Kelas D — Multicast' };
@@ -854,12 +960,14 @@
     const ipRaw = document.getElementById('ipInput').value.trim();
     const subRaw = document.getElementById('subnetInput').value.trim();
 
-    if (!ipRaw) { showError('Masukkan alamat IP terlebih dahulu.'); return; }
-    if (!isValidIp(ipRaw)) { showError('Format alamat IP tidak valid. Contoh: 192.168.1.0'); return; }
-    if (!subRaw) { showError('Masukkan subnet atau prefix CIDR.'); return; }
+    if (!ipRaw) { showError('Harap masukkan Alamat IP terlebih dahulu.'); return; }
+    if (!isValidIp(ipRaw)) { showError('Format Alamat IP tidak valid. Pastikan format seperti 192.168.1.0'); return; }
+    if (!subRaw) { showError('Harap masukkan Subnet Mask atau Prefix CIDR.'); return; }
 
     const mask = parseMaskInput(subRaw);
-    if (mask === null) { showError('Format subnet tidak valid. Contoh: /24 atau 255.255.255.0'); return; }
+    if (mask === -2) { showError('Nilai CIDR tidak valid. Harap gunakan angka antara 0 hingga 32.'); return; }
+    if (mask === -3) { showError('Nilai Subnet Mask tidak valid. Bit aktif (1) pada subnet mask harus berurutan secara kontigu.'); return; }
+    if (mask === -1 || mask === null) { showError('Format Subnet tidak dikenali. Gunakan CIDR (contoh: /24) atau desimal (contoh: 255.255.255.0).'); return; }
 
     const ipInt    = ipToInt(ipRaw);
     const netInt   = (ipInt & mask) >>> 0;
@@ -906,8 +1014,8 @@
       document.getElementById('ipListContent').innerHTML = `
         <div class="big-notice">
           <div class="big-num">${total.toLocaleString('id-ID')}</div>
-          <p>Total IP terlalu banyak untuk ditampilkan satu per satu.<br>
-          Range: <strong>${netIp}</strong> s/d <strong>${bcastIp}</strong></p>
+          <p>Total IP pada jangkauan subnet ini terlalu besar untuk dirender sekaligus ke dalam tabel.<br><br>
+          Rentang lengkap:<br><strong>${netIp}</strong> s/d <strong>${bcastIp}</strong></p>
         </div>`;
       document.getElementById('pagination').innerHTML = '';
       allIPs = [];
@@ -923,7 +1031,12 @@
     }
 
     document.getElementById('results').classList.add('show');
-    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    // Smooth scroll offset slightly to accommodate sticky header
+    const yOffset = -80; 
+    const element = document.getElementById('results');
+    const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    window.scrollTo({top: y, behavior: 'smooth'});
   }
 
   function renderIPTable() {
@@ -949,7 +1062,7 @@
       rows += `<tr>
         <td style="color:var(--text3);width:60px">${num}</td>
         <td class="${special}">${ip}${tags}</td>
-        <td>
+        <td style="text-align: right;">
           <button class="copy-btn" onclick="copyIP(this,'${ip}')">Salin</button>
         </td>
       </tr>`;
@@ -958,7 +1071,7 @@
     document.getElementById('ipListContent').innerHTML = `
       <div class="ip-table-wrap">
         <table class="ip-table">
-          <thead><tr><th>#</th><th>Alamat IP</th><th></th></tr></thead>
+          <thead><tr><th>#</th><th>Alamat IP</th><th style="text-align: right;">Aksi</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
       </div>`;
@@ -971,7 +1084,7 @@
     const pages = Math.ceil(total / PAGE_SIZE);
     if (pages <= 1) { document.getElementById('pagination').innerHTML = ''; return; }
 
-    let html = `<button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+    let html = `<button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹ Prev</button>`;
 
     const range = [];
     for (let p = 1; p <= pages; p++) {
@@ -987,8 +1100,8 @@
       }
     });
 
-    html += `<button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}>›</button>`;
-    html += `<span class="pg-info">${total.toLocaleString('id-ID')} IP</span>`;
+    html += `<button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}>Next ›</button>`;
+    html += `<span class="pg-info" style="margin-left:8px;">${total.toLocaleString('id-ID')} IP</span>`;
 
     document.getElementById('pagination').innerHTML = html;
   }
@@ -998,7 +1111,6 @@
     if (p < 1 || p > pages) return;
     currentPage = p;
     renderIPTable();
-    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   // Search
@@ -1012,22 +1124,27 @@
   // Copy
   function copyIP(btn, ip) {
     navigator.clipboard.writeText(ip).then(() => {
-      btn.textContent = '✓';
+      btn.textContent = 'Berhasil';
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Salin'; btn.classList.remove('copied'); }, 1500);
     });
   }
 
-  // Enter key
+  // Auto-format Input IP Address (Hanya izinkan angka dan titik)
+  document.getElementById('ipInput').addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9.]/g, '');
+  });
+
+  // Auto-format Input Subnet (Hanya izinkan angka, titik, dan garis miring)
+  document.getElementById('subnetInput').addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9./]/g, '');
+  });
+
+  // Action enter key
   document.getElementById('ipInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('subnetInput').focus(); });
   document.getElementById('subnetInput').addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
   document.getElementById('calcBtn').addEventListener('click', calculate);
 
-  // Auto-format IP input
-  document.getElementById('ipInput').addEventListener('input', function() {
-    const v = this.value.replace(/[^0-9.]/g, '');
-    this.value = v;
-  });
 </script>
 </body>
 </html>
