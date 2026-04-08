@@ -63,4 +63,4 @@ title: Check List Mitigasi Ransomware
 
 
 
-##### Sumber: [CRPO - RANSOMWARE MITIGATION CHECK LIST V 1.2](https://www.eucyberacademy.com/)
+#### Sumber: [CRPO - RANSOMWARE MITIGATION CHECK LIST V 1.2](https://www.eucyberacademy.com/)
