@@ -14,10 +14,12 @@
             font-family: 'Fira Code', monospace;
             overflow-x: hidden;
             cursor: url('https://cdn.custom-cursor.com/db/7648/32/meme-pop-cat-cursor.png'), auto;
+            /*cursor: url('https://cdn.custom-cursor.com/db/18387/32/disney-big-hero-6-baymax-pointer.png'), auto;*/
         }
 
         #fullscreen-toggle, #theme-toggle {
             cursor: url('https://cdn.custom-cursor.com/db/7647/32/meme-pop-cat-pointer.png'), pointer;
+            /*cursor: url('https://cdn.custom-cursor.com/db/18388/32/disney-big-hero-6-baymax-cursor.png'), pointer;*/
         }
         
         /* Warna text selection Default (Light Mode) */
@@ -64,6 +66,7 @@
         input[type="text"] {
             caret-color: transparent;
             color: transparent;
+            cursor: url('https://cdn.custom-cursor.com/db/7648/32/meme-pop-cat-cursor.png'), auto !important;
         }
         
         /* Efek kursor berkedip */
@@ -316,7 +319,6 @@
                     }
                 }
                                     
-                // Scroll ke bawah & kembalikan fokus
                 terminalBody.scrollTop = terminalBody.scrollHeight;
                 commandInput.disabled = false;
                 commandInput.focus();
