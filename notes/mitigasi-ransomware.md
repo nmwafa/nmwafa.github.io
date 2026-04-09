@@ -63,4 +63,4 @@ title: Check List Mitigasi Ransomware
 
 
 
-#### Sumber: [eucyberacademy.com]([https://www.eucyberacademy.com/](https://drive.google.com/file/d/1gUqLR4zCjOT_S0eBXQDH1z0xMEGuJaby/view?usp=sharing))
+#### Sumber: [eucyberacademy.com](https://drive.google.com/file/d/1gUqLR4zCjOT_S0eBXQDH1z0xMEGuJaby/view?usp=sharing)
