@@ -39,7 +39,7 @@
             background-color: var(--card-bg);
             width: 100%;
             max-width: 1000px;
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
@@ -67,10 +67,10 @@
         input[type="text"] {
             flex: 1;
             min-width: 200px;
-            padding: 0.75rem 1rem;
+            padding: 0.5rem 0.75rem;
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.875rem;
             outline: none;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
@@ -81,10 +81,10 @@
         }
 
         button {
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 1rem;
             border: none;
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.875rem;
             font-weight: 500;
             cursor: pointer;
             transition: background-color 0.2s, color 0.2s;
@@ -121,23 +121,36 @@
             min-height: 1.25rem; /* Reserve space */
         }
 
-        textarea {
-            width: 100%;
-            height: 300px;
-            padding: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.875rem;
-            font-family: monospace;
-            resize: vertical;
+        .filter-group {
             margin-bottom: 1rem;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            outline: none;
         }
 
-        textarea:focus {
-            border-color: var(--focus-ring);
+        .result-container {
+            width: 100%;
+            height: 450px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow-y: auto;
+            background-color: var(--bg-color);
+            margin-bottom: 1rem;
+        }
+
+        .url-item {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-family: monospace;
+            word-break: break-all;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+        }
+
+        .url-item:nth-child(even) {
+            background-color: var(--bg-color); /* Zebra stripe color */
+        }
+
+        .url-item:last-child {
+            border-bottom: none;
         }
 
         .action-group {
@@ -199,10 +212,16 @@
 
         <div class="status" id="statusMsg">Ready to fetch.</div>
 
-        <textarea id="resultArea" readonly placeholder="Extracted URLs will appear here..."></textarea>
+        <div class="input-group filter-group">
+            <input type="text" id="searchInput" placeholder="Filter/Search URLs..." oninput="filterUrls()" disabled>
+        </div>
+
+        <div id="resultContainer" class="result-container">
+            <div style="padding: 1rem; color: var(--text-muted);">Extracted URLs will appear here...</div>
+        </div>
 
         <div class="action-group">
-            <button id="copyBtn" class="secondary" onclick="copyUrls()" disabled>Copy All</button>
+            <button id="copyBtn" class="secondary" onclick="copyUrls()" disabled>Copy URLs</button>
             <button id="downloadBtn" class="secondary" onclick="downloadUrls()" disabled>Download TXT</button>
         </div>
     </div>
@@ -212,6 +231,8 @@
 
     <script>
         let fetchedUrls = new Set();
+        let allUrls = [];
+        let currentFilteredUrls = [];
 
         // Allow pressing Enter to trigger fetch
         function handleEnter(event) {
@@ -228,10 +249,35 @@
             setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
         }
 
+        function escapeHtml(unsafe) {
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
+        function renderUrls(urls) {
+            const container = document.getElementById('resultContainer');
+            if (urls.length === 0) {
+                container.innerHTML = '<div style="padding: 1rem; color: var(--text-muted);">No URLs found matching your criteria.</div>';
+                return;
+            }
+            container.innerHTML = urls.map(url => `<div class="url-item">${escapeHtml(url)}</div>`).join('');
+        }
+
+        function filterUrls() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            currentFilteredUrls = allUrls.filter(url => url.toLowerCase().includes(searchTerm));
+            renderUrls(currentFilteredUrls);
+            document.getElementById('statusMsg').textContent = `Showing ${currentFilteredUrls.length} of ${allUrls.length} unique URLs.`;
+        }
+
         async function fetchUrls() {
             const domainInput = document.getElementById('domainInput').value.trim();
             const statusMsg = document.getElementById('statusMsg');
-            const resultArea = document.getElementById('resultArea');
+            const searchInput = document.getElementById('searchInput');
             const fetchBtn = document.getElementById('fetchBtn');
             const copyBtn = document.getElementById('copyBtn');
             const downloadBtn = document.getElementById('downloadBtn');
@@ -243,13 +289,17 @@
 
             // Reset UI and data
             fetchedUrls.clear();
-            resultArea.value = '';
+            allUrls = [];
+            currentFilteredUrls = [];
+            document.getElementById('resultContainer').innerHTML = '<div style="padding: 1rem; color: var(--text-muted);">Fetching...</div>';
+            searchInput.value = '';
+            searchInput.disabled = true;
             fetchBtn.disabled = true;
             copyBtn.disabled = true;
             downloadBtn.disabled = true;
             
             let page = 1;
-            const limit = 500;
+            const limit = 1000;
             let isFetching = true;
 
             try {
@@ -290,31 +340,39 @@
 
                 // Finalize output
                 if (fetchedUrls.size > 0) {
-                    const sortedUrls = Array.from(fetchedUrls).sort();
-                    resultArea.value = sortedUrls.join('\n');
-                    statusMsg.textContent = `Success! Extracted ${fetchedUrls.size} unique URLs.`;
-                    copyBtn.disabled = false;
-                    downloadBtn.disabled = false;
+                    allUrls = Array.from(fetchedUrls).sort();
+                    currentFilteredUrls = [...allUrls];
+                    renderUrls(currentFilteredUrls);
+                    statusMsg.textContent = `Success! Extracted ${allUrls.length} unique URLs.`;
+                    document.getElementById('searchInput').disabled = false;
+                    document.getElementById('copyBtn').disabled = false;
+                    document.getElementById('downloadBtn').disabled = false;
                 } else {
+                    document.getElementById('resultContainer').innerHTML = '<div style="padding: 1rem; color: var(--text-muted);">No URLs found for this domain.</div>';
                     statusMsg.textContent = "No URLs found for this domain.";
                 }
 
             } catch (error) {
                 console.error("Fetch Error:", error);
                 statusMsg.textContent = `Error: ${error.message}`;
+                document.getElementById('resultContainer').innerHTML = '<div style="padding: 1rem; color: #ef4444;">Failed to fetch data.</div>';
                 showMessage("Failed to fetch data. Check console or CORS policy.");
             } finally {
-                fetchBtn.disabled = false;
+                document.getElementById('fetchBtn').disabled = false;
             }
         }
 
         function copyUrls() {
-            const resultArea = document.getElementById('resultArea');
-            if (resultArea.value.length === 0) return;
+            if (currentFilteredUrls.length === 0) return;
+
+            const textToCopy = currentFilteredUrls.join('\n');
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
 
             // Select the text field
-            resultArea.select();
-            resultArea.setSelectionRange(0, 9999999); // For mobile devices
+            tempTextArea.select();
+            tempTextArea.setSelectionRange(0, 9999999); // For mobile devices
 
             try {
                 // Execute the copy command
@@ -325,12 +383,13 @@
             }
             
             // Unselect the text to keep UI clean
+            document.body.removeChild(tempTextArea);
             window.getSelection().removeAllRanges();
         }
 
         function downloadUrls() {
-            const textToSave = document.getElementById('resultArea').value;
-            if (!textToSave) return;
+            if (currentFilteredUrls.length === 0) return;
+            const textToSave = currentFilteredUrls.join('\n');
 
             const domain = document.getElementById('domainInput').value.trim();
             const fileName = `${domain}_urls.txt`;
