@@ -7,3 +7,4 @@
 - ### [OTX AlienVault URL Extractor](https://nmwafa.github.io/tools/otx-url-extractor)
 - ### [CSRF PoC Generator](https://nmwafa.github.io/tools/csrf-poc-gen)
 - ### [IP Calculator](https://nmwafa.github.io/tools/ip-calc)
+- ### [Text Comparer](https://nmwafa.github.io/tools/text-comparer)
