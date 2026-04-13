@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>req · res</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Tema Light - Putih & Abu-abu yang lebih lembut */
+    --bg: #f3f4f6;
+    --surface: #ffffff;
+    --surface2: #e5e7eb;
+    --border: #e5e7eb;
+    --border2: #d1d5db;
+    --text: #111827;
+    --text2: #4b5563;
+    --text3: #9ca3af;
+    --accent: #374151;
+    --send-bg: #111827;
+    --send-text: #ffffff;
+    --lnum: #9ca3af;
+    
+    /* Warna Status & Method */
+    --status-ok: #059669;
+    --status-err: #dc2626;
+    --status-warn: #d97706;
+    --method-get: #059669;
+    --method-post: #2563eb;
+    --method-put: #d97706;
+    --method-del: #dc2626;
+    --method-patch: #7c3aed;
+    --method-bg-get: #d1fae5;
+    --method-bg-post: #dbeafe;
+    --method-bg-put: #fef3c7;
+    --method-bg-del: #fee2e2;
+    --method-bg-patch: #ede9fe;
+    
+    --radius: 12px;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Instrument Sans', sans-serif;
+  }
+  
+  [data-dark] {
+    /* Tema Dark */
+    --bg: #111827;
+    --surface: #1f2937;
+    --surface2: #374151;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f9fafb;
+    --text2: #d1d5db;
+    --text3: #6b7280;
+    --accent: #f9fafb;
+    --send-bg: #f9fafb;
+    --send-text: #111827;
+    --lnum: #4b5563;
+    
+    --status-ok: #10b981;
+    --status-err: #ef4444;
+    --status-warn: #f59e0b;
+    --method-get: #10b981;
+    --method-post: #60a5fa;
+    --method-put: #fcd34d;
+    --method-del: #ef4444;
+    --method-patch: #a78bfa;
+    --method-bg-get: rgba(16, 185, 129, 0.15);
+    --method-bg-post: rgba(96, 165, 250, 0.15);
+    --method-bg-put: rgba(252, 211, 77, 0.15);
+    --method-bg-del: rgba(239, 68, 68, 0.15);
+    --method-bg-patch: rgba(167, 139, 250, 0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    transition: background 0.2s, color 0.2s;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    user-select: none;
+  }
+  .logo-sep {
+    color: var(--text3);
+    font-weight: 300;
+    padding: 0 2px;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .badge-cors {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid transparent;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .badge-cors:hover { 
+    background: var(--border); 
+  }
+  .badge-cors.active {
+    background: var(--method-bg-get);
+    color: var(--method-get);
+  }
+
+  /* TOGGLE THEME BUTTON */
+  .theme-toggle {
+    background: transparent;
+    border: none;
+    color: var(--text2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .theme-toggle:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+  .theme-toggle svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
+  .icon-moon { display: none; }
+  [data-dark] .icon-sun { display: none; }
+  [data-dark] .icon-moon { display: block; }
+
+  /* MAIN PANELS */
+  main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    padding: 20px;
+    gap: 16px;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* SEND COLUMN */
+  .send-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .send-btn {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--send-bg);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
+    flex-shrink: 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  .send-btn:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  }
+  .send-btn:active { 
+    transform: translateY(0); 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .send-btn.loading { opacity: 0.6; pointer-events: none; }
+  .send-btn svg { stroke: var(--send-text); }
+  .send-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    text-transform: uppercase;
+  }
+  .kbd-hint {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+
+  /* PANEL */
+  .panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    min-height: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    background: var(--surface);
+  }
+  .panel-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--text2);
+    text-transform: lowercase;
+  }
+  .panel-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .method-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.05em;
+  }
+  .status-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .meta-text {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  /* EDITOR & SYNCED TYPOGRAPHY */
+  .editor-wrap {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+    background: var(--surface);
+  }
+  /* Kunci perbaikan line numbers: ukuran & spacing disamakan presisi */
+  .line-nums, .editor-area, .res-content {
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre; /* Mencegah wrap teks, 1 baris tetap 1 baris */
+  }
+  .line-nums {
+    flex-shrink: 0;
+    width: 34px;
+    padding: 14px 8px 14px 0;
+    text-align: right;
+    color: var(--lnum);
+    border-right: 1px solid var(--border);
+    user-select: none;
+    overflow: hidden; /* Sembunyikan scrollbar agar bersih, discroll via JS */
+  }
+  .editor-area {
+    flex: 1;
+    resize: none;
+    border: none;
+    outline: none;
+    padding: 14px;
+    color: var(--text);
+    background: transparent;
+    overflow-y: auto;
+    overflow-x: auto;
+    tab-size: 2;
+    min-height: 0;
+  }
+  .editor-area::placeholder { color: var(--text3); }
+  .editor-area::-webkit-scrollbar { width: 8px; height: 8px; }
+  .editor-area::-webkit-scrollbar-track { background: transparent; }
+  .editor-area::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; border: 2px solid var(--surface); }
+
+  /* RESPONSE DISPLAY */
+  .res-content {
+    flex: 1;
+    overflow: auto;
+    padding: 14px;
+    color: var(--text);
+    min-height: 0;
+  }
+  .res-content::-webkit-scrollbar { width: 8px; height: 8px; }
+  .res-content::-webkit-scrollbar-track { background: transparent; }
+  .res-content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; border: 2px solid var(--surface); }
+  
+  .res-placeholder {
+    color: var(--text3);
+    font-style: italic;
+  }
+
+  /* SYNTAX HIGHLIGHT */
+  .hl-key { color: #7c3aed; }
+  [data-dark] .hl-key { color: #a78bfa; }
+  .hl-str { color: #059669; }
+  [data-dark] .hl-str { color: #34d399; }
+  .hl-num { color: #d97706; }
+  [data-dark] .hl-num { color: #fbbf24; }
+  .hl-bool { color: #dc2626; }
+  [data-dark] .hl-bool { color: #f87171; }
+  .hl-null { color: var(--text3); }
+  .hl-header-name { color: #2563eb; }
+  [data-dark] .hl-header-name { color: #60a5fa; }
+  .hl-header-val { color: var(--text2); }
+  .hl-status-line { color: var(--text); font-weight: 600; }
+
+  /* STATUS BAR */
+  .statusbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .statusbar-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text);
+  }
+  .statusbar-item span:first-child { color: var(--text3); }
+
+  /* TABS for response */
+  .res-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .res-tab {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 10px 16px;
+    cursor: pointer;
+    color: var(--text3);
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    user-select: none;
+    border-right: 1px solid var(--border);
+  }
+  .res-tab:hover { color: var(--text2); background: var(--bg); }
+  .res-tab.active { color: var(--text); border-bottom-color: var(--text); background: var(--surface); }
+
+  /* ERROR STATE */
+  .error-box {
+    font-family: var(--mono);
+    color: var(--status-err);
+  }
+
+  /* SPINNER */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    width: 20px; height: 20px;
+    border: 2px solid var(--send-text);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  /* TOOLTIP */
+  .tooltip { position: relative; }
+  .tooltip::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: var(--surface);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .tooltip:hover::after { opacity: 1; transform: translateX(-50%) translateY(-2px); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    main { grid-template-columns: 1fr; grid-template-rows: 1fr auto 1fr; padding: 12px; gap: 12px; }
+    .send-col { flex-direction: row; }
+    .panel { min-height: 280px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span>req</span>
+    <span class="logo-sep">·</span>
+    <span>res</span>
+  </div>
+  <div class="header-right">
+    <div class="badge-cors tooltip" id="corsToggle" data-tip="Use CORS proxy for cross-origin">CORS proxy</div>
+    <button class="theme-toggle tooltip" id="darkToggle" data-tip="Toggle theme">
+      <!-- Sun Icon -->
+      <svg class="icon-sun" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+      <!-- Moon Icon -->
+      <svg class="icon-moon" viewBox="0 0 24 24">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <!-- REQUEST PANEL -->
+  <div class="panel" id="reqPanel">
+    <div class="panel-header">
+      <span class="panel-label">Request</span>
+      <div class="panel-meta">
+        <span class="method-badge" id="methodBadge">—</span>
+        <span class="meta-text" id="urlPreview">—</span>
+      </div>
+    </div>
+    <div class="editor-wrap">
+      <div class="line-nums" id="reqLineNums">1</div>
+      <textarea
+        class="editor-area"
+        id="reqEditor"
+        spellcheck="false"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        placeholder="GET https://api.example.com/users
+
+Accept: application/json
+Authorization: Bearer token
+
+{
+  &quot;key&quot;: &quot;value&quot;
+}"
+      >POST https://jsonplaceholder.typicode.com/posts
+
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "halo dunia",
+  "body": "ini adalah contoh request",
+  "userId": 1
+}</textarea>
+    </div>
+    <div class="statusbar">
+      <div class="statusbar-item"><span>lines</span><span id="reqLines">0</span></div>
+      <div class="statusbar-item"><span>chars</span><span id="reqChars">0</span></div>
+      <div class="statusbar-item"><span>headers</span><span id="reqHeaderCount">0</span></div>
+    </div>
+  </div>
+
+  <!-- SEND COLUMN -->
+  <div class="send-col">
+    <button class="send-btn tooltip" id="sendBtn" data-tip="⌘↵ Send">
+      <svg width="20" height="20" viewBox="0 0 24 24">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </button>
+    <span class="send-label">send</span>
+    <span class="kbd-hint">⌘↵</span>
+  </div>
+
+  <!-- RESPONSE PANEL -->
+  <div class="panel" id="resPanel">
+    <div class="panel-header">
+      <span class="panel-label">Response</span>
+      <div class="panel-meta" id="resMeta"></div>
+    </div>
+    <div class="res-tabs" id="resTabs" style="display:none">
+      <div class="res-tab active" data-tab="body">Body</div>
+      <div class="res-tab" data-tab="headers">Headers</div>
+      <div class="res-tab" data-tab="raw">Raw</div>
+    </div>
+    <div class="editor-wrap" id="resEditorWrap">
+      <div class="line-nums" id="resLineNums">1</div>
+      <div class="res-content" id="resContent">
+        <span class="res-placeholder">Send a request to see the response...</span>
+      </div>
+    </div>
+    <div class="statusbar" id="resStatusbar" style="display:none">
+      <div class="statusbar-item"><span>status</span><span id="statStatus">—</span></div>
+      <div class="statusbar-item"><span>time</span><span id="statTime">—</span></div>
+      <div class="statusbar-item"><span>size</span><span id="statSize">—</span></div>
+      <div class="statusbar-item"><span>type</span><span id="statType">—</span></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+let darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+let corsProxy = false;
+let currentTab = 'body';
+let lastResponse = null;
+
+// ── DARK MODE TOGGLE ──
+function applyDark() {
+  document.body.toggleAttribute('data-dark', darkMode);
+}
+applyDark();
+$('darkToggle').addEventListener('click', () => { 
+  darkMode = !darkMode; 
+  applyDark(); 
+});
+
+// ── CORS PROXY ──
+$('corsToggle').addEventListener('click', () => {
+  corsProxy = !corsProxy;
+  $('corsToggle').classList.toggle('active', corsProxy);
+});
+
+// ── LINE NUMBERS SYNC ──
+function updateLineNums(textarea, numsEl) {
+  const lines = textarea.value.split('\n').length || 1;
+  let html = '';
+  for (let i = 1; i <= lines; i++) html += i + '\n';
+  numsEl.textContent = html;
+  numsEl.scrollTop = textarea.scrollTop;
+}
+
+const reqEditor = $('reqEditor');
+const reqLineNums = $('reqLineNums');
+
+reqEditor.addEventListener('input', () => {
+  updateLineNums(reqEditor, reqLineNums);
+  updateReqMeta();
+  $('reqLines').textContent = reqEditor.value.split('\n').length;
+  $('reqChars').textContent = reqEditor.value.length;
+});
+
+// Sinkronisasi scroll presisi
+reqEditor.addEventListener('scroll', () => { 
+  reqLineNums.scrollTop = reqEditor.scrollTop; 
+});
+
+// Tab key di Editor
+reqEditor.addEventListener('keydown', e => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const s = reqEditor.selectionStart, end = reqEditor.selectionEnd;
+    reqEditor.value = reqEditor.value.substring(0, s) + '  ' + reqEditor.value.substring(end);
+    reqEditor.selectionStart = reqEditor.selectionEnd = s + 2;
+    updateLineNums(reqEditor, reqLineNums);
+  }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { 
+    e.preventDefault(); 
+    sendRequest(); 
+  }
+});
+
+// ── PARSE REQUEST ──
+function parseRequest(raw) {
+  const lines = raw.split('\n');
+  if (!lines.length || !lines[0].trim()) return null;
+
+  const firstLine = lines[0].trim();
+  const parts = firstLine.split(/\s+/);
+  if (parts.length < 2) return null;
+
+  const method = parts[0].toUpperCase();
+  let url = parts[1];
+  if (!url.startsWith('http')) url = 'https://' + url;
+
+  const headers = {};
+  let bodyStart = -1;
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.trim() === '') { bodyStart = i + 1; break; }
+    const colonIdx = line.indexOf(':');
+    if (colonIdx > 0) {
+      const k = line.substring(0, colonIdx).trim();
+      const v = line.substring(colonIdx + 1).trim();
+      headers[k] = v;
+    }
+  }
+
+  const body = bodyStart > 0 ? lines.slice(bodyStart).join('\n').trim() : null;
+  return { method, url, headers, body };
+}
+
+// ── REQ META ──
+function updateReqMeta() {
+  const parsed = parseRequest(reqEditor.value);
+  const badge = $('methodBadge');
+  const preview = $('urlPreview');
+
+  const colors = {
+    GET: ['var(--method-get)', 'var(--method-bg-get)'],
+    POST: ['var(--method-post)', 'var(--method-bg-post)'],
+    PUT: ['var(--method-put)', 'var(--method-bg-put)'],
+    DELETE: ['var(--method-del)', 'var(--method-bg-del)'],
+    PATCH: ['var(--method-patch)', 'var(--method-bg-patch)'],
+  };
+
+  if (parsed) {
+    const [c, bg] = colors[parsed.method] || ['var(--text2)', 'var(--surface2)'];
+    badge.textContent = parsed.method;
+    badge.style.color = c;
+    badge.style.background = bg;
+    try {
+      const u = new URL(parsed.url);
+      preview.textContent = u.hostname + (u.pathname !== '/' ? u.pathname : '');
+    } catch { preview.textContent = parsed.url.slice(0, 40); }
+    $('reqHeaderCount').textContent = Object.keys(parsed.headers).length;
+  } else {
+    badge.textContent = '—';
+    badge.style.color = 'var(--text3)';
+    badge.style.background = 'transparent';
+    preview.textContent = '—';
+    $('reqHeaderCount').textContent = '0';
+  }
+}
+
+// ── SYNTAX HIGHLIGHT JSON ──
+function highlightJSON(json) {
+  try {
+    const parsed = JSON.parse(json);
+    json = JSON.stringify(parsed, null, 2);
+  } catch {}
+  return json
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) return `<span class="hl-key">${match}</span>`;
+        return `<span class="hl-str">${match}</span>`;
+      }
+      if (/true|false/.test(match)) return `<span class="hl-bool">${match}</span>`;
+      if (/null/.test(match)) return `<span class="hl-null">${match}</span>`;
+      return `<span class="hl-num">${match}</span>`;
+    });
+}
+
+function formatHeaders(headers) {
+  let html = '';
+  headers.forEach((v, k) => {
+    html += `<span class="hl-header-name">${escHtml(k)}</span>: <span class="hl-header-val">${escHtml(v)}</span>\n`;
+  });
+  return html || '<span class="res-placeholder">no headers</span>';
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── RENDER RESPONSE TAB ──
+function renderTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.res-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  if (!lastResponse) return;
+  const { statusLine, body, headers, rawText, contentType } = lastResponse;
+  const resContent = $('resContent');
+  const resLineNums = $('resLineNums');
+
+  let html = '';
+  let text = '';
+
+  if (tab === 'body') {
+    if (contentType && contentType.includes('json')) {
+      try {
+        html = highlightJSON(body);
+        text = JSON.stringify(JSON.parse(body), null, 2);
+      } catch { html = escHtml(body); text = body; }
+    } else {
+      html = escHtml(body);
+      text = body;
+    }
+  } else if (tab === 'headers') {
+    html = `<span class="hl-status-line">${escHtml(statusLine)}</span>\n` + formatHeaders(headers);
+    text = statusLine + '\n' + Array.from(headers.entries()).map(([k,v])=>`${k}: ${v}`).join('\n');
+  } else {
+    html = escHtml(rawText);
+    text = rawText;
+  }
+
+  resContent.innerHTML = html;
+  const lines = text.split('\n').length;
+  let nums = '';
+  for (let i = 1; i <= lines; i++) nums += i + '\n';
+  resLineNums.textContent = nums;
+  resContent.scrollTop = 0;
+  resLineNums.scrollTop = 0;
+}
+
+// Sinkronisasi scroll presisi untuk Response
+$('resContent').addEventListener('scroll', () => { 
+  $('resLineNums').scrollTop = $('resContent').scrollTop; 
+});
+
+// ── SEND REQUEST ──
+async function sendRequest() {
+  const raw = reqEditor.value.trim();
+  if (!raw) return;
+  const parsed = parseRequest(raw);
+  if (!parsed) { showError('Invalid request format.\nExpected: METHOD URL\nHeader: Value\n\nbody'); return; }
+
+  const btn = $('sendBtn');
+  btn.classList.add('loading');
+  btn.innerHTML = '<div class="spinner"></div>';
+
+  const t0 = performance.now();
+
+  try {
+    let url = parsed.url;
+    if (corsProxy) url = 'https://corsproxy.io/?' + encodeURIComponent(url);
+
+    const opts = {
+      method: parsed.method,
+      headers: parsed.headers,
+    };
+    if (parsed.body && !['GET','HEAD'].includes(parsed.method)) {
+      opts.body = parsed.body;
+    }
+
+    const res = await fetch(url, opts);
+    const elapsed = Math.round(performance.now() - t0);
+    const bodyText = await res.text();
+    const size = new Blob([bodyText]).size;
+    const contentType = res.headers.get('content-type') || '';
+
+    const statusLine = `HTTP/1.1 ${res.status} ${res.statusText}`;
+    const rawText = statusLine + '\n' + Array.from(res.headers.entries()).map(([k,v])=>`${k}: ${v}`).join('\n') + '\n\n' + bodyText;
+
+    lastResponse = { statusLine, body: bodyText, headers: res.headers, rawText, contentType };
+
+    const sc = res.status;
+    const isOk = sc >= 200 && sc < 300;
+    const isWarn = sc >= 300 && sc < 500;
+    const dotColor = isOk ? 'var(--status-ok)' : isWarn ? 'var(--status-warn)' : 'var(--status-err)';
+    const textColor = isOk ? 'var(--status-ok)' : isWarn ? 'var(--status-warn)' : 'var(--status-err)';
+    
+    $('resMeta').innerHTML = `
+      <span class="status-badge" style="color:${textColor}">
+        <span class="status-dot" style="background:${dotColor}"></span>
+        <span>${sc} ${res.statusText}</span>
+      </span>`;
+
+    $('resTabs').style.display = 'flex';
+    $('resStatusbar').style.display = 'flex';
+    $('statStatus').textContent = sc;
+    $('statStatus').style.color = textColor;
+    $('statTime').textContent = elapsed + 'ms';
+    $('statSize').textContent = size > 1024 ? (size/1024).toFixed(1) + 'kb' : size + 'b';
+    $('statType').textContent = contentType.split(';')[0] || '—';
+
+    renderTab('body');
+
+  } catch (err) {
+    showError('Request failed:\n' + err.message + (corsProxy ? '' : '\n\nTip: enable CORS proxy for cross-origin requests'));
+  } finally {
+    btn.classList.remove('loading');
+    btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
+  }
+}
+
+function showError(msg) {
+  lastResponse = null;
+  $('resTabs').style.display = 'none';
+  $('resStatusbar').style.display = 'none';
+  $('resMeta').innerHTML = `<span style="font-family:var(--mono);font-size:11px;color:var(--status-err)">error</span>`;
+  $('resContent').innerHTML = `<span class="error-box">${escHtml(msg)}</span>`;
+  $('resLineNums').textContent = '1';
+}
+
+// ── TABS EVENT ──
+document.querySelectorAll('.res-tab').forEach(tab => {
+  tab.addEventListener('click', () => renderTab(tab.dataset.tab));
+});
+
+$('sendBtn').addEventListener('click', sendRequest);
+
+// Init Default State
+updateLineNums(reqEditor, reqLineNums);
+updateReqMeta();
+</script>
+</body>
+</html>
