@@ -19,14 +19,15 @@ title: Web Server Hardening CheatSheet
 | 3 | Nonaktifkan modul/fitur tidak perlu |
 | 4 | Konfigurasi SSL/TLS kuat |
 | 5 | Security headers HTTP |
-| 6 | Batasi metode HTTP |
-| 7 | Proteksi file & direktori sensitif |
-| 8 | Timeout & ukuran request |
-| 9 | Rate limiting & anti-DoS |
-| 10 | WAF (Web Application Firewall) |
-| 11 | Permission file konfigurasi |
-| 12 | Konfigurasi logging |
-| 13 | Anti PHP Shell & Anti bypass disable function |
+| 6 | Nonaktifkan directory listing |
+| 7 | Batasi metode HTTP |
+| 8 | Proteksi file & direktori sensitif |
+| 9 | Timeout & ukuran request |
+| 10 | Rate limiting & anti-DoS |
+| 11 | WAF (Web Application Firewall) |
+| 12 | Permission file konfigurasi |
+| 13 | Konfigurasi logging |
+| 14 | Anti PHP Shell & Anti bypass disable function |
 
 
 ---
