@@ -4,28 +4,30 @@ title: Web Server Hardening CheatSheet
 
 <h1 align="center">Hardening Web Server: Apache & Nginx di Ubuntu Linux</h1>
 
-**Versi:** 1.0  
-Semua teknik yang ditulis sudah dites pada server Ubuntu 22.04 LTS
+**Versi:** 1.0
+
+>Semua teknik yang ditulis sudah dites pada server Ubuntu 22.04 LTS
 
 ---
 
 ## Daftar Area Hardening
 
-| # | Area | Apache | Nginx |
-|---|------|--------|-------|
-| 1 | Update sistem & firewall | ✓ | ✓ |
-| 2 | Sembunyikan versi/banner | ✓ | ✓ |
-| 3 | Nonaktifkan modul/fitur tidak perlu | ✓ | ✓ |
-| 4 | Konfigurasi SSL/TLS kuat | ✓ | ✓ |
-| 5 | Security headers HTTP | ✓ | ✓ |
-| 6 | Batasi metode HTTP | ✓ | ✓ |
-| 7 | Proteksi file & direktori sensitif | ✓ | ✓ |
-| 8 | Timeout & ukuran request | ✓ | ✓ |
-| 9 | Rate limiting & anti-DoS | ✓ | ✓ |
-| 10 | WAF (Web Application Firewall) | mod_security | naxsi/modsec |
-| 11 | Permission file konfigurasi | ✓ | ✓ |
-| 12 | Konfigurasi logging | ✓ | ✓ |
-| 13 | Jalankan sebagai user non-root | ✓ | ✓ |
+| No | Area |
+|---|------|
+| 1 | Update sistem & firewall |
+| 2 | Sembunyikan versi/banner |
+| 3 | Nonaktifkan modul/fitur tidak perlu |
+| 4 | Konfigurasi SSL/TLS kuat |
+| 5 | Security headers HTTP |
+| 6 | Batasi metode HTTP |
+| 7 | Proteksi file & direktori sensitif |
+| 8 | Timeout & ukuran request |
+| 9 | Rate limiting & anti-DoS |
+| 10 | WAF (Web Application Firewall) |
+| 11 | Permission file konfigurasi |
+| 12 | Konfigurasi logging |
+| 13 | Anti PHP Shell & Anti bypass disable function |
+
 
 ---
 
@@ -453,9 +455,15 @@ more_clear_headers X-Powered-By;
 
 > **Catatan:** `more_clear_headers` memerlukan modul `ngx_headers_more`. Alternatif tanpa modul tambahan: gunakan `proxy_hide_header` jika Nginx sebagai reverse proxy.
 
+Install modul `ngx_headers_more`:
+
+```bash
+sudo apt install libnginx-mod-http-headers-more-filter
+```
+
 ### 3.5 Batasi Metode HTTP
 
-Di dalam blok `server { }`:
+Di dalam file `/etc/nginx/sites-available/default` di blok `server { }`:
 
 ```nginx
 # Izinkan hanya GET, POST, HEAD
@@ -466,7 +474,7 @@ if ($request_method !~ ^(GET|POST|HEAD)$) {
 
 ### 3.6 Proteksi File Sensitif
 
-Di dalam blok `server { }`:
+Di dalam file `/etc/nginx/sites-available/default` di blok `server { }`:
 
 ```nginx
 # Blokir akses ke file tersembunyi (.git, .env, dll.)
@@ -489,7 +497,7 @@ location = /wp-config.php {
 
 ### 3.7 Batasi Ukuran Request dan Timeout
 
-Di dalam blok `http { }`:
+Di dalam file `nginx.conf` di blok `http { }`:
 
 ```nginx
 # Batas ukuran body upload (10MB)
@@ -585,7 +593,7 @@ Jika Nginx digunakan sebagai reverse proxy:
 
 ```nginx
 location / {
-    proxy_pass http://backend;
+    proxy_pass http://ip-backend:port;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -611,7 +619,6 @@ sudo chmod -R 644 /etc/nginx/*.conf
 sudo chmod 755 /etc/nginx/ /etc/nginx/conf.d/ /etc/nginx/sites-available/ /etc/nginx/sites-enabled/
 
 # Root document web
-sudo chown -R nginx:nginx /var/www/html/
 sudo chmod -R 755 /var/www/html/
 sudo find /var/www/html/ -type f -exec chmod 644 {} \;
 ```
@@ -664,7 +671,41 @@ nikto -h https://your-domain.com -ssl
 
 ---
 
-## Bagian 5: Checklist Akhir
+## Bagian 5: Anti PHP Shell & Anti bypass disable function
+
+Edit file `php.ini`:
+
+```
+# Sesuaikan versi php
+sudo nano /etc/php/8.1/apache2/php.ini
+```
+
+Tambahkan / edit baris berikut:
+
+```php
+disable_functions = curl_multi_exec, popen, passthru, exec, popen, symlink, proc_open, shell_exec, show_source, allow_url_fopen, system, passthru, parse_ini_file, show_source, exec, proc_open, php_uname, posix_getpwuid, setenv, main, apache_setenv, putenv, mail, link, mb_send_mail,pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wifcontinued,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_get_handler,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,pcntl_async_signals,pcntl_unshare,phpinfo
+
+open_basedir = /var/www/html
+```
+
+Jika menggunakan virtualhost, tambahkan seperti berikut:
+
+```
+<VirtualHost *:443>
+        #Konfigurasi lainnya ..
+
+        <Directory /home/blog>
+            php_admin_value open_basedir /home/blog
+        </Directory>
+        <Directory /home/sample>
+            php_admin_value upload_tmp_dir /home/blog
+        </Directory>
+</VirtualHost>
+```
+
+---
+
+## Bagian 6: Checklist Akhir
 
 Setelah semua konfigurasi diterapkan, verifikasi poin-poin berikut:
 
@@ -683,6 +724,5 @@ Setelah semua konfigurasi diterapkan, verifikasi poin-poin berikut:
 [ ] Uji SSL Labs mendapat grade A atau A+
 [ ] Mozilla Observatory mendapat grade B+ atau lebih
 [ ] Nikto tidak menemukan kerentanan kritis
+[ ] Uji dengan upload shell PHP apakah masih di eksekusi/tidak
 ```
-
-<h1 align="center">Bonus: Wordpress Hardening</h1>
