@@ -156,14 +156,12 @@
                 <div class="flex-shrink-0 mr-2">
                     <span class="text-light-green dark:text-dark-green">root@localhost</span><span class="text-light-fg dark:text-dark-fg">:</span><span class="text-light-blue dark:text-dark-blue">~</span><span class="text-light-fg dark:text-dark-fg">#</span>
                 </div>
-                <!-- Container untuk input dan overlay visualnya -->
                 <div class="relative flex-grow" onclick="commandInput.focus()">
-                    <!-- Input field yang sebenarnya, teks dan kursornya transparan -->
                     <input type="text" id="command-input" class="w-full bg-transparent border-none outline-none" autofocus autocomplete="off" spellcheck="false">
                     <!-- Overlay visual untuk menampilkan teks dan kursor kustom -->
                     <div class="absolute inset-0 flex items-center pointer-events-none">
                         <span id="input-text-display" class="whitespace-pre"></span>
-                        <span id="fake-cursor" class="blinking-cursor">▌</span>
+                        <span id="fake-cursor" class="blinking-cursor">_</span>
                     </div>
                 </div>
             </div>
