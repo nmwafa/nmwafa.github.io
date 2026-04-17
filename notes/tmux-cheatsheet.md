@@ -1,7 +1,8 @@
 # TMUX Cheatsheet
 
-Hampir semua *shortcut* di dalam tmux membutuhkan **Prefix Key** terlebih dahulu. Secara *default*, prefix key untuk tmux adalah:
-`Ctrl + b` (tekan Ctrl dan b bersamaan, lalu lepas, baru tekan tombol *shortcut* berikutnya).
+>Hampir semua *shortcut* di dalam tmux membutuhkan **Prefix Key** terlebih dahulu.
+>
+>Secara *default*, prefix key untuk tmux adalah: `Ctrl + b` (tekan Ctrl dan b bersamaan, lalu lepas, baru tekan tombol *shortcut* berikutnya).
 
 ---
 
