@@ -149,29 +149,12 @@ Tolak yang lain:
 sudo iptables -P INPUT DROP
 ```
 
-Lihat *rules* standar: 
-
-```bash
-sudo iptables -L -n
-```
-
-Lihat *rules* detail statistik: 
-
-```bash
-sudo iptables -L -n -v
-```
-
-Lihat *rules* nomor baris: 
-
-```bash
-sudo iptables -L --line-numbers
-```
-
-Lihat *rules* format skrip: 
-
-```bash
-sudo iptables -S
-```
+| Perintah | Deskripsi |
+|----------|-----------|
+| `sudo iptables -L -n` | Lihat *rules* standar |
+| `sudo iptables -L -n -v` | Lihat *rules* detail statistik |
+| `sudo iptables -L --line-numbers` | Lihat *rules* nomor baris |
+| `sudo iptables -S` | Lihat *rules* format skrip |
 
 ### 4.4 Proteksi tambahan dengan fail2ban (proteksi *bruteforce* dengan blokir IP): 
 
@@ -221,9 +204,11 @@ systemctl list-unit-files --state=enabled
 
 ## Bagian 5: Log, Audit & Monitor
 
-- Lacak user yang login saat ini: `who -H` -> membaca file `/var/log/utmp`
-- Lacak pengguna yang sebelumnya pernah login: `last -R` -> membaca file `/var/log/wtmp`
-- Lacak upaya kegagalan login ke sistem: `lastb` -> membaca file `/var/log/btmp`
+| Perintah | Deskripsi |
+|----------|-----------|
+| `who -H` | Lacak user yang login saat ini. membaca file `/var/log/utmp` |
+| `last -R` | Lacak pengguna yang sebelumnya pernah login. membaca file `/var/log/wtmp` |
+| `lastb` | Lacak upaya kegagalan login ke sistem. membaca file `/var/log/btmp` |
 
 ### 5.1 Pakai lynis untuk audit keamanan sistem
 
@@ -283,29 +268,12 @@ sudo augenrules --load
 
 Log ada di /var/log/audit/audit.log
 
-Cari event: 
-
-```bash
-sudo ausearch -k ubah-password
-```
-
-Ringkasan laporan login: 
-
-```bas
-hsudo aureport -au
-```
-
-Laporan Perintah yang Gagal: 
-
-```bash
-sudo aureport -c --failed
-```
-
-Ringkasan Akses File: 
-
-```bash
-sudo aureport -f
-```
+| Perintah | Deskripsi |
+|----------|-----------|
+| `sudo ausearch -k ubah-password` | Cari event |
+| `sudo aureport -au` | Ringkasan laporan login |
+| `sudo aureport -c --failed` | Laporan Perintah yang Gagal |
+| `sudo aureport -f` | Ringkasan Akses File |
 
 ---
 
@@ -458,4 +426,4 @@ Aktifkan mode *enforcing*:
   - Ubah mode secara instan tanpa reboot: `sudo setenforce 1`
   - Ubah permanen: `sudo nano /etc/selinux/config`, edit: `SELINUX=enforcing`
     
-**[Penting]** Hati-hati sebelum di ubah ke mode `enforcing`. Pastikan semua pengaturan sudah benar
+**[Penting]** Hati-hati sebelum di ubah ke mode `enforcing`. Pastikan SELinux tidak memblokir akses masuk seperti layanan SSH
