@@ -1,8 +1,4 @@
----
-title: Reconnaissance
----
-
-<h1 align="center">Recon</h1>
+# Recon
 
 #### Subdomain
 
