@@ -1,8 +1,4 @@
----
-title: Linux Server Hardening
----
-
-<h1 align="center">Linux Server Hardening</h1>
+# Linux Server Hardening
 
 ## Bagian 1: Persiapan
 
