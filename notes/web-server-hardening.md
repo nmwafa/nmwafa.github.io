@@ -1,8 +1,4 @@
----
-title: Web Server Hardening CheatSheet
----
-
-<h1 align="center">Hardening Web Server: Apache & Nginx di Ubuntu Linux</h1>
+# Hardening Web Server: Apache & Nginx di Ubuntu Linux
 
 **Versi:** 1.0
 
