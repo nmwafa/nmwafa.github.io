@@ -1,8 +1,8 @@
----
-title: Check List Mitigasi Ransomware
----
+# Check List Mitigasi Ransomware
 
-<h1 align="center">Check List Mitigasi Ransomware</h1>
+Sumber: [eucyberacademy.com](https://drive.google.com/file/d/1gUqLR4zCjOT_S0eBXQDH1z0xMEGuJaby/view?usp=sharing)
+
+---
 
 ### Manajemen Akses (_Access Management_)
 - **Kelola Identitas dan Kredensial:** Manajemen kredensial yang tepat sangat penting karena ransomware sering dimulai dengan kebocoran kredensial.
@@ -60,7 +60,3 @@ title: Check List Mitigasi Ransomware
 ### Koordinasi Pemulihan dengan Pihak Internal dan Eksternal (_Restoration Coordination with Internal and External Parties_)
 - **Mengelola Hubungan Masyarakat dan Perbaikan Reputasi:** Meminimalkan dampak bisnis dan memulihkan kepercayaan di antara pemangku kepentingan.
 - **Mengomunikasikan Kegiatan Pemulihan:** Komunikasi dengan pemangku kepentingan internal dan eksternal meminimalkan dampak bisnis dan memulihkan kepercayaan.
-
-
-
-#### Sumber: [eucyberacademy.com](https://drive.google.com/file/d/1gUqLR4zCjOT_S0eBXQDH1z0xMEGuJaby/view?usp=sharing)
