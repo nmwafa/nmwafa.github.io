@@ -1,9 +1,9 @@
 # Table of contents
 
-- ### [Linux Server Hardening](https://nmwafa.github.io/notes/linux-server-hardening)
-- ### [Hardening Web Server: Apache & Nginx di Ubuntu Linux](https://nmwafa.github.io/notes/web-server-hardening)
-- ### [File Transfer](https://nmwafa.github.io/notes/file-transfer)
-- ### [Reconnaissance](https://nmwafa.github.io/notes/recon)
-- ### [Check List Mitigasi Ransomware](https://nmwafa.github.io/notes/mitigasi-ransomware)
-- ### [TMUX cheatsheet](https://nmwafa.github.io/notes/tmux-cheatsheet)
-- ### [Nmap cheatsheet](https://nmwafa.github.io/notes/nmap-cheatsheet)
+- ### [Linux Server Hardening](linux-server-hardening)
+- ### [Hardening Web Server: Apache & Nginx di Ubuntu Linux](web-server-hardening)
+- ### [File Transfer](file-transfer)
+- ### [Reconnaissance](recon)
+- ### [Check List Mitigasi Ransomware](mitigasi-ransomware)
+- ### [TMUX cheatsheet](tmux-cheatsheet)
+- ### [Nmap cheatsheet](nmap-cheatsheet)
