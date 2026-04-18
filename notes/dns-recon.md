@@ -512,7 +512,7 @@ curl -s https://raw.githubusercontent.com/trickest/resolvers/main/resolvers.txt 
 ## Quick Reference — Urutan Eksekusi Recon
 
 ```
-1. WHOIS & NS discovery      →  whois, dig NS
+1. WHOIS & NS discovery       →  whois, dig NS
 2. Zone Transfer              →  dig axfr, dnsenum
 3. Passive subdomain enum     →  subfinder, assetfinder, crt.sh
 4. Active DNS brute force     →  puredns, massdns, gobuster dns
