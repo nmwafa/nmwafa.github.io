@@ -1,6 +1,24 @@
 # Check List Mitigasi Ransomware
 
-Sumber: [eucyberacademy.com](https://drive.google.com/file/d/1gUqLR4zCjOT_S0eBXQDH1z0xMEGuJaby/view?usp=sharing)
+>Sumber: [eucyberacademy.com](https://drive.google.com/file/d/1gUqLR4zCjOT_S0eBXQDH1z0xMEGuJaby/view?usp=sharing)
+
+---
+
+Daftar isi:
+
+1. [Manajemen Akses](#access-management)
+2. [Edukasi Keamanan Siber](#cyber-security-education)
+3. [Manajemen Data](#data-management)
+4. [Kebijakan dan Manajemen Konfigurasi](#policy-and-configuration-management)
+5. [Pemeliharaan dan Perbaikan](#maintenance-and-repair)
+6. [Solusi Keamanan Teknis](#technical-security-solutions)
+7. [Deteksi Aktivitas Anomali dan Pemahaman Dampak](#anomalous-activity-detection-and-impact-understanding)
+8. [Eksekusi Respons terhadap Insiden Terdeteksi](#response-execution-to-detected-incidents)
+9. [Analisis Efektif untuk Respons dan Pemulihan](#effectife-analysis-for-response-and-recovery)
+10. [Mitigasi Penahanan Peristiwa, dan Resolusi](#event-containment-mitigation-and-resolution)
+11. [Peningkatan Respons Melalui Pembelajaran](#response-improvement-through-lessons-learned)
+12. [Eksekusi dan Pemeliharaan Proses Pemulihan](#recovery-process-execution-and-maintenance)
+13. [Koordinasi Pemulihan dengan Pihak Internal dan Eksternal](#restoration-coordination-with-internal-and-external-parties)
 
 ---
 
