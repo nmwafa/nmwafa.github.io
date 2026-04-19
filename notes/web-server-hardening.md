@@ -1,6 +1,6 @@
 # Hardening Web Server: Apache & Nginx di Ubuntu Linux
 
-**Versi:** 1.0
+**Versi:** 1.1
 
 >Semua teknik yang ditulis sudah dites pada server Ubuntu 22.04 LTS
 >
