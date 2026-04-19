@@ -1,6 +1,6 @@
 # Hardening Web Server: Apache & Nginx di Ubuntu Linux
 
-**Versi:** 1.1
+**Versi:** 1.2
 
 >Semua teknik yang ditulis sudah dites pada server Ubuntu 22.04 LTS
 >
@@ -685,6 +685,9 @@ Tambahkan / edit baris berikut:
 disable_functions = curl_multi_exec, popen, passthru, exec, popen, symlink, proc_open, shell_exec, show_source, allow_url_fopen, system, passthru, parse_ini_file, show_source, exec, proc_open, php_uname, posix_getpwuid, setenv, main, apache_setenv, putenv, mail, link, mb_send_mail,pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wifcontinued,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_get_handler,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,pcntl_async_signals,pcntl_unshare,phpinfo
 
 open_basedir = /var/www/html
+
+# Atau jika menggunakan phpMyAdmin
+open_basedir = "/var/www/html:/usr/share/phpmyadmin:/usr/share/php"
 ```
 
 Jika menggunakan virtualhost, tambahkan seperti berikut:
