@@ -3,6 +3,8 @@
 **Versi:** 1.0
 
 >Semua teknik yang ditulis sudah dites pada server Ubuntu 22.04 LTS
+>
+>Di bagian akhir ada trik singkat untuk [Hardening Wordpress dan phpMyAdmin](#hardening-wordpress-dan-phpmyadmin)
 
 ---
 
@@ -723,3 +725,41 @@ Setelah semua konfigurasi diterapkan, verifikasi poin-poin berikut:
 [ ] Nikto tidak menemukan kerentanan kritis
 [ ] Uji dengan upload shell PHP apakah masih di eksekusi/tidak
 ```
+
+---
+
+# Hardening Wordpress dan phpMyAdmin
+
+## Bagian 1: phpMyAdmin
+
+Ubah URI (*Uniform Resource Identifier*) default di `/etc/phpmyadmin/apache.conf`. Ganti dengan kata yang sekiranya tidak ada di Wordlists manapun:
+
+```
+# phpMyAdmin default Apache configuration
+
+Alias /ini-halaman-phpmyadmin-rahasia-00 /usr/share/phpmyadmin
+
+# Konfigurasi lain
+```
+
+```bash
+sudo systemctl restart apache2
+```
+
+---
+
+## Bagian 2: Wordpress
+
+### 2.1 Aktifkan update otomatis
+
+### 2.2 Install dan aktifkan plugin Disable XML-RPC
+
+Masuk ke menu tambahkan plugin cari plugin **Disable XML-RPC-API**. Yang saya gunakan dibuat oleh *Amin Nazemi* dengan logo warna merah.
+
+### 2.3 Ubah URI login wp-admin
+
+Install dan aktifkan plugin **Easy Hide Login** oleh *WebFactory*. Settings dan isi bagian **Slug Text** dengan kata rahasia. Contoh: `ini-halaman-login-rahasia-00`.
+
+Setelah diaktifkan, logout dan login ulang dengan menambahkan Slug tadi di akhir URL. Contoh: `https://your-domain.com/?ini-halaman-login-rahasia-00`
+
+**Cek:** Jika mengakses halaman login menggunakan `/wp-admin` harus 404
