@@ -26,7 +26,7 @@
     - 6.4 [Serangan Denial of Service (DoS)](#64-serangan-denial-of-service-dos)
     - 6.5 [Serangan Injeksi](#65-serangan-injeksi)
     - 6.6 [WebSocket sebagai Tunnel untuk C2 (Command and Control)](#66-websocket-sebagai-tunnel-untuk-c2-command-and-control)
-7. [Skenario Pengujian Keamanan terhadap WebSocket](#7-skenario-pengujian-keamanan-terhadap-websocket)
+7. [Skenario Pengujian Keamanan](#7-skenario-pengujian-keamanan)
     - 7.1 [Persiapan dan Tools](#71-persiapan-dan-tools)
     - 7.2 [Skenario Pengujian: Identifikasi Penggunaan WebSocket](#72-skenario-pengujian-identifikasi-penggunaan-websocket)
     - 7.3 [Skenario Pengujian: Validasi Origin (CSWSH)](#73-skenario-pengujian-validasi-origin-cswsh)
@@ -302,7 +302,7 @@ WebSocket juga dapat digunakan oleh penyerang sebagai mekanisme komunikasi untuk
 
 RoadK1ll adalah implant berbasis Node.js yang membuat koneksi WebSocket keluar (outbound) ke infrastruktur yang dikontrol penyerang dan menggunakannya sebagai tunnel untuk meneruskan traffic TCP. Ini memungkinkan penyerang untuk melakukan pivoting di dalam jaringan korban tanpa perlu koneksi masuk (inbound) yang sering diblokir oleh firewall.
 
-## 7. Skenario Pengujian Keamanan terhadap WebSocket
+## 7. Skenario Pengujian Keamanan
 
 Pengujian keamanan WebSocket memerlukan pendekatan yang berbeda dari pengujian HTTP tradisional karena sifat koneksi yang persisten dan stateful.
 
