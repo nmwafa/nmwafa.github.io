@@ -417,8 +417,8 @@
         <div style="display: flex; align-items: center; gap: 8px; margin-left: auto; margin-right: 12px;">
           <label for="combineMode" style="font-family: var(--mono); font-size: 10px; color: var(--text-3); text-transform: uppercase;">Combine with:</label>
           <select id="combineMode" class="field-select">
-            <option value="AND">AND (Space)</option>
             <option value="OR">OR ( | )</option>
+            <option value="AND">AND (Space)</option>
           </select>
         </div>
 
@@ -709,7 +709,7 @@ var domains      = [];   // full domain strings
 var selectedKeys = {};   // { "id||query": true }
 var customDorks  = [];   // user-added strings
 var previewDirty = false;
-var combineMode  = 'AND'; // 'AND' or 'OR'
+var combineMode  = 'OR'; // 'AND' or 'OR'
 
 // ─── THEME MANAGER ───────────────────────────────────────────────────────────
 function initTheme() {
