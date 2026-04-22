@@ -368,7 +368,7 @@
 <header class="header">
   <div class="logo">
     <div class="logo-icon">W</div>
-    DORK-GENERATOR
+    GEDOR-GEDOR
   </div>
   <div class="header-actions">
     <span class="header-tag" id="ipDisplay">YOUR IP: FETCHING...</span>
@@ -757,9 +757,9 @@ var CATS = [
     { id:'vc6', label:'filetype:env "APP_SECRET"',  query:'filetype:env "APP_SECRET"',   desc:'.env with app secret' },
     // ── NEW additions ──
     { id:'vc7', label:'inurl:"/.hg/hgrc"',          query:'inurl:"/.hg/hgrc"',   desc:'Mercurial repo config' },
-    { id:'vc8', label:'inurl:"/.bzr/README"',        query:'inurl:"/.bzr/README"', desc:'Bazaar VCS exposure' },
-    { id:'vc9', label:'filetype:env "JWT_SECRET"',   query:'filetype:env "JWT_SECRET"',   desc:'.env with JWT secret' },
-    { id:'vc10',label:'filetype:env "PRIVATE_KEY"',  query:'filetype:env "PRIVATE_KEY"',   desc:'.env with private key' },
+    { id:'vc8', label:'inurl:"/.bzr/README"',       query:'inurl:"/.bzr/README"', desc:'Bazaar VCS exposure' },
+    { id:'vc9', label:'filetype:env "JWT_SECRET"',  query:'filetype:env "JWT_SECRET"',   desc:'.env with JWT secret' },
+    { id:'vc10',label:'filetype:env "PRIVATE_KEY"', query:'filetype:env "PRIVATE_KEY"',   desc:'.env with private key' },
   ]},
 
   // ── 13. SERVER & INFRASTRUCTURE ──────────────────────────────────────────
@@ -785,11 +785,11 @@ var CATS = [
   // ── 14. API HACKING ───────────────────────────────────────────────────────
   { id:'api_hacking_collection', name:'API', dorks:[
     { id:'api1',  label:'Swagger UI Dashboard',   query:'intitle:"Swagger UI" inurl:"/swagger-ui/"', desc:'Exposed Swagger UI interfaces' },
-    { id:'api2',  label:'OpenAPI Spec (JSON)',     query:'filetype:json "openapi": "3.0.0"', desc:'OpenAPI/Swagger JSON definitions' },
-    { id:'api3',  label:'OpenAPI Spec (YAML)',     query:'filetype:yaml "openapi": "3.0.0"', desc:'OpenAPI/Swagger YAML definitions' },
+    { id:'api2',  label:'OpenAPI Spec (JSON)',    query:'filetype:json "openapi": "3.0.0"', desc:'OpenAPI/Swagger JSON definitions' },
+    { id:'api3',  label:'OpenAPI Spec (YAML)',    query:'filetype:yaml "openapi": "3.0.0"', desc:'OpenAPI/Swagger YAML definitions' },
     { id:'api4',  label:'Postman Collections',    query:'filetype:json "postman_collection" "info"', desc:'Exported Postman API collections' },
     { id:'api5',  label:'ReDoc Documentation',    query:'intitle:"ReDoc" inurl:api',    desc:'ReDoc generated documentation' },
-    { id:'api6',  label:'.env Files (Keys)',       query:'filetype:env "API_KEY=" OR "STRIPE_KEY=" OR "AWS_SECRET_ACCESS_KEY="',   desc:'Environment configuration files' },
+    { id:'api6',  label:'.env Files (Keys)',      query:'filetype:env "API_KEY=" OR "STRIPE_KEY=" OR "AWS_SECRET_ACCESS_KEY="',   desc:'Environment configuration files' },
     { id:'api7',  label:'Firebase Configuration', query:'filetype:js "apiKey" "authDomain" "projectId"',   desc:'Firebase web configuration snippets' },
     { id:'api8',  label:'Config JSON Secrets',    query:'filetype:json inurl:config "api_key" OR "secret"',   desc:'JSON files containing API credentials' },
     { id:'api9',  label:'YAML API Tokens',        query:'filetype:yaml "api_key" OR "access_token" OR "bearer"',   desc:'YAML configuration with tokens' },
@@ -842,17 +842,29 @@ var CATS = [
     { id:'ra4',  label:'intitle:"Guacamole"',          query:'intitle:"Guacamole" inurl:login',   desc:'Apache Guacamole (RDP/VNC gateway)' },
     { id:'ra5',  label:'intitle:"TeamViewer"',         query:'intitle:"TeamViewer" inurl:login', desc:'TeamViewer web login' },
     { id:'ra6',  label:'intitle:"AnyDesk"',            query:'intitle:"AnyDesk" inurl:login', desc:'AnyDesk web portal' },
-    { id:'ra7',  label:'intitle:"Webmin" inurl:10000',  query:'intitle:"Webmin" inurl:10000',   desc:'Webmin on default port 10000' },
+    { id:'ra7',  label:'intitle:"Webmin" inurl:10000', query:'intitle:"Webmin" inurl:10000',   desc:'Webmin on default port 10000' },
     { id:'ra8',  label:'intitle:"IPMI"',               query:'intitle:"IPMI" OR "iDRAC" inurl:login',   desc:'BMC/IPMI/iDRAC server management' },
     { id:'ra9',  label:'inurl:":4848" intitle:"GlassFish"', query:'inurl:":4848" intitle:"GlassFish"',   desc:'GlassFish admin console' },
     { id:'ra10', label:'inurl:":9090" intitle:"Cockpit"', query:'inurl:":9090" intitle:"Cockpit"',   desc:'Cockpit Linux web console' },
   ]},
   
   // ── 18. FINANCIAL & PAYMENT SYSTEMS ─────────────────────────────────────
-  { id:'financial', name:'Financial Data', dorks:[
-    { id:'fin1', label:'Stripe Live Keys', query:'"sk_live_" filetype:env', desc:'Stripe live secret keys' },
-    { id:'fin2', label:'PayPal API Creds', query:'"PAYPAL_CLIENT_ID" filetype:txt', desc:'PayPal credentials' },
-    { id:'fin3', label:'Bitcoin Wallet', query:'filetype:txt "wallet.dat"', desc:'Bitcoin wallet files' }
+  { id:'financial', name:'Financial & Payment Systems', dorks:[
+	{ id:'fin1',  label:'Stripe Live Secret Key',        query:'"sk_live_" filetype:env OR filetype:txt',                 desc:'Stripe live secret keys' },
+	{ id:'fin2',  label:'Stripe Publishable Key',        query:'"pk_live_" filetype:js OR filetype:json',                desc:'Stripe live publishable keys' },
+	{ id:'fin3',  label:'PayPal Client ID / Secret',     query:'"PAYPAL_CLIENT_ID" OR "PAYPAL_SECRET" filetype:env',     desc:'PayPal API credentials' },
+	{ id:'fin4',  label:'Authorize.Net Keys',            query:'"authorize.net" "API_LOGIN_ID" OR "TRANSACTION_KEY"',    desc:'Authorize.Net API credentials' },
+	{ id:'fin5',  label:'Routing & Account Numbers',     query:'filetype:xls OR filetype:csv "routing number" "account number"', desc:'ACH/bank account details in spreadsheets' },
+	{ id:'fin6',  label:'Bank Statement PDFs',           query:'filetype:pdf "bank statement" "account number" "confidential"', desc:'Exposed bank statements' },
+	{ id:'fin7', label:'Direct Deposit Forms',          query:'filetype:pdf "direct deposit" "routing" "voided check"',       desc:'Employee direct deposit authorization forms' },
+	{ id:'fin8', label:'Credit Card Numbers (PAN)',     query:'filetype:txt OR filetype:csv "VISA" "MasterCard" "Expiration" "CVV"', desc:'Plaintext credit card data dumps' },
+	{ id:'fin9', label:'PCI DSS Compliance Spreadsheets', query:'filetype:xlsx "PCI" "cardholder data"',                desc:'Internal PCI compliance tracking sheets' },
+	{ id:'fin10', label:'Bitcoin Private Keys (WIF)',    query:'filetype:txt "5H" OR "5J" OR "5K" "bitcoin"',            desc:'Bitcoin private keys in WIF format' },
+	{ id:'fin11', label:'Ethereum Private Keys',         query:'filetype:txt "0x" "private key" "ether"',                desc:'Ethereum private keys' },
+	{ id:'fin12', label:'Crypto Wallet Seed Phrases',    query:'filetype:txt "seed phrase" "mnemonic" "wallet"',         desc:'BIP39 mnemonic seed phrases' },
+	{ id:'fin13', label:'Wallet.dat Files',              query:'intitle:"index of" "wallet.dat" -sample -example',       desc:'Bitcoin Core wallet files' },
+	{ id:'fin14', label:'Coinbase API Keys',             query:'"coinbase" "api_key" "api_secret" filetype:env',         desc:'Coinbase exchange API credentials' },
+	{ id:'fin15', label:'Tax Returns (W‑2 / 1040)',      query:'filetype:pdf "W-2" "Employer identification number"',    desc:'Employee tax forms with SSN' },
   ]},
 ];
 
