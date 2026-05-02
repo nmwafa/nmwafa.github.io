@@ -30,11 +30,6 @@
     --transition: all 0.2s ease;
   }
 
-  ::-webkit-scrollbar {
-        width: 3px;
-        height: 0px;
-  }
-
   [data-theme="dark"] {
     --bg: #121212;
     --surface: #1e1e1e;
@@ -468,7 +463,7 @@
         <button class="btn-link btn-danger" id="btnResetPreview" title="Reset to auto-generated query" style="opacity:0.8; text-decoration:none; display:none;">&#8635; reset sync</button>
       </div>
       <div class="preview-body">
-        <textarea class="preview-textarea" id="previewTextarea"
+        <textarea class="preview-textarea" id="previewTextarea" spellcheck="false"
           placeholder="Configure targets and select dork operators above — the query will appear here and can be freely edited."></textarea>
         <div class="preview-url-row">
           <span class="preview-url-label">URL&nbsp;&rarr;</span>
