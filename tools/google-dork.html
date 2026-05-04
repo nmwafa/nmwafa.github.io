@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Google Dork Generator</title>
+<title>GEDOR | Google Dork Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -699,19 +699,19 @@ var CATS = [
 
   // ── 9. CLOUD & STORAGE ────────────────────────────────────────────────────
   { id:'cloud_storage', name:'Cloud & Storage', dorks:[
-    { id:'cs1', label:'site:s3.amazonaws.com',           query:'site:s3.amazonaws.com',   desc:'AWS S3 public buckets' },
-    { id:'cs2', label:'site:blob.core.windows.net',      query:'site:blob.core.windows.net',   desc:'Azure Blob storage' },
-    { id:'cs3', label:'site:storage.googleapis.com',     query:'site:storage.googleapis.com',   desc:'Google Cloud Storage' },
-    { id:'cs4', label:'site:drive.google.com',           query:'site:drive.google.com', desc:'Public Google Drive files' },
-    { id:'cs5', label:'site:pastebin.com password',      query:'site:pastebin.com password',   desc:'Passwords on Pastebin' },
-    { id:'cs6', label:'site:github.com password',        query:'site:github.com password',   desc:'Passwords on GitHub' },
-    { id:'cs7', label:'site:trello.com inurl:board',     query:'site:trello.com inurl:board', desc:'Public Trello boards' },
-    { id:'cs8', label:'site:docs.google.com',            query:'site:docs.google.com', desc:'Public Google Docs' },
+    { id:'cs1', label:'s3.amazonaws.com',           query:'"s3.amazonaws.com"',   desc:'AWS S3 public buckets' },
+    { id:'cs2', label:'blob.core.windows.net',      query:'"blob.core.windows.net"',   desc:'Azure Blob storage' },
+    { id:'cs3', label:'storage.googleapis.com',     query:'"storage.googleapis.com"',   desc:'Google Cloud Storage' },
+    { id:'cs4', label:'drive.google.com',           query:'"drive.google.com"', desc:'Public Google Drive files' },
+    { id:'cs5', label:'pastebin.com password',      query:'site:pastebin.com',   desc:'Pastebin' },
+    { id:'cs6', label:'github.com password',        query:'site:github.com',   desc:'GitHub' },
+    { id:'cs7', label:'trello.com inurl:board',     query:'"trello.com" inurl:board', desc:'Public Trello boards' },
+    { id:'cs8', label:'docs.google.com',            query:'"docs.google.com"', desc:'Public Google Docs' },
     // ── NEW additions ──
-    { id:'cs9',  label:'site:digitaloceanspaces.com',    query:'site:digitaloceanspaces.com',   desc:'DigitalOcean Spaces buckets' },
-    { id:'cs10', label:'site:onedrive.live.com',         query:'site:onedrive.live.com', desc:'Public OneDrive files' },
-    { id:'cs11', label:'site:sharepoint.com filetype:xlsx', query:'site:sharepoint.com filetype:xlsx', desc:'Exposed SharePoint spreadsheets' },
-    { id:'cs12', label:'site:gitlab.com password',       query:'site:gitlab.com password',   desc:'Passwords on GitLab' },
+    { id:'cs9',  label:'digitaloceanspaces.com',    query:'"digitaloceanspaces.com"',   desc:'DigitalOcean Spaces buckets' },
+    { id:'cs10', label:'onedrive.live.com',         query:'"onedrive.live.com"', desc:'Public OneDrive files' },
+    { id:'cs11', label:'sharepoint.com filetype:xlsx', query:'"sharepoint.com" filetype:xlsx', desc:'Exposed SharePoint spreadsheets' },
+    { id:'cs12', label:'gitlab.com password',       query:'site:gitlab.com "password"',   desc:'Passwords on GitLab' },
   ]},
 
   // ── 10. CMS & TECH FINGERPRINT ────────────────────────────────────────────
