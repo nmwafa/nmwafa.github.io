@@ -95,13 +95,13 @@ Cek di file `/etc/passwd` dan `/etc/group`
 
 ### 3.2 Selalu gunakan sudo untuk tugas administratif, bukan langsung sebagai user root
 
-### 3.4 Pastikan tidak ada user dengan id 0 dan group 0 selain root
+### 3.3 Pastikan tidak ada user dengan id 0 dan group 0 selain root
 
 ```bash
 awk -F: '($3 == 0) || ($4 == 0)' /etc/passwd
 ```
 
-### 3.3 Pastikan tidak ada user dengan *password* kosong 
+### 3.4 Pastikan tidak ada user dengan *password* kosong 
 
 Cek di file `/etc/shadow`
 
