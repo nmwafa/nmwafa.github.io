@@ -9,3 +9,4 @@
 - ### [CSRF PoC Generator](csrf-poc-gen)
 - ### [IP Calculator](ip-calc)
 - ### [Text Comparer](text-comparer)
+- ### [Memory Calculator](memory-calc)
