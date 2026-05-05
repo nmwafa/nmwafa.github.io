@@ -201,18 +201,12 @@
             { name: 'Recon & Pillage', description: 'Automation script for subdomain search, technology detection, and categorizing based on status code, URL, and technology.', url: 'https://github.com/nmwafa/recon-pillage' }
         ];
 
-        const certUrl = 'https://drive.google.com/drive/folders/1LydeHP-hpuWUZEipSZV-B0h8dJloc89W?usp=sharing';
-
-        const toolsUrl = 'https://nmwafa.github.io/tools/';
-
-        const notesUrl = 'https://nmwafa.github.io/notes/';
-
         const commands = {
             help: () => {
                 return `
                     <p class="mb-2">Available commands:</p>
                     <ul class="list-inside list-disc">
-                        <li><span class="text-light-green dark:text-dark-green">whoami</span>        - Show information about me</li>
+                        <li><span class="text-light-green dark:text-dark-green">whoami</span>       - Show information about me</li>
                         <li><span class="text-light-green dark:text-dark-green">projects</span>     - See the list of projects</li>
                         <li><span class="text-light-green dark:text-dark-green">blog</span>         - List of blog articles</li>
                         <li><span class="text-light-green dark:text-dark-green">cert</span>         - See the certificate and letter of appreciation</li>
@@ -262,11 +256,11 @@
                 return `<p class="text-light-red dark:text-dark-red">Invalid command! Use 'blog list' or 'blog read [id]'</p>`;
             },
             cert: () => {
-                window.open(certUrl, '_blank');
-                return `<p>Opening page in a new tab...</p>`;
+                window.open('https://drive.google.com/drive/folders/1LydeHP-hpuWUZEipSZV-B0h8dJloc89W?usp=sharing', '_blank');
+                return '';
             },
             tools: () => {
-                window.open(toolsUrl, '_self');
+                window.open('tools', '_self');
                 return '';
             },
             notes: () => {
