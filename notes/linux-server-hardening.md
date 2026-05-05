@@ -1,4 +1,4 @@
-# Linux Server Hardening
+# Linux Server Hardening — *Debian based*
 
 ## Bagian 1: Persiapan
 
@@ -8,17 +8,25 @@ Update Repositori & Package:
 sudo apt update && sudo apt upgrade -y
 ```
 
-Pastikan kernel versi terbaru. Cek: 
+Cek versi kernel: 
 
 ```
 uname -r
 ```
+
+Cari apakah ada kerentanan di versi itu. Jika ada, segera upgrade.
 
 ---
 
 ## Bagian 2: Keamanan Akses dan SSH
 
 ### 2.1 Ubah port standar
+
+> *Perubahan port disarankan untuk dilakukan secara lokal, bukan melalui remote karena berpotensi putus koneksi di tengah jalan ketika sedang di setting*
+>
+> *Sebelum merubah port ssh, pastikan dulu tidak ada lokal firewall atau jika ada lokal firewall dipastikan sudah ditambahkan policy allow port 23456*
+>
+> *Pastikan juga jika sebelumnya sudah menggunakan SELinux atau AppArmor sudah di update untuk allow port 23456*
 
 ```bash
 sudo sed -i "s/#Port 22/Port 23456/" /etc/ssh/sshd_config
@@ -87,6 +95,12 @@ Cek di file `/etc/passwd` dan `/etc/group`
 
 ### 3.2 Selalu gunakan sudo untuk tugas administratif, bukan langsung sebagai user root
 
+### 3.4 Pastikan tidak ada user dengan id 0 dan group 0 selain root
+
+```bash
+awk -F: '($3 == 0) || ($4 == 0)' /etc/passwd
+```
+
 ### 3.3 Pastikan tidak ada user dengan *password* kosong 
 
 Cek di file `/etc/shadow`
@@ -94,6 +108,21 @@ Cek di file `/etc/shadow`
 ---
 
 ## Bagian 4: Keamanan Jaringan
+
+Cara mudah untuk cek apakah server sudah *compromised*:
+
+```bash
+lsof -i -nP | grep ESTABLISHED
+```
+
+Jika terlihat ada koneksi yang mencurigakan, segera tutup koneksi.
+
+```bash
+# kill [Process ID / PID]
+# PID terlihat di kolom kedua pada output perintah sebelumnya
+
+sudo kill 1234567
+```
 
 ### 4.1 Tutup semua port, kecuali yang dibutuhkan
 
@@ -106,6 +135,10 @@ sudo systemctl enable --now ufw
 ```
 
 Hanya izinkan koneksi masuk ke port yang dibutuhkan
+
+```bash
+ufw allow https
+```
 
 Proteksi dasar SSH
 
@@ -192,7 +225,7 @@ Cek status:
 fail2ban-client status sshd
 ```
 
-### 4.4 Matikan service tidak perlu 
+### 4.5 Matikan service tidak perlu 
 
 Cek: 
 
