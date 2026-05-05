@@ -68,7 +68,7 @@
     }
     .header-title h1 {
       font-size: clamp(1.6rem, 4vw, 2.2rem);
-      font-weight: 800;
+      font-weight: 500;
       letter-spacing: -0.04em;
       line-height: 1.1;
       color: var(--text);
@@ -388,6 +388,7 @@
   <header>
     <div class="header-title">
       <h1>Memory<br>Calculator</h1>
+      <span>Kalkulasi menggunakan konvensi <strong>biner</strong></span>
     </div>
     <div class="toggle-wrap">
       <span class="toggle-label" id="theme-label">LIGHT</span>
@@ -420,19 +421,19 @@
         <div class="field-group">
           <label class="field-label" for="input-unit">Satuan</label>
           <select class="unit-select" id="input-unit">
-            <optgroup label="─ Bit & Byte">
+            <optgroup label="+ Bit & Byte">
               <option value="bit">Bit (b)</option>
               <option value="byte" selected>Byte (B)</option>
             </optgroup>
-            <optgroup label="─ Kilo">
+            <optgroup label="+ Kilo">
               <option value="kilobit">Kilobit (Kb)</option>
               <option value="kilobyte">Kilobyte (KB)</option>
             </optgroup>
-            <optgroup label="─ Mega">
+            <optgroup label="+ Mega">
               <option value="megabit">Megabit (Mb)</option>
               <option value="megabyte">Megabyte (MB)</option>
             </optgroup>
-            <optgroup label="─ Giga">
+            <optgroup label="+ Giga">
               <option value="gigabit">Gigabit (Gb)</option>
               <option value="gigabyte">Gigabyte (GB)</option>
             </optgroup>
@@ -471,19 +472,7 @@
     </div>
   </div>
 
-  <!-- Info -->
-  <div class="info-strip">
-    <span class="info-icon">ℹ</span>
-    <div class="info-text">
-      Kalkulasi menggunakan konvensi <strong>biner (IEC)</strong> &nbsp;·&nbsp;
-      <strong>1 KB = 1.024 byte</strong> &nbsp;·&nbsp;
-      <strong>1 MB = 1.048.576 byte</strong> &nbsp;·&nbsp;
-      <strong>1 GB = 1.073.741.824 byte</strong> &nbsp;·&nbsp;
-      <strong>1 Byte = 8 bit</strong>
-    </div>
-  </div>
-
-  <footer>Vibe coded bu Claude Sonnet 4.6 Adaptive</footer>
+  <footer>Vibe coded by Claude Sonnet 4.6 Adaptive</footer>
 
   <script>
     // ─── Conversion factors to bytes (binary / IEC) ───
