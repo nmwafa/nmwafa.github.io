@@ -212,7 +212,7 @@
                 return `
                     <p class="mb-2">Available commands:</p>
                     <ul class="list-inside list-disc">
-                        <li><span class="text-light-green dark:text-dark-green">about</span>        - Show information about me</li>
+                        <li><span class="text-light-green dark:text-dark-green">whoami</span>        - Show information about me</li>
                         <li><span class="text-light-green dark:text-dark-green">projects</span>     - See the list of projects</li>
                         <li><span class="text-light-green dark:text-dark-green">blog</span>         - List of blog articles</li>
                         <li><span class="text-light-green dark:text-dark-green">cert</span>         - See the certificate and letter of appreciation</li>
@@ -224,7 +224,7 @@
                     </ul>
                 `;
             },
-            about: () => {
+            whoami: () => {
                 return `
                     <p>Wafa is a cybersecurity specialist who is passionate about web application and infrastructure security.</p>
                     <p>He is dedicated to developing his skills and consistently keeping up with the latest trends in this area.</p>
@@ -270,7 +270,7 @@
                 return '';
             },
             notes: () => {
-                window.open(notesUrl, '_self');
+                window.open('notes', '_self');
                 return '';
             },
             contact: () => {
@@ -289,6 +289,9 @@
             },
             welcome: () => {
                 return getWelcomeMessage();
+            }
+            id: () => {
+                return 'uid=0(root) gid=0(root) groups=0(root)';
             }
         };
 
