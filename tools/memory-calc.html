@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Size Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── CSS Variables ─── */
+    :root {
+      --bg:          #f4f4f2;
+      --surface:     #ffffff;
+      --surface-2:   #ebebea;
+      --border:      #d6d6d4;
+      --text:        #1a1a1a;
+      --text-muted:  #717170;
+      --accent:      #2d2d2d;
+      --accent-lite: #e8e8e6;
+      --result-bg:   #f9f9f8;
+      --highlight:   #1a1a1a;
+      --shadow:      0 2px 12px rgba(0,0,0,0.07);
+      --shadow-lg:   0 8px 32px rgba(0,0,0,0.10);
+      --radius:      14px;
+      --mono:        'DM Mono', monospace;
+      --sans:        'Syne', sans-serif;
+      --transition:  0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg:          #111110;
+      --surface:     #1c1c1b;
+      --surface-2:   #252524;
+      --border:      #333332;
+      --text:        #f0f0ee;
+      --text-muted:  #888886;
+      --accent:      #e8e8e6;
+      --accent-lite: #2a2a28;
+      --result-bg:   #161615;
+      --highlight:   #ffffff;
+      --shadow:      0 2px 12px rgba(0,0,0,0.35);
+      --shadow-lg:   0 8px 32px rgba(0,0,0,0.50);
+    }
+
+    /* ─── Reset ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px 80px;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    /* ─── Header ─── */
+    header {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 48px;
+    }
+    .header-title h1 {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      color: var(--text);
+    }
+    .header-title span {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* ─── Dark Mode Toggle ─── */
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; padding-top: 4px; }
+    .toggle-label { font-family: var(--mono); font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.08em; }
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track {
+      position: absolute; inset: 0;
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .toggle input:checked ~ .toggle-track { background: var(--accent); border-color: var(--accent); }
+    .toggle-thumb {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 16px; height: 16px;
+      background: var(--text);
+      border-radius: 50%;
+      transition: transform var(--transition), background var(--transition);
+    }
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(20px); background: var(--bg); }
+
+    /* ─── Main Card ─── */
+    .card {
+      width: 100%;
+      max-width: 680px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
+    }
+
+    /* ─── Input Section ─── */
+    .input-section {
+      padding: 32px 32px 28px;
+      border-bottom: 1.5px solid var(--border);
+    }
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+    .field-group { display: flex; flex-direction: column; gap: 8px; }
+    .field-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .input-field {
+      font-family: var(--mono);
+      font-size: 1.55rem;
+      font-weight: 500;
+      color: var(--text);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid var(--border);
+      border-radius: 0;
+      padding: 8px 0;
+      width: 100%;
+      outline: none;
+      transition: border-color var(--transition), color var(--transition);
+      -moz-appearance: textfield;
+    }
+    .input-field::-webkit-outer-spin-button,
+    .input-field::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .input-field:focus { border-bottom-color: var(--highlight); }
+    .input-field::placeholder { color: var(--border); }
+
+    .unit-select {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text);
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 34px;
+      min-width: 130px;
+      transition: border-color var(--transition), background-color var(--transition), color var(--transition);
+    }
+    .unit-select:focus { border-color: var(--highlight); }
+
+    /* ─── Quick Presets ─── */
+    .presets {
+      padding: 20px 32px;
+      border-bottom: 1.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .presets-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .preset-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      font-family: var(--mono);
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      padding: 5px 14px;
+      cursor: pointer;
+      transition: all var(--transition);
+      user-select: none;
+    }
+    .chip:hover { border-color: var(--accent); color: var(--text); background: var(--accent-lite); }
+    .chip:active { transform: scale(0.95); }
+
+    /* ─── Results Grid ─── */
+    .results-section { padding: 28px 32px 32px; }
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .results-title {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .copy-all-btn {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .copy-all-btn:hover { border-color: var(--accent); color: var(--text); }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .result-item {
+      background: var(--result-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      transition: border-color var(--transition), background var(--transition), transform 0.15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .result-item:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow); }
+    .result-item:active { transform: scale(0.98); }
+    .result-item.copied::after {
+      content: "Disalin!";
+      position: absolute;
+      inset: 0;
+      background: var(--accent);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 500;
+      border-radius: 8px;
+      animation: fadeOut 0.9s forwards;
+    }
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      60% { opacity: 1; }
+      100% { opacity: 0; pointer-events: none; }
+    }
+
+    .result-unit {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .result-value {
+      font-family: var(--mono);
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--text);
+      word-break: break-all;
+      line-height: 1.3;
+      transition: color var(--transition);
+    }
+    .result-item:hover .result-value { color: var(--highlight); }
+
+    /* ─── Empty State ─── */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+    }
+    .empty-icon { font-size: 2.2rem; margin-bottom: 12px; opacity: 0.5; }
+
+    /* ─── Info Footer ─── */
+    .info-strip {
+      width: 100%;
+      max-width: 680px;
+      margin-top: 20px;
+      padding: 14px 20px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      box-shadow: var(--shadow);
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .info-icon { font-size: 0.9rem; flex-shrink: 0; margin-top: 1px; }
+    .info-text {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      letter-spacing: 0.03em;
+    }
+    .info-text strong { color: var(--text); font-weight: 500; }
+
+    /* ─── Divider Label ─── */
+    .group-divider {
+      grid-column: 1 / -1;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--border);
+      padding: 6px 0 2px;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
+    }
+
+    /* ─── Footer ─── */
+    footer {
+      margin-top: 36px;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-align: center;
+      opacity: 0.6;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 480px) {
+      header { flex-direction: column; gap: 16px; align-items: flex-start; }
+      .input-row { grid-template-columns: 1fr; }
+      .unit-select { width: 100%; }
+      .results-grid { grid-template-columns: 1fr; }
+      .input-section, .presets, .results-section { padding-left: 20px; padding-right: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Header ─── -->
+  <header>
+    <div class="header-title">
+      <h1>Memory<br>Calculator</h1>
+    </div>
+    <div class="toggle-wrap">
+      <span class="toggle-label" id="theme-label">LIGHT</span>
+      <label class="toggle" title="Ganti tema">
+        <input type="checkbox" id="theme-toggle" />
+        <span class="toggle-track"></span>
+        <span class="toggle-thumb"></span>
+      </label>
+    </div>
+  </header>
+
+  <!-- ─── Main Card ─── -->
+  <div class="card">
+
+    <!-- Input -->
+    <div class="input-section">
+      <div class="input-row">
+        <div class="field-group">
+          <label class="field-label" for="input-value">Nilai</label>
+          <input
+            class="input-field"
+            type="number"
+            id="input-value"
+            placeholder="0"
+            min="0"
+            step="any"
+            autocomplete="off"
+          />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="input-unit">Satuan</label>
+          <select class="unit-select" id="input-unit">
+            <optgroup label="─ Bit & Byte">
+              <option value="bit">Bit (b)</option>
+              <option value="byte" selected>Byte (B)</option>
+            </optgroup>
+            <optgroup label="─ Kilo">
+              <option value="kilobit">Kilobit (Kb)</option>
+              <option value="kilobyte">Kilobyte (KB)</option>
+            </optgroup>
+            <optgroup label="─ Mega">
+              <option value="megabit">Megabit (Mb)</option>
+              <option value="megabyte">Megabyte (MB)</option>
+            </optgroup>
+            <optgroup label="─ Giga">
+              <option value="gigabit">Gigabit (Gb)</option>
+              <option value="gigabyte">Gigabyte (GB)</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Presets -->
+    <div class="presets">
+      <span class="presets-label">Preset Cepat</span>
+      <div class="preset-chips" id="presets">
+        <span class="chip" data-val="1" data-unit="byte">1 Byte</span>
+        <span class="chip" data-val="1" data-unit="kilobyte">1 KB</span>
+        <span class="chip" data-val="1" data-unit="megabyte">1 MB</span>
+        <span class="chip" data-val="1" data-unit="gigabyte">1 GB</span>
+        <span class="chip" data-val="512" data-unit="megabyte">512 MB</span>
+        <span class="chip" data-val="1024" data-unit="megabyte">1024 MB</span>
+        <span class="chip" data-val="8" data-unit="bit">8 Bit</span>
+        <span class="chip" data-val="100" data-unit="megabit">100 Mb</span>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-section">
+      <div class="results-header">
+        <span class="results-title">Hasil Konversi</span>
+        <button class="copy-all-btn" id="copy-all-btn">Salin semua</button>
+      </div>
+      <div class="results-grid" id="results-grid">
+        <div class="empty-state">
+          <div class="empty-icon">#</div>
+          Masukkan nilai untuk melihat konversi
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div class="info-strip">
+    <span class="info-icon">ℹ</span>
+    <div class="info-text">
+      Kalkulasi menggunakan konvensi <strong>biner (IEC)</strong> &nbsp;·&nbsp;
+      <strong>1 KB = 1.024 byte</strong> &nbsp;·&nbsp;
+      <strong>1 MB = 1.048.576 byte</strong> &nbsp;·&nbsp;
+      <strong>1 GB = 1.073.741.824 byte</strong> &nbsp;·&nbsp;
+      <strong>1 Byte = 8 bit</strong>
+    </div>
+  </div>
+
+  <footer>Vibe coded bu Claude Sonnet 4.6 Adaptive</footer>
+
+  <script>
+    // ─── Conversion factors to bytes (binary / IEC) ───
+    const TO_BYTES = {
+      bit:       1 / 8,
+      byte:      1,
+      kilobit:   1024 / 8,
+      kilobyte:  1024,
+      megabit:   (1024 * 1024) / 8,
+      megabyte:  1024 * 1024,
+      gigabit:   (1024 * 1024 * 1024) / 8,
+      gigabyte:  1024 * 1024 * 1024,
+    };
+
+    const FROM_BYTES = Object.fromEntries(
+      Object.entries(TO_BYTES).map(([k, v]) => [k, 1 / v])
+    );
+
+    const UNITS = [
+      { key: 'bit',      label: 'Bit',      abbr: 'b',  group: 'Bit & Byte' },
+      { key: 'byte',     label: 'Byte',     abbr: 'B',  group: 'Bit & Byte' },
+      { key: 'kilobit',  label: 'Kilobit',  abbr: 'Kb', group: 'Kilo' },
+      { key: 'kilobyte', label: 'Kilobyte', abbr: 'KB', group: 'Kilo' },
+      { key: 'megabit',  label: 'Megabit',  abbr: 'Mb', group: 'Mega' },
+      { key: 'megabyte', label: 'Megabyte', abbr: 'MB', group: 'Mega' },
+      { key: 'gigabit',  label: 'Gigabit',  abbr: 'Gb', group: 'Giga' },
+      { key: 'gigabyte', label: 'Gigabyte', abbr: 'GB', group: 'Giga' },
+    ];
+
+    function convert(value, fromUnit) {
+      const bytes = value * TO_BYTES[fromUnit];
+      return UNITS.map(u => ({
+        ...u,
+        value: bytes * FROM_BYTES[u.key]
+      }));
+    }
+
+    function formatNum(n) {
+      if (n === 0) return '0';
+      if (Math.abs(n) >= 1e15 || (Math.abs(n) < 1e-6 && n !== 0)) {
+        return n.toExponential(6).replace(/\.?0+e/, 'e');
+      }
+      // Up to 10 significant digits
+      let str = parseFloat(n.toPrecision(10)).toString();
+      // Add thousand separators for integer part
+      const parts = str.split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      return parts.join(',');
+    }
+
+    // ─── DOM refs ───
+    const inputVal  = document.getElementById('input-value');
+    const inputUnit = document.getElementById('input-unit');
+    const grid      = document.getElementById('results-grid');
+    const copyAllBtn = document.getElementById('copy-all-btn');
+
+    function render() {
+      const raw = inputVal.value.trim();
+      if (raw === '' || isNaN(parseFloat(raw))) {
+        grid.innerHTML = `<div class="empty-state"><div class="empty-icon">⌗</div>Masukkan nilai untuk melihat konversi</div>`;
+        return;
+      }
+      const value    = parseFloat(raw);
+      const fromUnit = inputUnit.value;
+      const results  = convert(value, fromUnit);
+
+      let lastGroup = '';
+      let html = '';
+      results.forEach(r => {
+        if (r.group !== lastGroup) {
+          if (lastGroup !== '') {
+            // close nothing — grid handles columns
+          }
+          html += `<div class="group-divider">${r.group}</div>`;
+          lastGroup = r.group;
+        }
+        const formatted = formatNum(r.value);
+        html += `
+          <div class="result-item" data-copy="${r.value}" data-unit="${r.abbr}">
+            <span class="result-unit">${r.label} (${r.abbr})</span>
+            <span class="result-value">${formatted}</span>
+          </div>`;
+      });
+
+      grid.innerHTML = html;
+
+      // Click-to-copy individual
+      grid.querySelectorAll('.result-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const text = el.dataset.copy + ' ' + el.dataset.unit;
+          navigator.clipboard.writeText(text).then(() => {
+            el.classList.add('copied');
+            setTimeout(() => el.classList.remove('copied'), 950);
+          });
+        });
+      });
+    }
+
+    inputVal.addEventListener('input', render);
+    inputUnit.addEventListener('change', render);
+
+    // ─── Presets ───
+    document.getElementById('presets').addEventListener('click', e => {
+      const chip = e.target.closest('.chip');
+      if (!chip) return;
+      inputVal.value  = chip.dataset.val;
+      inputUnit.value = chip.dataset.unit;
+      render();
+      inputVal.focus();
+    });
+
+    // ─── Copy All ───
+    copyAllBtn.addEventListener('click', () => {
+      const raw = inputVal.value.trim();
+      if (!raw || isNaN(parseFloat(raw))) return;
+      const results = convert(parseFloat(raw), inputUnit.value);
+      const text = results.map(r => `${r.label} (${r.abbr}): ${formatNum(r.value)}`).join('\n');
+      navigator.clipboard.writeText(text).then(() => {
+        copyAllBtn.textContent = 'Disalin ✓';
+        setTimeout(() => copyAllBtn.textContent = 'Salin semua', 1400);
+      });
+    });
+
+    // ─── Dark Mode ───
+    const toggle      = document.getElementById('theme-toggle');
+    const themeLabel  = document.getElementById('theme-label');
+    const html        = document.documentElement;
+
+    // Respect system preference on load
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (prefersDark) {
+      html.dataset.theme = 'dark';
+      toggle.checked     = true;
+      themeLabel.textContent = 'DARK';
+    }
+
+    toggle.addEventListener('change', () => {
+      if (toggle.checked) {
+        html.dataset.theme = 'dark';
+        themeLabel.textContent = 'DARK';
+      } else {
+        html.dataset.theme = 'light';
+        themeLabel.textContent = 'LIGHT';
+      }
+    });
+  </script>
+</body>
+</html>
