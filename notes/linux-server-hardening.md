@@ -1,5 +1,11 @@
 # Linux Server Hardening — *Debian based*
 
+## Daftar isi:
+- [Bagian 1: Persiapan](#bagian-1-persiapan)
+- [Bagian 2: Keamanan Akses dan SSH](#bagian-2-keamanan-akses-dan-ssh)
+
+---
+
 ## Bagian 1: Persiapan
 
 Update Repositori & Package: 
