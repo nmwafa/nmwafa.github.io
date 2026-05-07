@@ -6,7 +6,26 @@
   - [2.1 Ubah port standar](#21-ubah-port-standar)
   - [2.2 Jangan izinkan login dengan user root](#22-jangan-izinkan-login-dengan-user-root)
   - [2.3 Putus koneksi otomatis setelah tidak ada aktivitas](#23-putus-koneksi-otomatis-setelah-tidak-ada-aktivitas)
-- [Bagian 3: Manajemen User & Hak Akses](#bagian-3-manajemen-user-hak-akses)
+- [Bagian 3: Manajemen User & Hak Akses](#bagian-3-manajemen-user-dan-hak-akses)
+  - [3.1 Hapus user atau grup tidak terpakai](#31-hapus-user-atau-grup-tidak-terpakai)
+  - [3.2 Selalu gunakan sudo](#32-selalu-gunakan-sudo)
+  - [3.3 Pastikan tidak ada user dengan id 0 dan group 0 selain root](#33-pastikan-tidak-ada-user-dengan-id-0-dan-grup-0-selain-root)
+  - [3.4 Pastikan tidak ada user dengan password kosong](#34-pastikan-tidak-ada-user-dengan-password-kosong)
+- [Bagian 4: Keamanan Jaringan](#bagian-4-keamanan-jaringan)
+  - [4.1 Tutup semua port, kecuali yang dibutuhkan](#41-tutup-semua-port-kecuali-yang-dibutuhkan)
+  - [4.2 Aktifkan UFW](#42-aktifkan-ufw)
+  - [4.3 Pasang iptables](#43-pasang-iptables)
+  - [4.4 Proteksi tambahan dengan fail2ban](#44-proteksi-tambahan-dengan-fail2ban)
+  - [4.5 Matikan service tidak perlu](#45-matikan-service-tidak-perlu)
+- [Bagian 5: Log, Audit dan Monitor](#bagian-5-log-audit-dan-monitor)
+  - [5.1 Pakai lynis untuk audit keamanan sistem](#51-pakai-lynis-untuk-audit-keamanan-sistem)
+  - [5.2 Pasang auditd](#52-pasang-auditd)
+- [Bagian 6: Pasang Malware Scanner](#bagian-6-pasang-malware-scanner)
+  - [6.1 maldet](#61-maldet)
+  - [6.2 clamAV](#62-clamav)
+  - [6.3 rkhunter](#63-rkhunter)
+  - [6.4 chkrootkit](#64-chkrootkit)
+- [Bagian 7: SELinux](#bagian-7-selinux)
 
 ---
 
@@ -97,13 +116,15 @@ sed -i "s/#ClientAliveInterval 0/ClientAliveInterval 300/" /etc/ssh/sshd_config`
 
 ---
 
-## Bagian 3: Manajemen User & Hak Akses
+## Bagian 3: Manajemen User dan Hak Akses
 
-### 3.1 Hapus user/grup tidak terpakai
+### 3.1 Hapus user atau grup tidak terpakai
 
 Cek di file `/etc/passwd` dan `/etc/group`
 
-### 3.2 Selalu gunakan sudo untuk tugas administratif, bukan langsung sebagai user root
+### 3.2 Selalu gunakan sudo
+
+Untuk melakukan tugas administratif, pastikan selalu menggunakan sudo (tidak dijalankan langsung sebagai root)
 
 ### 3.3 Pastikan tidak ada user dengan id 0 dan group 0 selain root
 
@@ -111,7 +132,7 @@ Cek di file `/etc/passwd` dan `/etc/group`
 awk -F: '($3 == 0) || ($4 == 0)' /etc/passwd
 ```
 
-### 3.4 Pastikan tidak ada user dengan *password* kosong 
+### 3.4 Pastikan tidak ada user dengan password kosong 
 
 Cek di file `/etc/shadow`
 
@@ -199,7 +220,9 @@ sudo iptables -P INPUT DROP
 | `sudo iptables -L --line-numbers` | Lihat *rules* nomor baris |
 | `sudo iptables -S` | Lihat *rules* format skrip |
 
-### 4.4 Proteksi tambahan dengan fail2ban (proteksi *bruteforce* dengan blokir IP): 
+### 4.4 Proteksi tambahan dengan fail2ban
+
+Fungsinya untuk memproteksi terhadap serangan *bruteforce* dengan blokir IP
 
 Instalasi
 
@@ -245,7 +268,7 @@ systemctl list-unit-files --state=enabled
 
 ---
 
-## Bagian 5: Log, Audit & Monitor
+## Bagian 5: Log, Audit dan Monitor
 
 | Perintah | Deskripsi |
 |----------|-----------|
