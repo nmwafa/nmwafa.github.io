@@ -3,6 +3,10 @@
 ## Daftar isi:
 - [Bagian 1: Persiapan](#bagian-1-persiapan)
 - [Bagian 2: Keamanan Akses dan SSH](#bagian-2-keamanan-akses-dan-ssh)
+  - [2.1 Ubah port standar](#21-ubah-port-standar)
+  - [2.2 Jangan izinkan login dengan user root](#22-jangan-izinkan-login-dengan-user-root)
+  - [2.3 Putus koneksi otomatis setelah tidak ada aktivitas](#23-putus-koneksi-otomatis-setelah-tidak-ada-aktivitas)
+- [Bagian 3: Manajemen User & Hak Akses](#bagian-3-manajemen-user-&-hak-akses)
 
 ---
 
