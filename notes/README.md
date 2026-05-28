@@ -12,3 +12,4 @@
 - ### [Authentication Testing Checklist](auth-test-checklist)
 - ### [Git Cheatsheet](git-cheatsheet)
 - ### [JSON Web Token](jwt)
+- ### [File Upload Vulnerabilities Checklist](file-upload-vuln)
