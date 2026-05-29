@@ -1,4 +1,4 @@
-# 🐧 Linux Privilege Escalation Cheatsheet
+# Linux Privilege Escalation Cheatsheet
 
 >Checklist: https://hacktricks.wiki/en/linux-hardening/linux-privilege-escalation-checklist.html
 
