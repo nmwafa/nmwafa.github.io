@@ -14,3 +14,4 @@
 - ### [JSON Web Token](jwt)
 - ### [File Upload Vulnerabilities Checklist](file-upload-vuln)
 - ### [Linux Privilege Escalation Cheatsheet](lpe)
+- ### [OAuth dan SSO](oauth-sso)
