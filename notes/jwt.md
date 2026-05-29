@@ -10,6 +10,7 @@
 - [Security Issues pada JWS](#security-issues-pada-jws)
 - [Security Issues pada JWE](#security-issues-pada-jwe)
 - [Security Issues (General)](#security-issues-general)
+- [JWT Best Practices](#jwt-best-practices)
 - [Tools](#tools)
 
 ---
@@ -319,6 +320,28 @@ Karena JWT digunakan oleh protokol yang berbeda di area aplikasi yang berbeda, A
 ### Replay attack
 
 Jika mekanisme kedaluwarsa dan pencabutan memiliki kelemahan, token JWT dapat digunakan untuk *replay attack*. Dalam hal ini, perhatikan klaim `exp` (tanggal kedaluwarsa token) dan `jti` (pengidentifikasi token unik), dan coba gunakan token JWT yang telah kedaluwarsa/dicabut.
+
+## JWT Best Practices
+
+```
+# JWT Security Checklist:
+[ ] Algorithm specified and enforced server-side (not from token)
+[ ] Strong secret key (256+ bits for HMAC)
+[ ] RSA key size >= 2048 bits
+[ ] Token expiration (exp) checked and enforced
+[ ] Token issued-at (iat) verified
+[ ] Audience (aud) claim validated
+[ ] Issuer (iss) claim validated
+[ ] Algorithm "none" rejected
+[ ] Symmetric/asymmetric confusion prevented
+[ ] JWK/JWKS injection prevented
+[ ] kid parameter validated (no injection)
+[ ] Secret not guessable
+[ ] Token stored securely (httpOnly cookie preferred)
+[ ] Token revocation mechanism exists
+[ ] Sensitive data not in payload (viewable without key)
+[ ] Token size reasonable (not used as session storage)
+```
 
 ## Tools
 
