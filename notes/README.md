@@ -16,3 +16,4 @@
 - ### [Linux Privilege Escalation Cheatsheet](lpe)
 - ### [OAuth dan SSO](oauth-sso)
 - ### [MFA Testing](mfa-testing)
+- ### [Password Reset Vulnerability Checklist](pass-reset-check)
