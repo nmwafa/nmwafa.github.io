@@ -54,6 +54,31 @@
   }
 }
 
+/* Scrollbar Customization (Dukungan penuh warna tema untuk ukuran dan warna yg sesuai) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) var(--bg);
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 6px;
+  border: 2px solid var(--bg); /* Menambahkan jarak/padding virtual */
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text3);
+}
+::-webkit-scrollbar-corner {
+  background: var(--bg);
+}
+
 body {
   background: var(--body-bg);
   font-family: var(--sans);
@@ -68,7 +93,7 @@ body {
 
 .wrap {
   width: 100%;
-  max-width: 1300px;
+  max-width: 1600px; /* Diperluas dari 1300px agar area kerja lebih lega */
   height: 100%;
   background: var(--bg);
   border-radius: var(--radius);
@@ -157,7 +182,8 @@ body {
 .editor-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* Menggunakan minmax(0, 1fr) agar teks yang sangat panjang tidak merusak/menggeser proporsi 50:50 */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1px;
   background: var(--border);
   border-radius: 8px;
@@ -171,6 +197,7 @@ body {
   flex-direction: column;
   background: var(--bg);
   min-height: 0;
+  min-width: 0; /* Mencegah pelebaran elemen flex-child dari teks panjang */
 }
 
 .col-header {
@@ -317,7 +344,10 @@ textarea::selection { background: var(--mod-ln); }
 @media (max-width: 768px) {
   body { padding: 1rem; overflow: auto; height: auto; }
   .wrap { height: calc(100vh - 2rem); min-height: 600px; }
-  .editor-grid { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+  .editor-grid { 
+    grid-template-columns: 1fr; 
+    grid-template-rows: 1fr 1fr; 
+  }
   .legend { display: none; }
 }
 </style>
@@ -343,14 +373,14 @@ textarea::selection { background: var(--mod-ln); }
       <div class="col-header">Original</div>
       <div class="editor-wrap">
         <div class="line-nums-bg"><div class="line-nums" id="ln1"></div></div>
-        <textarea id="ta1" spellcheck="false" placeholder="Original text here..."></textarea>
+        <textarea id="ta1" spellcheck="false" placeholder="Masukkan teks asli di sini..."></textarea>
       </div>
     </div>
     <div>
       <div class="col-header">Modified</div>
       <div class="editor-wrap">
         <div class="line-nums-bg"><div class="line-nums" id="ln2"></div></div>
-        <textarea id="ta2" spellcheck="false" placeholder="Modified text here..."></textarea>
+        <textarea id="ta2" spellcheck="false" placeholder="Masukkan teks yang telah dimodifikasi di sini..."></textarea>
       </div>
     </div>
   </div>
@@ -526,25 +556,6 @@ document.getElementById('btnClear').onclick = () => {
   diffView.classList.remove('active');
   statBar.style.display = 'none';
 };
-
-// Contoh Default
-ta1.value = `function greet(name) {
-  console.log("Hello, " + name);
-  return true;
-}
-
-const user = "Alice";
-greet(user);
-console.log("Done");`;
-
-ta2.value = `function greet(name, title) {
-  console.log("Hi, " + title + " " + name + "!");
-  return true;
-}
-
-const user = "Bob";
-const role = "Admin";
-greet(user, role);`;
 
 updateLineNums(ta1, ln1); updateLineNums(ta2, ln2);
 </script>
