@@ -12,3 +12,4 @@
 - ### [Memory Calculator](memory-calc)
 - ### [Kalkulator Basis Bilangan](kalkulator-bilangan)
 - ### [Github Dork Generator](github-dork)
+- ### [CORS Tester](cors-tester)
