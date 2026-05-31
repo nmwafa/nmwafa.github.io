@@ -247,14 +247,6 @@
             margin: 0.5rem 0;
             border-color: #e2ecf0;
         }
-        .info-origin {
-            background: #eef4fa;
-            border-radius: 16px;
-            padding: 0.4rem 1rem;
-            font-size: 0.75rem;
-            text-align: center;
-            margin-top: 1rem;
-        }
         .req-preview {
             font-size: 0.75rem;
             background: #f3f7fb;
@@ -347,10 +339,6 @@
                 <button id="sendRequestBtn" class="btn-primary">🚀 Kirim Request & Uji CORS</button>
                 <button id="clearOutputBtn" class="btn-secondary">🗑 Bersihkan Output</button>
             </div>
-            <div class="info-origin">
-                🌍 <strong>Origin halaman ini:</strong> <span id="originDisplay">(mendeteksi...)</span><br>
-                <span style="font-size:0.7rem;">Request dikirim dari origin ini. Server wajib menyertakan <code>Access-Control-Allow-Origin</code> yang sesuai.</span>
-            </div>
         </div>
 
         <!-- RIGHT: Response & Debug -->
@@ -396,7 +384,6 @@
     const responseBodyBox = document.getElementById('responseBodyBox');
     const errorLogBox = document.getElementById('errorLogBox');
     const previewHeadersListSpan = document.getElementById('previewHeadersList');
-    const originDisplaySpan = document.getElementById('originDisplay');
 
     // state untuk abort controller (cancel request sebelumnya)
     let currentAbortController = null;
@@ -412,15 +399,6 @@
         }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
             return c;
         });
-    }
-
-    // Tampilkan origin halaman
-    function updateOriginDisplay() {
-        let origin = window.location.origin;
-        if (origin === 'null' || origin === 'file://') {
-            origin = 'file:// atau sandboxed (CORS ketat)';
-        }
-        originDisplaySpan.textContent = origin;
     }
 
     // ----- Header row management -----
@@ -666,7 +644,6 @@
 
     // ---- event listeners & initial setup ----
     function init() {
-        updateOriginDisplay();
         setDefaultHeaders();
         updatePreviewHeaders();
 
