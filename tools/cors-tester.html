@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CORS Tester · Uji CORS & Header Kustom</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f6f9fc 0%, #eef2f5 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 2rem 1.5rem;
+            color: #1a2c3e;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        .hero {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e3c4c, #2b5f7a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+        .hero p {
+            color: #4a6272;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+        .badge {
+            background: #d4e3ed;
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1f5e7e;
+            margin-top: 0.8rem;
+        }
+
+        /* dua kolom layout */
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+        }
+        .request-panel {
+            flex: 1.2;
+            min-width: 280px;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(2px);
+            border-radius: 32px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02);
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+        .response-panel {
+            flex: 2;
+            min-width: 340px;
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* form elements */
+        .form-group {
+            margin-bottom: 1.3rem;
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+            color: #2c4f66;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border-radius: 18px;
+            border: 1px solid #cbdbe2;
+            background: white;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2f86a6;
+            box-shadow: 0 0 0 3px rgba(47,134,166,0.2);
+        }
+        .row-flex {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .row-flex .form-group {
+            flex: 1;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-top: 0.5rem;
+        }
+        .checkbox-group input {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+        }
+        .checkbox-group label {
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* custom headers dynamic */
+        .headers-area {
+            background: #f8fafd;
+            border-radius: 20px;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e3ecf2;
+        }
+        .header-row {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            margin-bottom: 0.7rem;
+            flex-wrap: wrap;
+        }
+        .header-row input {
+            flex: 1;
+            min-width: 100px;
+            background: white;
+        }
+        .btn-icon {
+            background: #ecf3f8;
+            border: none;
+            border-radius: 40px;
+            padding: 0.5rem 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: 0.2s;
+        }
+        .btn-icon.danger {
+            background: #ffe5e5;
+            color: #b13e3e;
+        }
+        .btn-icon.danger:hover {
+            background: #ffc9c9;
+        }
+        button {
+            border: none;
+            border-radius: 32px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #eef3f9;
+        }
+        .btn-primary {
+            background: #1f6e8c;
+            color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .btn-primary:hover {
+            background: #0e5a75;
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: #e2eaf0;
+            color: #1e4b62;
+        }
+        .btn-secondary:hover {
+            background: #cfdce5;
+        }
+        .action-bar {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+            flex-wrap: wrap;
+        }
+        textarea {
+            font-family: monospace;
+            resize: vertical;
+        }
+        /* Warna latar abu-abu untuk area output (response headers, body, error) */
+        .output-box {
+            background: #2a2a2a;   /* abu-abu gelap modern */
+            color: #f0f0f0;
+            padding: 1rem;
+            border-radius: 24px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 320px;
+            overflow-y: auto;
+            border: 1px solid #444;
+        }
+        /* error log box juga abu-abu */
+        #errorLogBox {
+            background: #2a2a2a;
+            color: #ffcfb3;
+        }
+        .response-meta {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-bottom: 1px solid #e2edf2;
+            padding-bottom: 0.6rem;
+            margin-bottom: 0.5rem;
+        }
+        .status-badge {
+            font-weight: 700;
+            padding: 0.2rem 1rem;
+            border-radius: 60px;
+            background: #eef2f6;
+            display: inline-block;
+        }
+        .status-ok { background: #c3f0d6; color: #136b3a; }
+        .status-error { background: #ffe0db; color: #bc3f2e; }
+        hr {
+            margin: 0.5rem 0;
+            border-color: #e2ecf0;
+        }
+        .info-origin {
+            background: #eef4fa;
+            border-radius: 16px;
+            padding: 0.4rem 1rem;
+            font-size: 0.75rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .req-preview {
+            font-size: 0.75rem;
+            background: #f3f7fb;
+            border-radius: 18px;
+            padding: 0.7rem;
+            margin-bottom: 0.8rem;
+        }
+        @media (max-width: 780px) {
+            body { padding: 1rem; }
+            .request-panel, .response-panel { padding: 1.2rem; }
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <h1>🌐 CORS Explorer</h1>
+        <p>Uji kebijakan <strong>CORS</strong> & kirim <strong>custom request headers</strong> · Debug preflight & akses lintas domain</p>
+        <div class="badge">⚡ static tool · vibe coding dengan Deepseek</div>
+    </div>
+
+    <div class="dashboard">
+        <!-- LEFT: Request Builder -->
+        <div class="request-panel">
+            <div class="form-group">
+                <label>🎯 Target URL (harus absolute)</label>
+                <input type="text" id="requestUrl" value="https://httpbin.org/get" placeholder="https://api.example.com/endpoint">
+            </div>
+            <div class="row-flex">
+                <div class="form-group">
+                    <label>📌 Method</label>
+                    <select id="methodSelect">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                        <option value="PATCH">PATCH</option>
+                        <option value="OPTIONS">OPTIONS</option>
+                        <option value="HEAD">HEAD</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🔐 Credentials</label>
+                    <div class="checkbox-group">
+                        <!-- dicentang default agar 'kirim cookie' aktif -->
+                        <input type="checkbox" id="withCredentialsCheckbox" checked>
+                        <label>Kirim cookie / withCredentials</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Headers Section -->
+            <div class="form-group">
+                <label>✏️ Custom Headers (akan dikirim dalam request)</label>
+                <div class="headers-area" id="headersContainer">
+                    <!-- dynamic rows akan ditambahkan disini via js -->
+                </div>
+                <div class="action-bar" style="margin-top: 0.2rem;">
+                    <button type="button" id="addHeaderBtn" class="btn-secondary" style="font-size:0.8rem;">+ Tambah Header</button>
+                    <button type="button" id="resetHeadersBtn" class="btn-secondary" style="font-size:0.8rem;">↺ Reset ke Default</button>
+                </div>
+                <small style="color:#5e7b8c; display:block; margin-top:6px;">⚠️ Header seperti <code>Origin, Host, Cookie</code> tidak bisa diubah oleh browser (akan diabaikan/error).</small>
+            </div>
+
+            <!-- Request Body -->
+            <div class="form-group">
+                <label>📦 Request Body (untuk POST/PUT/PATCH)</label>
+                <textarea rows="3" id="requestBody" placeholder='Contoh: {"nama":"ujiCORS"} atau raw text'></textarea>
+                <small style="color:#5e7b8c;">Isi manual jika diperlukan. Kosongkan untuk GET/HEAD/DELETE.</small>
+            </div>
+
+            <div class="action-bar">
+                <button id="sendRequestBtn" class="btn-primary">🚀 Kirim Request & Uji CORS</button>
+                <button id="clearOutputBtn" class="btn-secondary">🗑 Bersihkan Output</button>
+            </div>
+            <div class="info-origin">
+                🌍 <strong>Origin halaman ini:</strong> <span id="originDisplay">(mendeteksi...)</span><br>
+                <span style="font-size:0.7rem;">Request dikirim dari origin ini. Server wajib menyertakan <code>Access-Control-Allow-Origin</code> yang sesuai.</span>
+            </div>
+        </div>
+
+        <!-- RIGHT: Response & Debug -->
+        <div class="response-panel">
+            <div id="responseMeta" class="response-meta">
+                <span class="status-badge" id="statusCodeSpan">⚡ Status: —</span>
+                <span id="responseTimeSpan">⏱️ Waktu: —</span>
+            </div>
+            <div>
+                <label>📋 Response Headers (terekspos oleh server)</label>
+                <div id="responseHeadersBox" class="output-box" style="max-height:150px;">— Headers akan tampil disini —</div>
+            </div>
+            <div>
+                <label>📄 Response Body</label>
+                <div id="responseBodyBox" class="output-box" style="max-height:280px;">— Response muncul setelah request —</div>
+            </div>
+            <div>
+                <label>⚠️ CORS & Error Detail</label>
+                <div id="errorLogBox" class="output-box" style="background:#2a2a2a; color:#ffcfb3;">✅ Belum ada error / siap uji</div>
+            </div>
+            <div class="req-preview">
+                <strong>🔍 Preview request headers yang dikirim:</strong> <span id="previewHeadersList">(belum ada request)</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- DOM Elements ----------
+    const urlInput = document.getElementById('requestUrl');
+    const methodSelect = document.getElementById('methodSelect');
+    const withCredentialsCheck = document.getElementById('withCredentialsCheckbox');
+    const headersContainer = document.getElementById('headersContainer');
+    const addHeaderBtn = document.getElementById('addHeaderBtn');
+    const resetHeadersBtn = document.getElementById('resetHeadersBtn');
+    const requestBodyTextarea = document.getElementById('requestBody');
+    const sendBtn = document.getElementById('sendRequestBtn');
+    const clearOutputBtn = document.getElementById('clearOutputBtn');
+
+    const statusCodeSpan = document.getElementById('statusCodeSpan');
+    const responseTimeSpan = document.getElementById('responseTimeSpan');
+    const responseHeadersBox = document.getElementById('responseHeadersBox');
+    const responseBodyBox = document.getElementById('responseBodyBox');
+    const errorLogBox = document.getElementById('errorLogBox');
+    const previewHeadersListSpan = document.getElementById('previewHeadersList');
+    const originDisplaySpan = document.getElementById('originDisplay');
+
+    // state untuk abort controller (cancel request sebelumnya)
+    let currentAbortController = null;
+
+    // ---------- Helper: Escape HTML ----------
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+
+    // Tampilkan origin halaman
+    function updateOriginDisplay() {
+        let origin = window.location.origin;
+        if (origin === 'null' || origin === 'file://') {
+            origin = 'file:// atau sandboxed (CORS ketat)';
+        }
+        originDisplaySpan.textContent = origin;
+    }
+
+    // ----- Header row management -----
+    function createHeaderRow(nameVal = '', valueVal = '') {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'header-row';
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.placeholder = 'Nama Header (contoh: X-Custom)';
+        nameInput.value = nameVal;
+        const valueInput = document.createElement('input');
+        valueInput.type = 'text';
+        valueInput.placeholder = 'Nilai Header';
+        valueInput.value = valueVal;
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = '✖ Hapus';
+        removeBtn.className = 'btn-icon danger';
+        removeBtn.type = 'button';
+        removeBtn.addEventListener('click', () => {
+            rowDiv.remove();
+        });
+        rowDiv.appendChild(nameInput);
+        rowDiv.appendChild(valueInput);
+        rowDiv.appendChild(removeBtn);
+        return rowDiv;
+    }
+
+    // inisialisasi default headers (beberapa contoh)
+    function setDefaultHeaders() {
+        headersContainer.innerHTML = '';
+        const defaultHeaders = [
+            ['Accept', 'application/json'],
+            ['X-CORS-Tester', 'StaticPage-v1']
+        ];
+        defaultHeaders.forEach(([name, val]) => {
+            headersContainer.appendChild(createHeaderRow(name, val));
+        });
+    }
+
+    // mengambil headers sebagai object {name: value} tanpa empty name
+    function getHeadersObject() {
+        const rows = document.querySelectorAll('#headersContainer .header-row');
+        const headers = {};
+        rows.forEach(row => {
+            const inputs = row.querySelectorAll('input');
+            if (inputs.length >= 2) {
+                let name = inputs[0].value.trim();
+                let value = inputs[1].value;
+                if (name !== '') {
+                    headers[name] = value;
+                }
+            }
+        });
+        return headers;
+    }
+
+    // preview untuk UI
+    function updatePreviewHeaders() {
+        const headers = getHeadersObject();
+        const entries = Object.entries(headers);
+        if (entries.length === 0) {
+            previewHeadersListSpan.textContent = '(tidak ada header kustom)';
+        } else {
+            previewHeadersListSpan.innerHTML = entries.map(([k,v]) => `<code>${escapeHtml(k)}: ${escapeHtml(v)}</code>`).join(', ');
+        }
+    }
+
+    // bersihkan output (response & error)
+    function clearOutput() {
+        statusCodeSpan.innerHTML = '⚡ Status: —';
+        responseTimeSpan.innerHTML = '⏱️ Waktu: —';
+        responseHeadersBox.innerHTML = '— Headers akan tampil disini —';
+        responseBodyBox.innerHTML = '— Response muncul setelah request —';
+        errorLogBox.innerHTML = '✅ Output dibersihkan. Siap uji CORS.';
+        errorLogBox.style.color = '#ffcfb3';
+    }
+
+    // log error / info di error box
+    function setErrorLog(message, isError = true) {
+        errorLogBox.innerHTML = isError ? `❌ ${escapeHtml(message)}` : `ℹ️ ${escapeHtml(message)}`;
+        if (!isError) errorLogBox.style.color = '#bfffcb';
+        else errorLogBox.style.color = '#ffcfb3';
+    }
+
+    // ---------- Fungsi utama send request dengan fetch & CORS + custom headers ----------
+    async function sendCORSRequest() {
+        // abort jika ada request berjalan
+        if (currentAbortController) {
+            currentAbortController.abort();
+        }
+        // disable button selama loading
+        sendBtn.disabled = true;
+        const originalBtnText = sendBtn.innerHTML;
+        sendBtn.innerHTML = '<span class="spinner"></span> Mengirim...';
+
+        // reset tampilan sebelumnya tapi simpan error kosong
+        clearOutput();
+        setErrorLog('🚀 Sedang mengirim request... cek CORS & headers', false);
+
+        const url = urlInput.value.trim();
+        if (!url) {
+            setErrorLog('URL tidak boleh kosong! Masukkan endpoint absolut (contoh: https://httpbin.org/get)');
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = originalBtnText;
+            return;
+        }
+        // validasi URL sederhana
+        try {
+            new URL(url);
+        } catch (e) {
+            setErrorLog(`URL tidak valid: ${url}. Harus lengkap dengan http:// atau https://`);
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = originalBtnText;
+            return;
+        }
+
+        const method = methodSelect.value;
+        const withCred = withCredentialsCheck.checked;
+        const headersCustom = getHeadersObject();
+        const rawBody = requestBodyTextarea.value;
+        let bodyToSend = undefined;
+        if (method !== 'GET' && method !== 'HEAD') {
+            if (rawBody.trim() !== '') {
+                bodyToSend = rawBody;
+            }
+        }
+
+        // fetch options
+        const fetchOptions = {
+            method: method,
+            mode: 'cors',          // penting: explicit CORS mode
+            credentials: withCred ? 'include' : 'omit',
+            headers: headersCustom,
+            cache: 'no-store'
+        };
+        if (bodyToSend !== undefined) {
+            fetchOptions.body = bodyToSend;
+        }
+
+        // buat abort controller untuk request ini
+        const controller = new AbortController();
+        currentAbortController = controller;
+        fetchOptions.signal = controller.signal;
+
+        const startTime = performance.now();
+
+        try {
+            const response = await fetch(url, fetchOptions);
+            const endTime = performance.now();
+            const elapsed = (endTime - startTime).toFixed(2);
+
+            // update status
+            const statusText = `${response.status} ${response.statusText}`;
+            statusCodeSpan.innerHTML = `📡 Status: ${statusText}`;
+            if (response.ok) statusCodeSpan.classList.add('status-ok');
+            else statusCodeSpan.classList.add('status-error');
+            responseTimeSpan.innerHTML = `⏱️ Waktu: ${elapsed} ms`;
+
+            // Response Headers (yang bisa diakses via CORS / exposed)
+            let headersStr = '';
+            try {
+                const headersObj = {};
+                response.headers.forEach((value, key) => {
+                    headersObj[key] = value;
+                });
+                if (Object.keys(headersObj).length === 0) {
+                    headersStr = '(tidak ada header yang terekspos, atau server tidak mengirim Access-Control-Expose-Headers)';
+                } else {
+                    headersStr = Object.entries(headersObj)
+                        .map(([k, v]) => `<strong>${escapeHtml(k)}</strong>: ${escapeHtml(v)}`)
+                        .join('<br>');
+                }
+            } catch(e) {
+                headersStr = `Gagal membaca headers: ${e.message}`;
+            }
+            responseHeadersBox.innerHTML = headersStr || '— tidak ada header —';
+
+            // Response body (text / json beautify)
+            let responseText = '';
+            const contentType = response.headers.get('content-type') || '';
+            try {
+                if (contentType.includes('application/json')) {
+                    const jsonData = await response.json();
+                    responseText = JSON.stringify(jsonData, null, 2);
+                } else {
+                    responseText = await response.text();
+                }
+                // batasi tampilan jika terlalu panjang
+                if (responseText.length > 5000) {
+                    responseText = responseText.substring(0, 5000) + '\n... (truncated, panjang >5000 chars)';
+                }
+                responseBodyBox.innerHTML = escapeHtml(responseText);
+            } catch (err) {
+                responseText = await response.text().catch(() => '(tidak bisa membaca body)');
+                responseBodyBox.innerHTML = escapeHtml(responseText.substring(0, 3000));
+            }
+
+            // jika status bukan ok atau ada indikasi CORS warning, beri catatan
+            if (!response.ok) {
+                setErrorLog(`Respons sukses secara teknis (HTTP ${response.status}), tapi mungkin masih ada kendala CORS jika Origin tidak sesuai. Periksa header Access-Control-Allow-Origin.`, false);
+            } else {
+                // cek apakah ada header ACAO
+                const acao = response.headers.get('access-control-allow-origin');
+                if (!acao) {
+                    setErrorLog('⚠️ Tidak ada header Access-Control-Allow-Origin. CORS bisa gagal jika origin berbeda, tapi request tetap berhasil karena browser tidak memblokir? Pastikan mode CORS aktif.', false);
+                } else {
+                    setErrorLog(`✅ CORS header ditemukan: Access-Control-Allow-Origin: ${acao}. Request lintas origin berhasil diproses.`, false);
+                }
+            }
+
+        } catch (error) {
+            const endTime = performance.now();
+            const elapsed = (endTime - startTime).toFixed(2);
+            responseTimeSpan.innerHTML = `⏱️ Waktu: ${elapsed} ms (gagal)`;
+            statusCodeSpan.innerHTML = '❌ Status: Gagal / CORS Error';
+            statusCodeSpan.classList.add('status-error');
+            
+            let errorMessage = error.message;
+            // Deteksi error CORS khas
+            if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError') || errorMessage.includes('CORS')) {
+                errorMessage = `🔥 GAGAL KARENA CORS / JARINGAN: ${errorMessage}. 
+                Kemungkinan: 
+                - Server tidak mengirim Access-Control-Allow-Origin yang sesuai dengan origin halaman ini.
+                - Preflight request (OPTIONS) ditolak karena custom headers/method tidak diizinkan.
+                - Header custom yang dilarang (Origin, dll) mencoba dikirim.
+                - URL tidak mendukung HTTPS? Periksa kembali endpoint.`;
+            } else if (error.name === 'AbortError') {
+                errorMessage = 'Request dibatalkan karena ada request baru.';
+            }
+            setErrorLog(errorMessage);
+            responseBodyBox.innerHTML = '— Gagal mengambil response karena error CORS/network —';
+            responseHeadersBox.innerHTML = '— headers tidak tersedia —';
+        } finally {
+            if (currentAbortController === controller) {
+                currentAbortController = null;
+            }
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = originalBtnText;
+            // update preview headers setelah request (tampilkan header terakhir yang dikirim)
+            updatePreviewHeaders();
+        }
+    }
+
+    // ---- event listeners & initial setup ----
+    function init() {
+        updateOriginDisplay();
+        setDefaultHeaders();
+        updatePreviewHeaders();
+
+        // event listener untuk perubahan headers container (biar update preview tiap ada perubahan)
+        const observerConfig = { childList: true, subtree: true, attributes: true };
+        const headersObserver = new MutationObserver(() => updatePreviewHeaders());
+        headersObserver.observe(headersContainer, { childList: true, subtree: true, characterData: true, attributes: true });
+        addHeaderBtn.addEventListener('click', () => {
+            headersContainer.appendChild(createHeaderRow('', ''));
+            updatePreviewHeaders();
+        });
+        resetHeadersBtn.addEventListener('click', () => {
+            setDefaultHeaders();
+            updatePreviewHeaders();
+        });
+        sendBtn.addEventListener('click', sendCORSRequest);
+        clearOutputBtn.addEventListener('click', () => {
+            clearOutput();
+            setErrorLog('Output direset. Siap menguji request baru.', false);
+        });
+        // update preview saat input header berubah secara manual
+        headersContainer.addEventListener('input', () => updatePreviewHeaders());
+        // juga jika method berubah tidak terlalu penting, tetap refresh preview
+        methodSelect.addEventListener('change', () => updatePreviewHeaders());
+        withCredentialsCheck.addEventListener('change', () => updatePreviewHeaders());
+    }
+
+    init();
+</script>
+</body>
+</html>
