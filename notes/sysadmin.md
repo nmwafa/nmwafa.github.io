@@ -6,30 +6,46 @@ Essential Commands, Scripts & Troubleshooting Guide
 
 ## Table of Contents
 
-- System Fundamentals
-  - File System Management
-  - User & Group Administration
-  - Process Management
-  - System Information
-  - Package Management
-- Security & Monitoring
-  - Permissions & Ownership
-  - SELinux & AppArmor
-  - System Monitoring
-  - Log Management
-  - Backup & Recovery
-- Networking
-  - Network Configuration
-  - SSH & Remote Access
-  - Firewall Management
-  - DNS & Network Diagnostics
-  - Web Services
-- Advanced Topics
-  - Shell Scripting
-  - Cron Jobs
-  - Docker & Containers
-  - Troubleshooting Guide
-  - Useful One‑Liners
+- [Quick Start Guide](#quick-start-guide)
+- [File System Management](#file-system-management)
+  - [Basic File Operations](#basic-file-operations)
+  - [Disk & Storage Management](#disk--storage-management)
+  - [Permissions & Ownership](#permissions--ownership)
+- [User & Group Administration](#user--group-administration)
+  - [User Management](#user-management)
+  - [Group Management](#group-management)
+  - [Sudo Security](#sudo-security)
+- [Process Management](#process-management)
+  - [Process Monitoring](#process-monitoring)
+  - [System Monitoring](#system-monitoring)
+  - [Systemd Service Management](#systemd-service-management)
+- [Network Configuration](#network-configuration)
+- [SSH & Remote Access](#ssh--remote-access)
+- [Firewall Management](#firewall-management)
+  - [UFW (Ubuntu)](#ufw-ubuntu)
+  - [Firewalld (RHEL/CentOS)](#firewalld-rhelcentos)
+- [Security & Monitoring](#security--monitoring)
+  - [System Monitoring (Security)](#system-monitoring-security)
+  - [Log Management](#log-management)
+- [Backup & Recovery](#backup--recovery)
+  - [File Backups](#file-backups)
+  - [Database Backups](#database-backups)
+  - [Critical Security Practices](#critical-security-practices)
+- [Shell Scripting Essentials](#shell-scripting-essentials)
+- [Cron Jobs](#cron-jobs)
+- [Useful One‑Liners](#useful-oneliners)
+- [Troubleshooting Guide](#troubleshooting-guide)
+  - [SSH Connectivity Issues](#ssh-connectivity-issues)
+  - [High CPU Usage](#high-cpu-usage)
+  - [Disk Full Issues](#disk-full-issues)
+  - [Emergency Recovery](#emergency-recovery)
+- [Most Used Commands](#most-used-commands)
+
+---
+
+## Quick Start Guide
+
+This cheatsheet is organized by topic with practical examples. Use the table of contents to quickly navigate to the sections most relevant to your current task.
 
 ---
 
@@ -214,7 +230,9 @@ sudo journalctl -u nginx -f
 | `ss` | Socket statistics | `ss -tulpn` |
 | `ping` | Network connectivity | `ping google.com` |
 
-### SSH & Remote Access
+---
+
+## SSH & Remote Access
 
 ```bash
 # Basic SSH connection
@@ -234,9 +252,11 @@ scp file.txt user@hostname:/path/
 scp user@hostname:/path/file.txt .
 ```
 
-### Firewall Management
+---
 
-#### UFW (Ubuntu)
+## Firewall Management
+
+### UFW (Ubuntu)
 
 ```bash
 # Enable firewall
@@ -255,7 +275,7 @@ sudo ufw deny 25/tcp
 sudo ufw status verbose
 ```
 
-#### Firewalld (RHEL/CentOS)
+### Firewalld (RHEL/CentOS)
 
 ```bash
 # Start service
@@ -278,7 +298,7 @@ sudo firewall-cmd --list-all
 
 ## Security & Monitoring
 
-### System Monitoring
+### System Monitoring (Security)
 
 ```bash
 # Monitor system resources
