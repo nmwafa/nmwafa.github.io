@@ -13,3 +13,9 @@
 - ### [Kalkulator Basis Bilangan](kalkulator-bilangan)
 - ### [Github Dork Generator](github-dork)
 - ### [CORS Tester](cors-tester)
+
+# Other useful tools
+
+- ### [CVSS v3.1 Base Score Calculator](https://cvss.js.org/)
+- ### [Security Headers](https://securityheaders.com/)
+- ### [Subdomain Finder](https://subdomainfinder.c99.nl/)
