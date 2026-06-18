@@ -20,4 +20,5 @@
 - ### [Cross-Origin Resource Sharing](cors)
 - ### [Port Forwarding & Tunnelling](portfwd)
 - ### [Active Directory Pentesting](ad-pentesting)
-- ### [Red Hat System Administration I (RH124 - RHA) - Ver. 10](rh124)
+- ### [Red Hat System Administration I - Ver. 10](rh124)
+- ### [Red Hat System Administration II - Ver. 10](rh134)
