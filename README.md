@@ -1,4 +1,4 @@
-<p align="center"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExN3cwZnIzdWVpemZyOXFyb2h1ejJmNGxvOWFiODlqMjk3ZHpxc2RtdyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3wr2cnwlghNomDeN9W/giphy.gif"></p>
+<p align="center"><img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeXJueG96bnU4ajUwdzc4MjlnM2twdHFidzEzaGtuNnNudnp5ZnIwbiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MD0svLSDeudszrNrp0/giphy.gif"></p>
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam lacinia lorem id posuere volutpat. Pellentesque luctus, leo eu facilisis scelerisque, est diam consequat velit, quis aliquet metus nunc at justo. Mauris sed nisi lacinia, placerat mauris a, placerat nunc. Maecenas commodo convallis egestas. Vestibulum commodo feugiat metus sed bibendum. Suspendisse in ornare lectus. Donec gravida finibus neque, pellentesque finibus ex rutrum id.
 
