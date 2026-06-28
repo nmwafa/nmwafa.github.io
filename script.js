@@ -7,7 +7,6 @@ const themeIconLight = document.getElementById('theme-icon-light');
 const fakeCursor = document.getElementById('fake-cursor');
 const inputTextDisplay = document.getElementById('input-text-display');
 
-// Unsur baru untuk Fullscreen
 const fullscreenToggle = document.getElementById('fullscreen-toggle');
 const fsIconExpand = document.getElementById('fs-icon-expand');
 const fsIconCompress = document.getElementById('fs-icon-compress');
@@ -101,7 +100,7 @@ const commands = {
         return `
             <p>Let's connect...</p>
             <ul>
-                <li>* Email: <a href="mailto:maswafa@bugcrowdninja.com" class="underline text-light-blue dark:text-dark-blue">maswafa@bugcrowdninja.com</a></li>
+                <li>* Email: <a href="mailto:me@maswafa.my.id" class="underline text-light-blue dark:text-dark-blue">me@maswafa.my.id</a></li>
                 <li>* GitHub: <a href="https://github.com/nmwafa" target="_blank" class="underline text-light-blue dark:text-dark-blue">nmwafa</a></li>
                 <li>* LinkedIn: <a href="https://www.linkedin.com/in/nmwafa" target="_blank" class="underline text-light-blue dark:text-dark-blue">nmwafa</a></li>
             </ul>
