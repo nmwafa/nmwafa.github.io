@@ -23,7 +23,8 @@ const blogPosts = {
 
 const projects = [
     { name: 'Recon & Pillage', description: 'Automation script for subdomain search, technology detection, and categorizing based on status code, URL, and technology.', url: 'https://github.com/nmwafa/recon-pillage' },
-    { name: 'ask', description: 'a lightweight, AI-powered Bash script designed for Linux systems. It integrates the OpenRouter API directly into your terminal to act as an expert Linux assistant.' , url: 'https://github.com/nmwafa/ask' }
+    { name: 'ask', description: 'a lightweight, AI-powered Bash script designed for Linux systems. It integrates the OpenRouter API directly into your terminal to act as an expert Linux assistant.' , url: 'https://github.com/nmwafa/ask' },
+    { name: 'Sistem Perpustakaan', description: 'a library system built with Laravel and integrated with an AI chatbot service using the Llama model.', url: 'https://github.com/nmwafa/sistem-perpustakaan' }
 ];
 
 const commands = {
@@ -124,7 +125,6 @@ commandInput.addEventListener('keydown', (e) => {
         commandInput.disabled = true;
         const fullCommand = commandInput.value.trim();
         
-        // Selalu buat dan tampilkan baris prompt baru (meskipun input kosong)
         const promptLine = document.createElement('div');
         promptLine.innerHTML = `
             <div class="flex">
