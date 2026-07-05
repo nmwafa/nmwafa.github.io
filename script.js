@@ -18,7 +18,8 @@ const blogPosts = {
     '4': { title: 'Apa itu Fork bomb?', url: 'https://nmwafa.medium.com/apa-itu-fork-bomb-27a2a4d0ffe9' },
     '5': { title: 'HTB Skills Assessment — SQL Injection Fundamentals', url: 'https://medium.com/@nmwafa/htb-skills-assessment-sql-injection-fundamentals-4584dc7568a5' },
     '6': { title: 'Mengenal kerentanan desinkronisasi HTTP', url: 'https://nmwafa.medium.com/mengenal-kerentanan-desinkronisasi-http-7d59abef382b' },
-    '7': { title: 'Pengenalan SELinux', url: 'https://nmwafa.medium.com/pengenalan-selinux-4e97fb4eab0b' }
+    '7': { title: 'Pengenalan SELinux', url: 'https://nmwafa.medium.com/pengenalan-selinux-4e97fb4eab0b' },
+    '8': { title: 'Ukuran Penyimpanan Data', url: 'https://nmwafa.medium.com/ukuran-penyimpanan-data-f20a45c691fb' }
 };
 
 const projects = [
