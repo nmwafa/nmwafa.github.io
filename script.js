@@ -53,7 +53,7 @@ const commands = {
         `;
     },
     projects: () => {
-        let projectList = '<p class="mb-2">This is a project that I created:</p>';
+        let projectList = '<p class="mb-2">Here are some of my projects::</p>';
         projects.forEach(p => {
             projectList += `
                 <div class="mb-2">
@@ -66,7 +66,7 @@ const commands = {
     },
     blog: (args) => {
         if (args.length === 0 || args[0] === 'list') {
-            let postList = '<p class="mb-2">Article in Indonesian. Use the command \'blog read [id]\' to read (e.g., blog read 1):</p>';
+            let postList = '<p class="mb-2">Use the command \'blog read [id]\' to read (e.g., blog read 1):</p>';
             Object.entries(blogPosts).forEach(([id, post]) => {
                 postList += `<p><span class="text-light-cyan dark:text-dark-cyan">[${id}]</span> ${post.title} </p>`;
             });
@@ -188,10 +188,9 @@ themeToggle.addEventListener('click', () => {
     setTheme(currentTheme === 'dark' ? 'light' : 'dark');
 });
 
-// --- Logika Fullscreen (Cross-Browser) ---
+// --- Fullscreen (Cross-Browser) ---
 function toggleFullscreen() {
     if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
-        // Masuk Fullscreen
         const elem = document.documentElement;
         if (elem.requestFullscreen) {
             elem.requestFullscreen();
@@ -218,7 +217,6 @@ function toggleFullscreen() {
 
 fullscreenToggle.addEventListener('click', toggleFullscreen);
 
-// Update icon saat status fullscreen berubah (termasuk jika user tekan ESC)
 function updateFullscreenIcons() {
     const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
     if (isFullscreen) {
@@ -248,9 +246,7 @@ function initialize() {
     const preferredTheme = localStorage.getItem('theme');
     setTheme(preferredTheme || 'dark');
     output.innerHTML = getWelcomeMessage();
-    // Saat terminal diklik di mana saja, fokuskan ke input
     terminalBody.addEventListener('click', (e) => {
-        // Hindari re-focus jika yang diklik adalah link
         if (e.target.tagName !== 'A') {
             commandInput.focus();
         }
