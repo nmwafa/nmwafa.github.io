@@ -71,7 +71,6 @@ const commands = {
                 <div class="mb-2">
                     <p>Check out the blog page <a href="/blog/" target="_self" class="underline text-light-cyan dark:text-dark-cyan">here</a>.</p>
                     </br>
-                    </br>
                     <p>Another blog on medium. To read, use this command: (e.g., blog read 1):</p>
                 </div>
             `;
