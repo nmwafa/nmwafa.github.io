@@ -25,7 +25,8 @@ const blogPosts = {
 const projects = [
     { name: 'Recon & Pillage', description: 'Automation script for subdomain search, technology detection, and categorizing based on status code, URL, and technology.', url: 'https://github.com/nmwafa/recon-pillage' },
     { name: 'ask', description: 'a lightweight, AI-powered Bash script designed for Linux systems. It integrates the OpenRouter API directly into your terminal to act as an expert Linux assistant.' , url: 'https://github.com/nmwafa/ask' },
-    { name: 'Sistem Perpustakaan', description: 'a library system built with Laravel and integrated with an AI chatbot service using the Llama model.', url: 'https://github.com/nmwafa/sistem-perpustakaan' }
+    { name: 'Sistem Perpustakaan', description: 'a library system built with Laravel and integrated with an AI chatbot service using the Llama model.', url: 'https://github.com/nmwafa/sistem-perpustakaan' },
+    { name: 'GEDOR-GEDOR', description: 'A practical web tool based on Google Dorking, featuring a collection of nearly 1,000 structured search patterns to accelerate reconnaissance, OSINT, and bug hunting processes.', url: 'https://maswafa.is-a.dev/tools/google-dork' }
 ];
 
 const commands = {
@@ -53,7 +54,7 @@ const commands = {
         `;
     },
     projects: () => {
-        let projectList = '<p class="mb-2">Here are some of my projects::</p>';
+        let projectList = '<p class="mb-2">Here are some of my projects:</p>';
         projects.forEach(p => {
             projectList += `
                 <div class="mb-2">
@@ -66,7 +67,14 @@ const commands = {
     },
     blog: (args) => {
         if (args.length === 0 || args[0] === 'list') {
-            let postList = '<p class="mb-2">Use the command \'blog read [id]\' to read (e.g., blog read 1):</p>';
+            let postList = `
+                <div class="mb-2">
+                    <p>Check out the blog page <a href="/blog/" target="_self" class="underline text-light-cyan dark:text-dark-cyan">here</a>.</p>
+                    </br>
+                    </br>
+                    <p>Another blog on medium. To read, use this command: (e.g., blog read 1):</p>
+                </div>
+            `;
             Object.entries(blogPosts).forEach(([id, post]) => {
                 postList += `<p><span class="text-light-cyan dark:text-dark-cyan">[${id}]</span> ${post.title} </p>`;
             });
@@ -102,9 +110,9 @@ const commands = {
         return `
             <p>Let's connect...</p>
             <ul>
-                <li>* Email: <a href="mailto:me@maswafa.my.id" class="underline text-light-blue dark:text-dark-blue">me@maswafa.my.id</a></li>
-                <li>* GitHub: <a href="https://github.com/nmwafa" target="_blank" class="underline text-light-blue dark:text-dark-blue">nmwafa</a></li>
-                <li>* LinkedIn: <a href="https://www.linkedin.com/in/nmwafa" target="_blank" class="underline text-light-blue dark:text-dark-blue">nmwafa</a></li>
+                <li>* Email: <a href="mailto:me@maswafa.my.id" class="underline text-light-cyan dark:text-dark-cyan">me@maswafa.my.id</a></li>
+                <li>* GitHub: <a href="https://github.com/nmwafa" target="_blank" class="underline text-light-cyan dark:text-dark-cyan">nmwafa</a></li>
+                <li>* LinkedIn: <a href="https://www.linkedin.com/in/nmwafa" target="_blank" class="underline text-light-cyan dark:text-dark-cyan">nmwafa</a></li>
             </ul>
         `;
     },
