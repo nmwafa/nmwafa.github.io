@@ -49,9 +49,11 @@ const commands = {
     },
     whoami: () => {
         return `
-            <p>Wafa is a cybersecurity specialist who is passionate about web application security and linux system administration.</p>
-            <p>He is dedicated to developing his skills and consistently keeping up with the latest trends in this area.</p>
-            <p>Occasionally, he also contributes by helping secure systems for educational institutions and other organizations.</p>
+            <p>Cybersecurity and Linux Systems enthusiast dedicated to web application security, ethical hacking, and secure infrastructure operations.</P>
+            <p>With practical experience in vulnerability assessments (OWASP standards), penetration testing, and Linux administration, I enjoy discovering potential security risks and engineering proactive solutions to mitigate them.</p>
+            <p>My journey includes hands-on labs (PortSwigger, Hack The Box), graduating from the 6-month intensive Cyber ​​Sentinel Secure program, achieving Top 15 Finalist in the Helium Challenge Penetration Testing Competition, and actively identifying vulnerabilities through VDP/BBP programs.</p>
+            <p>Armed with professional credentials from Google, Cisco, and Red Hat, I continually stay ahead of emerging threats and strive to contribute to a safer digital ecosystem.</p>
+            <p>Feel free to connect to discuss application security, system hardening, or technology in general!</p>
         `;
     },
     projects: () => {
