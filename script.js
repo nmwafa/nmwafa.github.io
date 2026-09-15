@@ -24,9 +24,10 @@ const blogPosts = {
 
 const projects = [
     { name: 'Recon & Pillage', description: 'Automation script for subdomain search, technology detection, and categorizing based on status code, URL, and technology.', url: 'https://github.com/nmwafa/recon-pillage' },
-    { name: 'ask', description: 'a lightweight, AI-powered Bash script designed for Linux systems. It integrates the OpenRouter API directly into your terminal to act as an expert Linux assistant.' , url: 'https://github.com/nmwafa/ask' },
-    { name: 'Sistem Perpustakaan', description: 'a library system built with Laravel and integrated with an AI chatbot service using the Llama model.', url: 'https://github.com/nmwafa/sistem-perpustakaan' },
-    { name: 'GEDOR-GEDOR', description: 'A web-based tool for automating the Google Dorking process, featuring a collection of nearly 1,000 structured search patterns to accelerate reconnaissance, OSINT, and bug hunting.', url: 'https://maswafa.is-a.dev/tools/google-dork' }
+    { name: 'ask', description: 'A lightweight, AI-powered Bash script designed for Linux systems. It integrates the OpenRouter API directly into your terminal to act as an expert Linux assistant.' , url: 'https://github.com/nmwafa/ask' },
+    { name: 'Sistem Perpustakaan', description: 'A library system built with Laravel and integrated with an AI chatbot service using the Llama model.', url: 'https://github.com/nmwafa/sistem-perpustakaan' },
+    { name: 'GEDOR-GEDOR', description: 'A web-based tool for automating the Google Dorking process, featuring a collection of nearly 1,000 structured search patterns to accelerate reconnaissance, OSINT, and bug hunting.', url: 'https://maswafa.is-a.dev/tools/google-dork' },
+    { name: 'tumbas', description: 'Web-based product catalog application for SMEs that allows potential buyers to view lists of local products, search for products by category, and connect directly with sellers via WhatsApp or Google Maps.', url: 'https://github.com/nmwafa/tumbas' }
 ];
 
 const commands = {
