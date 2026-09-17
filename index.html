@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nur Muhammad Wafa | IT & Cybersecurity Portfolio</title>
     <meta name="author" content="Nur Muhammad Wafa">
+    <meta name="description" content="IT portfolio of Nur Muhammad Wafa, focused on Cybersecurity, Web Application Security, Linux System Administration, Networking, Programming, and IT Support">
     <!-- Open Graph -->
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="portfolio">
     <meta property="og:site_name" content="Nur Muhammad Wafa">
     <meta property="og:title" content="Nur Muhammad Wafa | IT & Cybersecurity Portfolio">
-    <meta property="og:description"
-        content="IT portfolio of Nur Muhammad Wafa, focused on cybersecurity, web application security, Linux system administration, networking, and programming.">
+    <meta property="og:description" content="IT portfolio of Nur Muhammad Wafa, focused on Cybersecurity, Web Application Security, Linux System Administration, Networking, Programming, and IT Support">
     <meta property="og:url" content="https://maswafa.is-a.dev/">
     
     <link rel="icon" href="https://img.icons8.com/?size=100&id=Ttjsnau5W1jb&format=png&color=000000">
@@ -51,11 +51,8 @@
     </script>
 </head>
 
-<body class="bg-light-bg dark:bg-dark-bg text-light-fg dark:text-dark-fg transition-colors duration-300"
-    oncontextmenu="return false;">
-
+<body class="bg-light-bg dark:bg-dark-bg text-light-fg dark:text-dark-fg transition-colors duration-300" oncontextmenu="return false;">
     <div id="terminal" class="p-2 sm:p-4 h-screen w-full flex flex-col">
-        <!-- Header Jendela Terminal -->
         <div class="bg-gray-200 dark:bg-[#282a36] rounded-t-lg p-2 flex items-center gap-2 shadow-md">
             <div class="w-3.5 h-3.5 bg-red-500 rounded-full"></div>
             <div class="w-3.5 h-3.5 bg-yellow-500 rounded-full"></div>
@@ -66,17 +63,14 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <!-- Tombol fullscreen -->
                 <button id="fullscreen-toggle"
                     class="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">
-                    <!-- Icon Expand -->
                     <svg id="fs-icon-expand" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4">
                         </path>
                     </svg>
-                    <!-- Icon Compress (Hidden by default) -->
                     <svg id="fs-icon-compress" class="w-5 h-5 hidden" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -84,7 +78,6 @@
                     </svg>
                 </button>
 
-                <!-- Tombol Light/Dark Mode -->
                 <button id="theme-toggle"
                     class="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">
                     <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
@@ -99,7 +92,6 @@
             </div>
         </div>
 
-        <!-- Konten Terminal -->
         <div id="terminal-body"
             class="w-full flex-grow bg-white dark:bg-dark-bg border-x-2 border-b-2 border-light-border dark:border-dark-border rounded-b-lg p-4 overflow-y-auto overflow-x-hidden text-sm sm:text-base">
             <div id="output"></div>
@@ -125,5 +117,4 @@
     <!-- Block -->
     <script src="block.js"></script>
 </body>
-
 </html>
