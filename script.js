@@ -27,7 +27,8 @@ const projects = [
     { name: 'ask', description: 'A lightweight, AI-powered Bash script designed for Linux systems. It integrates the OpenRouter API directly into your terminal to act as an expert Linux assistant.' , url: 'https://github.com/nmwafa/ask' },
     { name: 'Sistem Perpustakaan', description: 'A library system built with Laravel and integrated with an AI chatbot service using the Llama model.', url: 'https://github.com/nmwafa/sistem-perpustakaan' },
     { name: 'GEDOR-GEDOR', description: 'A web-based tool for automating the Google Dorking process, featuring a collection of nearly 1,000 structured search patterns to accelerate reconnaissance, OSINT, and bug hunting.', url: 'https://maswafa.is-a.dev/tools/google-dork' },
-    { name: 'tumbas', description: 'Web-based product catalog application for SMEs that allows potential buyers to view lists of local products, search for products by category, and connect directly with sellers via WhatsApp or Google Maps.', url: 'https://github.com/nmwafa/tumbas' }
+    { name: 'tumbas', description: 'Web-based product catalog application for SMEs that allows potential buyers to view lists of local products, search for products by category, and connect directly with sellers via WhatsApp or Google Maps.', url: 'https://github.com/nmwafa/tumbas' },
+    { name: 'PKI, Visualized', description: 'an interactive educational web tool that visually breaks down how Public Key Infrastructure (PKI) and TLS handshakes establish cryptographic trust between a browser and a server.', url: 'https://maswafa.is-a.dev/pki-visualized/' }
 ];
 
 const commands = {
