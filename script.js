@@ -50,11 +50,11 @@ const commands = {
     },
     whoami: () => {
         return `
-            <p>Cybersecurity and Linux Systems enthusiast dedicated to web application security, ethical hacking, and secure infrastructure operations.</P>
+            <p>Cybersecurity and Linux Systems enthusiast dedicated to Web Application Security, AI Security, Ethical Hacking, and Secure Infrastructure Operations.</P>
             <p>With practical experience in vulnerability assessments (OWASP standards), penetration testing, and Linux administration, I enjoy discovering potential security risks and engineering proactive solutions to mitigate them.</p>
-            <p>My journey includes hands-on labs (PortSwigger, Hack The Box), graduating from the 6-month intensive Cyber ​​Sentinel Secure program, achieving Top 15 Finalist in the Helium Challenge Penetration Testing Competition, and actively identifying vulnerabilities through VDP/BBP programs.</p>
+            <p>My journey includes hands-on labs, completing the 6-month Cyber ​​Sentinel Secure intensive program, achieving Top 15 Finalist in the Helium Challenge Penetration Testing Competition, and actively identifying vulnerabilities through VDP/BBP programs.</p>
             <p>Armed with professional credentials from Google, Cisco, and Red Hat, I continually stay ahead of emerging threats and strive to contribute to a safer digital ecosystem.</p>
-            <p>Feel free to connect to discuss application security, system hardening, or technology in general!</p>
+            <p>Feel free to connect to discuss about application security, server infrastructure, or technology in general!</p>
         `;
     },
     projects: () => {
@@ -131,7 +131,6 @@ const commands = {
     },
 };
 
-// --- Logika Terminal ---
 commandInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !commandInput.disabled) {
         commandInput.disabled = true;
@@ -146,12 +145,10 @@ commandInput.addEventListener('keydown', (e) => {
                 <div class="flex-grow break-all">${fullCommand}</div>
             </div>`;
         output.appendChild(promptLine);
-        
-        // Reset input
+
         commandInput.value = '';
         inputTextDisplay.textContent = '';
 
-        // Eksekusi pencarian perintah hanya jika ada teks
         if (fullCommand) {
             const [command, ...args] = fullCommand.split(' ');
 
@@ -172,14 +169,12 @@ commandInput.addEventListener('keydown', (e) => {
     }
 });
 
-// Sinkronkan teks dari input yang tersembunyi ke tampilan visual
 commandInput.addEventListener('input', () => {
     if (inputTextDisplay) {
         inputTextDisplay.textContent = commandInput.value;
     }
 });
 
-// --- Tema ---
 const setTheme = (theme) => {
     if (theme === 'dark') {
         document.documentElement.classList.add('dark');
@@ -199,7 +194,6 @@ themeToggle.addEventListener('click', () => {
     setTheme(currentTheme === 'dark' ? 'light' : 'dark');
 });
 
-// --- Fullscreen (Cross-Browser) ---
 function toggleFullscreen() {
     if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
         const elem = document.documentElement;
@@ -213,7 +207,6 @@ function toggleFullscreen() {
             elem.mozRequestFullScreen();
         }
     } else {
-        // Keluar Fullscreen
         if (document.exitFullscreen) {
             document.exitFullscreen();
         } else if (document.webkitExitFullscreen) {
