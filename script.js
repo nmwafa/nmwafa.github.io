@@ -109,6 +109,10 @@ const commands = {
         window.open('cheatsheets', '_self');
         return '';
     },
+    cv: () => {
+        window.open('cv', '_self');
+        return '';
+    },
     contact: () => {
         return `
             <p>Let's connect...</p>
