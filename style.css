@@ -13,6 +13,15 @@ body {
 
 #terminal {
     position: relative;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+}
+
+#terminal-body {
+    min-height: 0;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 #terminal::after {
@@ -45,6 +54,18 @@ body {
     #terminal::after {
         animation: none;
     }
+}
+
+@media (max-width: 639px) and (prefers-reduced-motion: no-preference) {
+    #terminal::after {
+        filter: none;
+        animation: edge-light-pulse 2.4s ease-in-out infinite alternate;
+    }
+}
+
+@keyframes edge-light-pulse {
+    from { opacity: 0.45; }
+    to { opacity: 1; }
 }
 
 #fullscreen-toggle, #theme-toggle, a {
