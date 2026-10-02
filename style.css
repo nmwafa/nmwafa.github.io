@@ -5,6 +5,48 @@ body {
     /*cursor: url('https://cdn.custom-cursor.com/db/18387/32/disney-big-hero-6-baymax-pointer.png'), auto;*/
 }
 
+@property --edge-light-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+#terminal {
+    position: relative;
+}
+
+#terminal::after {
+    position: absolute;
+    inset: 8px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: conic-gradient(from var(--edge-light-angle), transparent 0deg 225deg, rgba(34, 211, 238, 1) 260deg, rgba(74, 222, 128, 0.9) 305deg, transparent 335deg 360deg) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    content: '';
+    pointer-events: none;
+    filter: drop-shadow(0 0 2px rgba(34, 211, 238, 0.55));
+    animation: edge-light 6s linear infinite;
+}
+
+@media (min-width: 640px) {
+    #terminal::after {
+        inset: 16px;
+    }
+}
+
+@keyframes edge-light {
+    to { --edge-light-angle: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #terminal::after {
+        animation: none;
+    }
+}
+
 #fullscreen-toggle, #theme-toggle, a {
     cursor: url('https://cdn.custom-cursor.com/db/7647/32/meme-pop-cat-pointer.png'), pointer;
     /*cursor: url('https://cdn.custom-cursor.com/db/18388/32/disney-big-hero-6-baymax-cursor.png'), pointer;*/

@@ -31,6 +31,7 @@
                     },
                     colors: {
                         'dark-bg': '#1a1b26',
+                        'dark-page': '#101820',
                         'dark-fg': '#a9b1d6',
                         'dark-border': '#414868',
                         'dark-green': '#9ece6a',
@@ -38,6 +39,7 @@
                         'dark-cyan': '#7dcfff',
                         'dark-red': '#f7768e',
                         'light-bg': '#fafafa',
+                        'light-page': '#e8edf2',
                         'light-fg': '#26272b',
                         'light-border': '#cccccc',
                         'light-green': '#15803d',
@@ -51,9 +53,9 @@
     </script>
 </head>
 
-<body class="bg-light-bg dark:bg-dark-bg text-light-fg dark:text-dark-fg transition-colors duration-300" oncontextmenu="return false;">
+<body class="bg-light-page dark:bg-dark-page text-light-fg dark:text-dark-fg transition-colors duration-300" oncontextmenu="return false;">
     <div id="terminal" class="p-2 sm:p-4 h-screen w-full flex flex-col">
-        <div class="bg-gray-200 dark:bg-[#282a36] rounded-t-lg p-2 flex items-center gap-2 shadow-md">
+        <div class="bg-gray-200 dark:bg-[#282a36] border border-light-border dark:border-dark-border rounded-t-lg p-2 flex items-center gap-2 shadow-md">
             <div class="w-3.5 h-3.5 bg-red-500 rounded-full"></div>
             <div class="w-3.5 h-3.5 bg-yellow-500 rounded-full"></div>
             <div class="w-3.5 h-3.5 bg-green-500 rounded-full"></div>
@@ -93,7 +95,7 @@
         </div>
 
         <div id="terminal-body"
-            class="w-full flex-grow bg-white dark:bg-dark-bg border-x-2 border-b-2 border-light-border dark:border-dark-border rounded-b-lg p-4 overflow-y-auto overflow-x-hidden text-sm sm:text-base">
+            class="w-full flex-grow bg-white dark:bg-dark-bg border-x border-b border-light-border dark:border-dark-border rounded-b-lg p-4 overflow-y-auto overflow-x-hidden text-sm sm:text-base">
             <div id="output"></div>
             <div class="flex items-center">
                 <div class="flex-shrink-0 mr-2">
