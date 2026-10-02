@@ -59,13 +59,8 @@ body {
 @media (max-width: 639px) and (prefers-reduced-motion: no-preference) {
     #terminal::after {
         filter: none;
-        animation: edge-light-pulse 2.4s ease-in-out infinite alternate;
+        animation: edge-light 8s linear infinite;
     }
-}
-
-@keyframes edge-light-pulse {
-    from { opacity: 0.45; }
-    to { opacity: 1; }
 }
 
 #fullscreen-toggle, #theme-toggle, a {
