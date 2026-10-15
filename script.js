@@ -28,7 +28,8 @@ const projects = [
     { name: 'Sistem Perpustakaan', description: 'A library system built with Laravel and integrated with an AI chatbot service using the Llama model.', url: 'https://github.com/nmwafa/sistem-perpustakaan' },
     { name: 'GEDOR-GEDOR', description: 'A web-based tool for automating the Google Dorking process, featuring a collection of nearly 1,000 structured search patterns to accelerate reconnaissance, OSINT, and bug hunting.', url: 'https://maswafa.is-a.dev/tools/google-dork' },
     { name: 'tumbas', description: 'Web-based product catalog application for SMEs that allows potential buyers to view lists of local products, search for products by category, and connect directly with sellers via WhatsApp or Google Maps.', url: 'https://github.com/nmwafa/tumbas' },
-    { name: 'PKI, Visualized', description: 'an interactive educational web tool that visually breaks down how Public Key Infrastructure (PKI) and TLS handshakes establish cryptographic trust between a browser and a server.', url: 'https://maswafa.is-a.dev/pki-visualized/' }
+    { name: 'PKI, Visualized', description: 'an interactive educational web tool that visually breaks down how Public Key Infrastructure (PKI) and TLS handshakes establish cryptographic trust between a browser and a server.', url: 'https://maswafa.is-a.dev/pki-visualized/' },
+    { name: 'CIS Benchmark Security Audit Suite', description: 'Standalone, zero-install, read-only Bash security auditing suite and interactive CLI launcher.', url: 'https://github.com/nmwafa/cis-audit' }
 ];
 
 const commands = {
