@@ -18,17 +18,22 @@ body {
     min-height: 0;
 }
 
+#terminal > div:first-child {
+    border-radius: 13px 13px 0 0;
+}
+
 #terminal-body {
     min-height: 0;
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
+    border-radius: 0 0 13px 13px;
 }
 
 #terminal::after {
     position: absolute;
     inset: 8px;
     border: 1px solid transparent;
-    border-radius: 8px;
+    border-radius: 13px;
     background: conic-gradient(from var(--edge-light-angle), transparent 0deg 225deg, rgba(34, 211, 238, 1) 260deg, rgba(74, 222, 128, 0.9) 305deg, transparent 335deg 360deg) border-box;
     -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
